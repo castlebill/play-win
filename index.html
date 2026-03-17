@@ -3,19 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Play & Win</title>
+<title>NanoSoft — Play & Win</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-  const SUPABASE_URL = 'https://aionfmwajbjgywmsadna.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpb25mbXdhamJqZ3l3bXNhZG5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3Mzc3MjksImV4cCI6MjA4OTMxMzcyOX0.EzLeJF-6wzL1ydwCfkrMhjsiE1ZuyJM7Rm4mwYbel-A'
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
-  console.log('Connected:', supabase)
-</script>
-
+<!-- Supabase via CDN (global window.supabase) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- Supabase: using direct REST API (no SDK, no tracking-blocked CDN) -->
 <style>
 /* ═══════════════════════════════════════════
    DESIGN SYSTEM — Booth Play & Win
@@ -310,7 +302,7 @@ select option{background:var(--bg2)}
 <!-- ═══ LOGIN SCREEN ═══ -->
 <div id="login-screen">
   <div class="login-logo">NanoSoft</div>
-  <div class="login-sub">Smarter Together<div>
+  <div class="login-sub">Smarter Together</div>
 
   <div class="role-grid" id="role-grid">
     <div class="role-card" onclick="selRole('visitor')" data-role="visitor">
@@ -349,7 +341,7 @@ select option{background:var(--bg2)}
 
   <!-- Topbar -->
   <div class="topbar">
-    <div class="topbar-logo">⚡ BOOTH</div>
+    <div class="topbar-logo">NanoSoft</div>
     <div style="display:flex;align-items:center;gap:10px">
       <div class="db-status"><div class="db-dot connecting" id="db-dot"></div><span id="db-lbl">Connecting…</span></div>
       <div class="topbar-role" id="role-badge">Visitor</div>
@@ -785,7 +777,18 @@ ALTER TABLE counters ENABLE ROW LEVEL SECURITY;
 -- Disable RLS for event day (re-enable after):
 ALTER TABLE results  DISABLE ROW LEVEL SECURITY;
 ALTER TABLE visitors DISABLE ROW LEVEL SECURITY;
-ALTER TABLE counters DISABLE ROW LEVEL SECURITY;</pre>
+ALTER TABLE counters DISABLE ROW LEVEL SECURITY;
+
+-- Atomic ticket increment function (required for visitor numbering):
+CREATE OR REPLACE FUNCTION next_ticket()
+RETURNS integer LANGUAGE sql AS $$
+  UPDATE counters SET value = value + 1
+  WHERE name = 'ticket' RETURNING value;
+$$;
+
+-- Enable realtime on tables:
+ALTER PUBLICATION supabase_realtime ADD TABLE results;
+ALTER PUBLICATION supabase_realtime ADD TABLE visitors;</pre>
       </details>
     </div>
 
@@ -845,15 +848,19 @@ ALTER TABLE counters DISABLE ROW LEVEL SECURITY;</pre>
 </div>
 
 <script>
+// ─── SUPABASE CREDENTIALS (pre-configured) ──
+var SUPABASE_URL = 'https://aionfmwajbjgywmsadna.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpb25mbXdhamJqZ3l3bXNhZG5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3Mzc3MjksImV4cCI6MjA4OTMxMzcyOX0.EzLeJF-6wzL1ydwCfkrMhjsiE1ZuyJM7Rm4mwYbel-A';
+
 // ═══════════════════════════════════════════
 //  BOOTH SYSTEM — Complete JS
 // ═══════════════════════════════════════════
 
 // ─── CONFIG ───────────────────────────────
 var BRAND = {
-  name:'Your Company Name', tag:'We help you grow · Nairobi',
-  phone:'+254 700 000 000', email:'hello@company.com',
-  wa:'254700000000', emoji:'🏢', days:'90'
+  name:'NanoSoft', tag:'Smarter Together · Nairobi',
+  phone:'+254 700 000 000', email:'hello@nanosoft.co.ke',
+  wa:'254700000000', emoji:'⚡', days:'90'
 };
 var SVCS = [
   {i:'🔒',n:'Security Audit'},{i:'🌐',n:'Network Audit'},
@@ -924,9 +931,8 @@ var startTime = Date.now();
   // auto-login visitor from URL
   var params = new URLSearchParams(window.location.search);
   if(params.get('role')==='visitor') loginAs('visitor');
-  // try supabase reconnect
-  var sbUrl=localStorage.getItem('sb_url'), sbKey=localStorage.getItem('sb_key');
-  if(sbUrl&&sbKey) sbConnectWith(sbUrl,sbKey);
+  // auto-connect with built-in credentials
+  sbConnectWith(SUPABASE_URL, SUPABASE_KEY);
   // seed demo data if empty
   if(!visitors.length) seedDemo();
 })();
@@ -949,8 +955,7 @@ function seedDemo(){
 // ─── SUPABASE ─────────────────────────────
 function sbConnectWith(url,key){
   try{
-    var s=window.supabase||supabase;
-    SB=s.createClient(url,key);
+    SB = window.supabase.createClient(url, key);
     setDbStatus('connecting');
     SB.from('counters').select('value').eq('name','ticket').single()
       .then(function(res){
@@ -958,18 +963,17 @@ function sbConnectWith(url,key){
         setDbStatus('connected');
         if(res.data) currentPid=res.data.value;
         loadFromDB();
-      }).catch(function(){setDbStatus('disconnected');});
-  }catch(e){setDbStatus('disconnected');}
+      }).catch(function(e){ console.warn('Supabase connect error',e); setDbStatus('disconnected'); });
+  }catch(e){ console.warn('Supabase init error',e); setDbStatus('disconnected'); }
 }
 function sbSave(){
   localStorage.setItem('sb_url',document.getElementById('sb-url').value);
   localStorage.setItem('sb_key',document.getElementById('sb-key').value);
 }
 function sbConnect(){
-  var url=document.getElementById('sb-url').value.trim();
-  var key=document.getElementById('sb-key').value.trim();
-  if(!url||!key){toast('Enter URL and key','amber');return;}
-  localStorage.setItem('sb_url',url);localStorage.setItem('sb_key',key);
+  var url=(document.getElementById('sb-url').value||'').trim() || SUPABASE_URL;
+  var key=(document.getElementById('sb-key').value||'').trim() || SUPABASE_KEY;
+  localStorage.setItem('sb_url',url); localStorage.setItem('sb_key',key);
   sbConnectWith(url,key);
   toast('Connecting to Supabase…');
 }
@@ -988,7 +992,18 @@ async function loadFromDB(){
     if(res.data) res.data.forEach(function(p){
       playerMap[p.pid]={firstReward:p.reward,firstGame:p.game,playCount:1};
     });
-  }catch(e){}
+    // subscribe to live changes
+    SB.channel('booth-live')
+      .on('postgres_changes',{event:'*',schema:'public',table:'visitors'},function(){
+        loadFromDB();
+      })
+      .on('postgres_changes',{event:'*',schema:'public',table:'results'},function(){
+        loadFromDB();
+      })
+      .subscribe(function(status){
+        if(status==='SUBSCRIBED') setDbStatus('connected');
+      });
+  }catch(e){ console.warn('loadFromDB error',e); }
 }
 async function dbWriteResult(pid,reward,game,bg,col){
   if(!SB)return;
@@ -1626,10 +1641,12 @@ function buildAdminForms(){
     'br-email':BRAND.email,'br-wa':BRAND.wa,'br-emoji':BRAND.emoji,'br-days':BRAND.days
   };
   Object.keys(fields).forEach(function(id){var el=document.getElementById(id);if(el)el.value=fields[id];});
-  // fill supabase fields
-  var sbUrl=localStorage.getItem('sb_url'),sbKey=localStorage.getItem('sb_key');
-  if(sbUrl) document.getElementById('sb-url').value=sbUrl;
-  if(sbKey) document.getElementById('sb-key').value=sbKey;
+  // fill supabase fields with live credentials
+  var sbUrlVal=localStorage.getItem('sb_url')||SUPABASE_URL;
+  var sbKeyVal=localStorage.getItem('sb_key')||SUPABASE_KEY;
+  var sbUrlEl=document.getElementById('sb-url'), sbKeyEl=document.getElementById('sb-key');
+  if(sbUrlEl) sbUrlEl.value=sbUrlVal;
+  if(sbKeyEl) sbKeyEl.value=sbKeyVal;
   // build service editor
   document.getElementById('svc-editor').innerHTML=SVCS.map(function(s,i){
     return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'+
