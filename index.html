@@ -8,12 +8,12 @@
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
-  const supabase = createClient(
-    'YOUR_SUPABASE_URL',
-    'YOUR_ANON_KEY'
-  )
+  const SUPABASE_URL = 'https://aionfmwajbjgywmsadna.supabase.co'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpb25mbXdhamJqZ3l3bXNhZG5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3Mzc3MjksImV4cCI6MjA4OTMxMzcyOX0.EzLeJF-6wzL1ydwCfkrMhjsiE1ZuyJM7Rm4mwYbel-A'
 
-  console.log('Supabase ready:', supabase)
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+  console.log('Connected:', supabase)
 </script>
 
 <style>
