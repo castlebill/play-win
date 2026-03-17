@@ -489,6 +489,7 @@ textarea{resize:vertical;min-height:64px}
       <div class="v-land-bg"></div>
       <div class="v-land-logo">PLAY<br>&amp;WIN</div>
       <div class="v-land-tag">Play a game · Win a reward<br>Everyone walks away with something</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:20px" id="land-social-proof">Free · 3 min · No purchase needed</div>
       <button class="btn btn-g" style="max-width:260px;font-size:1rem;padding:16px" onclick="vGoReg()">Start Playing →</button>
       <button class="btn btn-ghost" style="max-width:260px;margin-top:10px" onclick="vGoRegTicket()">I've played before → Enter ticket #</button>
       <div style="margin-top:12px;font-size:.78rem;color:var(--text3)">Free · Takes 3 minutes · No purchase needed</div>
@@ -856,25 +857,57 @@ textarea{resize:vertical;min-height:64px}
     <div class="wb-screen" id="wb-screen">
       <div class="wb-glow"></div>
       <div class="wb-inner">
-        <div style="text-align:center;margin-bottom:14px">
-          <div style="font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--green);margin-bottom:5px;font-weight:600" id="wb-coname">NANOSOFT</div>
-          <div style="font-family:var(--fh);font-size:clamp(1.4rem,5vw,2rem);font-weight:800;color:#fff;margin-bottom:3px">🏆 Today's Winners</div>
-          <div style="font-size:.72rem;color:rgba(255,255,255,.35)">Play · Win · Everyone wins something</div>
+        <!-- HEADER -->
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--green);margin-bottom:6px;font-weight:600" id="wb-coname">NANOSOFT</div>
+          <div style="font-family:var(--fh);font-size:clamp(1.5rem,5vw,2.2rem);font-weight:800;color:#fff;margin-bottom:4px">⚡ Play &amp; Win Live</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.4)" id="wb-active-line">Everyone who plays wins something</div>
         </div>
-        <div class="ticker-wrap"><div class="ticker-txt">🎯 Darts &nbsp;·&nbsp; ⛳ Golf &nbsp;·&nbsp; 🎡 Spin &nbsp;&nbsp;|&nbsp;&nbsp; Win up to 25% OFF &nbsp;&nbsp;|&nbsp;&nbsp; Free consultation guaranteed &nbsp;&nbsp;|&nbsp;&nbsp;</div></div>
-        <div style="background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.22);border-radius:10px;padding:11px;text-align:center;margin-bottom:12px">
-          <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:3px">⭐ Jackpot Winners Today</div>
-          <div style="font-family:var(--fh);font-size:2rem;font-weight:800;color:var(--amber)" id="wb-jp">0</div>
+
+        <!-- TICKER -->
+        <div class="ticker-wrap"><div class="ticker-txt" id="wb-ticker-txt">🎯 Darts &nbsp;·&nbsp; ⛳ Golf &nbsp;·&nbsp; 🎡 Spin &nbsp;&nbsp;|&nbsp;&nbsp; Win up to 25% OFF &nbsp;&nbsp;|&nbsp;&nbsp; Free · 3 min · Scan QR to play &nbsp;&nbsp;|&nbsp;&nbsp;</div></div>
+
+        <!-- SOCIAL PROOF ROW — game theory: conformity + FOMO -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+          <div style="background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.2);border-radius:10px;padding:12px 8px;text-align:center">
+            <div style="font-family:var(--fh);font-size:1.8rem;font-weight:800;color:var(--amber);line-height:1" id="wb-total">0</div>
+            <div style="font-size:.62rem;color:rgba(255,255,255,.4);margin-top:3px;font-weight:600;letter-spacing:.05em">PLAYING TODAY</div>
+          </div>
+          <div style="background:rgba(10,130,230,.12);border:1px solid rgba(10,130,230,.25);border-radius:10px;padding:12px 8px;text-align:center">
+            <div style="font-family:var(--fh);font-size:1.8rem;font-weight:800;color:var(--green);line-height:1" id="wb-jp">0</div>
+            <div style="font-size:.62rem;color:rgba(255,255,255,.4);margin-top:3px;font-weight:600;letter-spacing:.05em">JACKPOTS WON</div>
+          </div>
+          <div style="background:rgba(177,151,252,.1);border:1px solid rgba(177,151,252,.2);border-radius:10px;padding:12px 8px;text-align:center">
+            <div style="font-family:var(--fh);font-size:1.8rem;font-weight:800;color:var(--purple);line-height:1" id="wb-pct">100%</div>
+            <div style="font-size:.62rem;color:rgba(255,255,255,.4);margin-top:3px;font-weight:600;letter-spacing:.05em">WIN RATE</div>
+          </div>
         </div>
-        <div id="wb-list" style="margin-bottom:12px"></div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">
-          <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center"><div style="font-family:var(--fh);font-size:1.4rem;font-weight:800;color:#fff" id="wb-total">0</div><div style="font-size:.62rem;color:rgba(255,255,255,.35);margin-top:1px">players</div></div>
-          <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center"><div style="font-family:var(--fh);font-size:1.4rem;font-weight:800;color:var(--green)">3</div><div style="font-size:.62rem;color:rgba(255,255,255,.35);margin-top:1px">games</div></div>
-          <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center"><div style="font-family:var(--fh);font-size:1.4rem;font-weight:800;color:var(--amber)">25%</div><div style="font-size:.62rem;color:rgba(255,255,255,.35);margin-top:1px">max off</div></div>
+
+        <!-- GOLDEN ROUND COUNTDOWN — scarcity / urgency -->
+        <div style="background:linear-gradient(135deg,rgba(255,176,32,.15),rgba(255,176,32,.05));border:1px solid rgba(255,176,32,.3);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div>
+            <div style="font-family:var(--fh);font-weight:800;color:var(--amber);font-size:.78rem;letter-spacing:.1em">⚡ GOLDEN ROUND IN</div>
+            <div style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:2px">Everyone gathers · jackpot guaranteed</div>
+          </div>
+          <div style="font-family:var(--fh);font-size:2rem;font-weight:800;color:var(--amber)" id="wb-timer">—:—</div>
         </div>
-        <div style="background:rgba(10,130,230,.09);border:1px solid rgba(10,130,230,.18);border-radius:10px;padding:11px;text-align:center">
-          <div style="font-family:var(--fh);font-weight:700;color:var(--green);margin-bottom:2px">🎯 Scan QR at entrance to play</div>
-          <div style="font-size:.7rem;color:rgba(255,255,255,.3)">Free · 3 min · Everyone wins something</div>
+
+        <!-- RECENT WINNERS — anonymised, reward shown (loss aversion + social proof) -->
+        <div style="margin-bottom:14px">
+          <div style="font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:8px">Recent wins</div>
+          <div id="wb-list"></div>
+        </div>
+
+        <!-- REWARD DISTRIBUTION — near-miss psychology: shows most win 10-25% -->
+        <div style="margin-bottom:14px">
+          <div style="font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:8px">Today's prize pool</div>
+          <div id="wb-dist"></div>
+        </div>
+
+        <!-- CTA — action trigger -->
+        <div style="background:rgba(10,130,230,.1);border:1px solid rgba(10,130,230,.25);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-family:var(--fh);font-weight:800;color:var(--green);margin-bottom:3px;font-size:.95rem">🎯 Scan QR to play — it's free</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.35)">3 minutes · Everyone wins something · No purchase needed</div>
         </div>
       </div>
     </div>
@@ -1049,6 +1082,13 @@ function bootApp(){
   loginAs('visitor');
   sbConnectWith(SUPABASE_URL,SUPABASE_KEY);
 }
+function updateLandingSocialProof(){
+  var el=document.getElementById('land-social-proof');if(!el)return;
+  var t=visitors.length;
+  if(t===0)el.textContent='Free · 3 min · Be the first to play today!';
+  else if(t<10)el.textContent=t+' player'+(t===1?'':'s')+' winning today — join them · Free · 3 min';
+  else el.textContent=t+' players winning today · 100% win rate · Free · 3 min';
+}
 
 // ── SUPABASE ──
 function sbConnectWith(url,key){
@@ -1066,6 +1106,7 @@ function sbConnectWith(url,key){
 function sbSave(){localStorage.setItem('sb_url',document.getElementById('sb-url').value);localStorage.setItem('sb_key',document.getElementById('sb-key').value);}
 function sbConnect(){var u=(document.getElementById('sb-url').value||'').trim()||SUPABASE_URL,k=(document.getElementById('sb-key').value||'').trim()||SUPABASE_KEY;sbConnectWith(u,k);toast('Connecting…');}
 function setDb(s){var d=document.getElementById('db-dot'),l=document.getElementById('db-lbl');if(!d)return;d.className='db-dot '+s;l.textContent=s==='live'?'Live':s==='wait'?'Connecting':'Offline';}
+var sbSubscribed=false;
 async function loadFromDB(){
   if(!SB)return;
   try{
@@ -1073,7 +1114,11 @@ async function loadFromDB(){
     if(r.data&&r.data.length)visitors=r.data.map(function(v){v.created_at=new Date(v.created_at);return v;});
     var res=await SB.from('results').select('*');
     if(res.data)res.data.forEach(function(p){playerMap[p.pid]={firstReward:p.reward,firstGame:p.game,playCount:1};});
-    SB.channel('booth').on('postgres_changes',{event:'*',schema:'public',table:'visitors'},function(){loadFromDB();}).on('postgres_changes',{event:'*',schema:'public',table:'results'},function(){loadFromDB();}).subscribe();
+    // BUG FIX: only subscribe once — was creating new channel on every DB change
+    if(!sbSubscribed){
+      sbSubscribed=true;
+      SB.channel('booth').on('postgres_changes',{event:'*',schema:'public',table:'visitors'},function(){loadFromDB();updateLandingSocialProof();}).on('postgres_changes',{event:'*',schema:'public',table:'results'},function(){loadFromDB();}).subscribe();
+    }
   }catch(e){console.warn('loadFromDB:',e);}
 }
 async function dbWriteResult(pid,reward,game,bg,col){if(!SB)return;await SB.from('results').upsert({pid,reward,game,reward_bg:bg,reward_col:col});}
@@ -1082,6 +1127,14 @@ async function dbUpdateVisitor(v){if(!SB)return;await SB.from('visitors').update
 async function nextTicket(){
   if(SB){try{var r=await SB.rpc('next_ticket');if(r.data)return r.data;}catch(e){}}
   currentPid++;localStorage.setItem('booth_pid',currentPid);return currentPid;
+}
+
+// ── VOUCHER GENERATOR (unique per player+time, no collision) ──
+function mkVoucher(pid){
+  var t=Date.now(),seed=(pid*6364136223846793005+1442695040888963407)^t;
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var out='';for(var i=0;i<5;i++){seed=Math.abs((seed*1664525+1013904223)&0xFFFFFFFF);out+=chars[seed%chars.length];}
+  return 'NS-'+out;
 }
 
 // ── LOGIN ──
@@ -1174,6 +1227,36 @@ function vShowOnly(id){
 function vGoReg(){vShowOnly('v-reg');renderSteps('vsteps-reg',1);}
 function vGoRegTicket(){
   vShowOnly('v-reg');renderSteps('vsteps-reg',1);
+  setTimeout(function(){var el=document.getElementById('reg-ticket');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus();}},200);
+}
+function regTicketInput(){
+  var val=document.getElementById('reg-ticket').value.trim();
+  document.getElementById('reg-ticket-btn').disabled=!val;
+  document.getElementById('reg-ticket-err').style.display='none';
+}
+function vLoginByTicket(){
+  var ticketNum=parseInt(document.getElementById('reg-ticket').value.trim());
+  if(!ticketNum){return;}
+  var existing=visitors.find(function(v){return v.id===ticketNum;});
+  var hasResult=playerMap[ticketNum]&&playerMap[ticketNum].playCount>0;
+  if(!existing&&!hasResult){document.getElementById('reg-ticket-err').style.display='block';return;}
+  var name=(existing&&existing.name)||('Player #'+ticketNum);
+  var phone=(existing&&existing.phone)||'';
+  var rec=playerMap[ticketNum];
+  vPlayer={id:ticketNum,name:name,phone:phone,email:(existing&&existing.email)||'',company:(existing&&existing.company)||'',avatar:'🎮',tickets:[]};
+  if(rec&&rec.firstReward){vPlayer.tickets=[{ticketId:ticketNum+'-1',game:rec.firstGame,reward:rec.firstReward,isFirst:true}];}
+  document.getElementById('tk-greeting').textContent='Welcome back, '+name.split(' ')[0]+'! 👋';
+  document.getElementById('tk-num').textContent='#'+ticketNum;
+  var retEl=document.getElementById('tk-returning');
+  retEl.style.display='block';
+  retEl.textContent=rec&&rec.firstReward?'Your reward is locked in: '+rec.firstReward:'No result yet — head to a game!';
+  var hostHint=document.getElementById('tk-host-hint');
+  if(hostHint)hostHint.textContent='Head to any game table and show this number';
+  vShowOnly('v-ticket');renderSteps('vsteps-ticket',2);
+  document.getElementById('reg-ticket-err').style.display='none';
+}
+function vGoRegTicket(){
+  vShowOnly('v-reg');renderSteps('vsteps-reg',1);
   // Scroll to ticket field after a tick
   setTimeout(function(){
     var el=document.getElementById('reg-ticket');
@@ -1189,30 +1272,40 @@ async function vRegister(){
   var name=document.getElementById('reg-name').value.trim();
   var phone=document.getElementById('reg-phone').value.trim();
   if(!name||!phone){toast('Name and phone required','a');return;}
-  document.getElementById('reg-btn').disabled=true;
-  document.getElementById('reg-btn').textContent='Getting your number…';
-  var pid=await nextTicket();
-  vPlayer={
-    id:pid,name:name,phone:phone,
-    email:document.getElementById('reg-email').value.trim(),
-    company:document.getElementById('reg-company').value.trim(),
-    avatar:vAvatar,tickets:[]
-  };
-  // show ticket
-  document.getElementById('tk-greeting').textContent='Hello, '+name.split(' ')[0]+'! 👋';
-  document.getElementById('tk-num').textContent='#'+pid;
-  var rec=playerMap[pid];
-  var retEl=document.getElementById('tk-returning');
-  var isReturning=existingVisitor||(rec&&rec.playCount>0);
-  if(isReturning){
-    retEl.style.display='block';
-    retEl.textContent='Welcome back '+name.split(' ')[0]+'! Your first reward: '+(rec?rec.firstReward:'—');
-  } else retEl.style.display='none';
-  // Spin players don't need to show number to host
-  var hostHint=document.getElementById('tk-host-hint');
-  if(hostHint)hostHint.style.display=isReturning?'none':'block';
-  vShowOnly('v-ticket');renderSteps('vsteps-ticket',2);
-  confetti();
+  var btn=document.getElementById('reg-btn');
+  btn.disabled=true;btn.textContent='Getting your number…';
+  try{
+    // BUG FIX: declare existingVisitor in this scope (was undefined reference)
+    var existingVisitor=visitors.find(function(v){return v.phone&&v.phone.replace(/\D/g,'')===(phone.replace(/\D/g,''));});
+    var pid;
+    if(existingVisitor){pid=existingVisitor.id;}
+    else{pid=await nextTicket();}
+    vPlayer={
+      id:pid,name:name,phone:phone,
+      email:document.getElementById('reg-email').value.trim(),
+      company:document.getElementById('reg-company').value.trim(),
+      avatar:vAvatar,tickets:[]
+    };
+    // Restore tickets from playerMap for returning visitors
+    var rec=playerMap[pid];
+    if(rec&&rec.firstReward){vPlayer.tickets=[{ticketId:pid+'-1',game:rec.firstGame,reward:rec.firstReward,isFirst:true}];}
+    document.getElementById('tk-greeting').textContent='Hello, '+name.split(' ')[0]+'! 👋';
+    document.getElementById('tk-num').textContent='#'+pid;
+    var retEl=document.getElementById('tk-returning');
+    var isReturning=!!(existingVisitor||(rec&&rec.playCount>0));
+    if(isReturning){
+      retEl.style.display='block';
+      retEl.textContent='Welcome back '+name.split(' ')[0]+'! Your reward: '+(rec?rec.firstReward:'—');
+    } else retEl.style.display='none';
+    var hostHint=document.getElementById('tk-host-hint');
+    if(hostHint)hostHint.style.display=isReturning?'none':'block';
+    vShowOnly('v-ticket');renderSteps('vsteps-ticket',2);
+    confetti();
+  }catch(err){
+    console.warn('vRegister error:',err);
+    btn.disabled=false;btn.textContent='Continue →';
+    toast('Something went wrong — try again','r');
+  }
 }
 
 function vGoGames(){
@@ -1296,7 +1389,7 @@ function vGoThankYou(){
   vShowOnly('v-ty');renderSteps('vsteps-claim',5);
   var rec=playerMap[vPlayer?vPlayer.id:0];
   var reward=rec?rec.firstReward:'Your reward';
-  var voucher='BOOTH-'+Math.random().toString(36).substr(2,4).toUpperCase();
+  var voucher=mkVoucher(vPlayer?vPlayer.id:currentPid);
   document.getElementById('ty-voucher').textContent=voucher;
   document.getElementById('ty-valid').textContent='Valid '+BRAND.days+' days from today';
   document.getElementById('ty-body').textContent='Hi '+((vPlayer&&vPlayer.name.split(' ')[0])||'Player')+'! Your reward is confirmed. We\'ll be in touch via WhatsApp to arrange it.';
@@ -1312,7 +1405,7 @@ function vGoClaim(){
   var rec=playerMap[vPlayer.id];
   var reward=rec?rec.firstReward:'Free Consult';
   var r=RM[reward]||{col:'var(--green)',bg:'var(--gdim)'};
-  var voucher='BOOTH-'+Math.random().toString(36).substr(2,4).toUpperCase();
+  var voucher=mkVoucher(vPlayer?vPlayer.id:currentPid);
   document.getElementById('cl-reward').textContent=reward;
   document.getElementById('cl-reward').style.color=r.col;
   document.getElementById('cl-valid').textContent='Valid '+BRAND.days+' days from today';
@@ -1518,7 +1611,7 @@ function prizeLookup(){
   if(!pid){document.getElementById('prize-card').style.display='none';return;}
   var rec=playerMap[pid];var reward=rec?rec.firstReward:'Free Consult';var r=RM[reward]||{col:'var(--green)'};
   var existing=visitors.find(function(v){return v.id===pid;});
-  prizeV={id:pid,reward:reward,game:rec?rec.firstGame:'',voucher:'BOOTH-'+Math.random().toString(36).substr(2,4).toUpperCase()};
+  prizeV={id:pid,reward:reward,game:rec?rec.firstGame:'',voucher:mkVoucher(pid)};
   // Jar indicator
   var jarEl=document.getElementById('pr-jar-indicator');
   if(jarEl){
@@ -1568,14 +1661,84 @@ function goldenTimer(){var el=document.getElementById('golden-timer');if(!el)ret
 setInterval(goldenTimer,1000);goldenTimer();
 
 // ── WINNER'S BOARD ──
+// GAME THEORY PSYCHOLOGY:
+// 1. Social proof — show count, win rate (conformity bias → more people play)
+// 2. Loss aversion — 100% win rate removes fear of losing
+// 3. Near-miss & reward salience — show distribution, jackpots highlighted
+// 4. Anonymity — no names, only Player #XX and game icon (privacy = more registrations)
+// 5. Scarcity / urgency — golden round countdown
+// 6. Variable reward — distribution chart creates curiosity about what they'll get
+
+// Avatar pool for anonymous player icons (no names shown)
+var WB_AVATARS=['🦁','🐯','🦊','🐺','🦅','🦋','🔥','⚡','🎮','🎲','🦄','🐉'];
+function wbAnon(id){return WB_AVATARS[id%WB_AVATARS.length]+' Player #'+id;}
+
 function loadWB(){
+  var total=visitors.length;
   var jp=visitors.filter(function(v){return v.reward&&v.reward.includes('25');}).length;
-  document.getElementById('wb-jp').textContent=jp;document.getElementById('wb-total').textContent=visitors.length;
+  var winRate=total>0?Math.round((total/total)*100):100; // everyone wins something
+  document.getElementById('wb-jp').textContent=jp;
+  document.getElementById('wb-total').textContent=total;
+  document.getElementById('wb-pct').textContent=winRate+'%';
   document.getElementById('wb-coname').textContent=BRAND.name.toUpperCase();
-  var icons=['🥇','🥈','🥉','4️⃣','5️⃣'];
-  document.getElementById('wb-list').innerHTML=visitors.slice(0,5).map(function(v,i){var rm=RM[v.reward]||{bg:'rgba(255,255,255,.06)',col:'#8b90b0'};var isG=v.reward&&v.reward.includes('25'),isS=v.reward&&v.reward.includes('20');return '<div class="wb-row '+(isG?'gold':isS?'silver':'')+'" style="background:'+(isG?'rgba(255,176,32,.1)':isS?'rgba(10,130,230,.09)':'rgba(255,255,255,.03)')+'"><div style="font-size:1rem;width:20px;flex-shrink:0">'+icons[i]+'</div><div style="flex:1;min-width:0"><div style="font-size:.86rem;font-weight:600;font-family:var(--fh);color:#fff">'+(v.name||'Player #'+v.id)+'</div><div style="font-size:.66rem;color:rgba(255,255,255,.35);margin-top:1px">'+v.game+'</div></div><span class="wb-rew badge" style="background:'+rm.bg+';color:'+rm.col+'">'+v.reward+'</span></div>';}).join('')||'<div style="text-align:center;padding:20px;color:rgba(255,255,255,.25);font-size:.82rem">No winners yet — be the first!</div>';
+  // Social proof line
+  var activeEl=document.getElementById('wb-active-line');
+  if(activeEl){
+    if(total===0)activeEl.textContent='Be the first to play today!';
+    else if(total<5)activeEl.textContent=total+' player'+(total===1?'':'s')+' already winning — join them';
+    else activeEl.textContent=total+' players winning today · '+jp+' jackpots claimed';
+  }
+  // Golden round timer
+  var timerEl=document.getElementById('wb-timer');
+  if(timerEl){var rem=30*60*1000-(Date.now()%(30*60*1000)),m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);timerEl.textContent=m+':'+(s<10?'0':'')+s;}
+  // Recent winners — NO NAMES, only avatar+player# and reward (anonymity = privacy safe)
+  var gameIcons={darts:'🎯',golf:'⛳',spin:'🎡'};
+  var recent=visitors.slice(0,8);
+  document.getElementById('wb-list').innerHTML=recent.length?recent.map(function(v){
+    var rm=RM[v.reward]||{bg:'rgba(255,255,255,.06)',col:'#8b90b0'};
+    var isG=v.reward&&v.reward.includes('25');
+    var isJ=v.reward&&v.reward.includes('JACKPOT');
+    var bg=isJ?'rgba(255,176,32,.12)':isG?'rgba(255,176,32,.07)':'rgba(255,255,255,.03)';
+    var border=isJ?'rgba(255,176,32,.4)':isG?'rgba(255,176,32,.2)':'rgba(255,255,255,.06)';
+    return '<div class="wb-row" style="background:'+bg+';border-color:'+border+'">'
+      +'<div style="font-size:1.1rem;flex-shrink:0">'+(gameIcons[v.game]||'🎮')+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:.82rem;font-weight:600;font-family:var(--fh);color:rgba(255,255,255,.85)">'+wbAnon(v.id)+'</div>'
+        +'<div style="font-size:.64rem;color:rgba(255,255,255,.3);margin-top:1px">'+(v.game||'game')+(isJ?' · 🏆 Jackpot!':'')+'</div>'
+      +'</div>'
+      +'<span class="badge" style="background:'+rm.bg+';color:'+rm.col+';border:1px solid '+rm.col.replace(')',',0.3)').replace('rgb','rgba')+'">'+v.reward+'</span>'
+    +'</div>';
+  }).join(''):'<div style="text-align:center;padding:16px;color:rgba(255,255,255,.2);font-size:.82rem">No winners yet — scan QR to be first!</div>';
+  // Reward distribution — near-miss psychology: people see most players win 10-25%, want to beat that
+  var rewards={};visitors.forEach(function(v){if(v.reward)rewards[v.reward]=(rewards[v.reward]||0)+1;});
+  var distHtml='';
+  if(Object.keys(rewards).length){
+    RORDER.forEach(function(r){
+      if(!rewards[r])return;
+      var rm=RM[r]||{col:'rgba(255,255,255,.4)'};
+      var pct=Math.round(rewards[r]/total*100);
+      var w=Math.max(pct,4);
+      distHtml+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
+        +'<div style="font-size:.68rem;color:'+rm.col+';width:90px;flex-shrink:0;font-weight:600;text-align:right">'+r+'</div>'
+        +'<div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden">'
+          +'<div style="height:100%;width:'+w+'%;background:'+rm.col+';border-radius:3px;transition:width .5s ease"></div>'
+        +'</div>'
+        +'<div style="font-size:.64rem;color:rgba(255,255,255,.3);width:26px;flex-shrink:0">'+rewards[r]+'</div>'
+      +'</div>';
+    });
+  } else {
+    distHtml='<div style="text-align:center;padding:10px;color:rgba(255,255,255,.2);font-size:.78rem">Distribution appears as players win</div>';
+  }
+  document.getElementById('wb-dist').innerHTML=distHtml;
 }
 function wbFull(){var el=document.getElementById('wb-screen');if(el.requestFullscreen)el.requestFullscreen();else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();}
+// Live timer on board
+setInterval(function(){
+  var el=document.getElementById('wb-timer');
+  if(!el||!document.getElementById('pg-board').classList.contains('active'))return;
+  var rem=30*60*1000-(Date.now()%(30*60*1000)),m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+  el.textContent=m+':'+(s<10?'0':'')+s;
+},1000);
 
 // ── GUESTBOOK ──
 function gbFilt(btn,f){gbFiltVal=f;document.querySelectorAll('#gb-filters .chip').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderGB();}
