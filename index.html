@@ -1,598 +1,1656 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Booth — Play & Win</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);background:var(--color-background-tertiary);font-size:14px}
-.nav{display:flex;gap:3px;padding:8px 10px;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);flex-wrap:wrap;position:sticky;top:0;z-index:10}
-.nb{padding:5px 10px;font-size:11px;font-weight:500;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans);white-space:nowrap}
-.nb.on{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
-.pg{display:none;padding:16px;max-width:500px;margin:0 auto}
-.pg.on{display:block}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:16px;margin-bottom:10px}
-.lbl{font-size:11px;font-weight:500;color:var(--color-text-secondary);display:block;margin-bottom:5px}
-input[type=number],input[type=text],textarea{width:100%;padding:8px 12px;font-size:14px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-sans);outline:none}
-textarea{resize:vertical;min-height:56px}
-.f{margin-bottom:10px}
-.btn{display:block;width:100%;padding:12px;font-size:14px;font-weight:500;border-radius:10px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);cursor:pointer;text-align:center;color:var(--color-text-primary);font-family:var(--font-sans)}
-.btn:active{opacity:.7}
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — Booth Play & Win
+   Aesthetic: Industrial playful — dark canvas,
+   neon accents, tactile game-show energy
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #0e0f14;
+  --bg2:       #161820;
+  --bg3:       #1e2029;
+  --border:    rgba(255,255,255,.08);
+  --border2:   rgba(255,255,255,.14);
+  --text:      #f0f1f5;
+  --text2:     #8b8fa8;
+  --text3:     #5a5e74;
+  --green:     #1ddc8c;
+  --green-dim: rgba(29,220,140,.15);
+  --amber:     #f5a623;
+  --amber-dim: rgba(245,166,35,.15);
+  --blue:      #4a9eff;
+  --blue-dim:  rgba(74,158,255,.15);
+  --red:       #ff5c5c;
+  --red-dim:   rgba(255,92,92,.15);
+  --purple:    #a78bfa;
+  --purple-dim:rgba(167,139,250,.15);
+  --r: 14px;
+  --r2: 10px;
+  --shadow: 0 2px 16px rgba(0,0,0,.4);
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;background:var(--bg)}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.5}
+
+/* ─── TYPOGRAPHY ─── */
+h1,h2,h3,.head{font-family:var(--font-head);letter-spacing:-.01em}
+.display{font-family:var(--font-head);font-size:clamp(2.5rem,10vw,5rem);font-weight:800;line-height:.95;letter-spacing:-.03em}
+.title{font-family:var(--font-head);font-size:clamp(1.2rem,4vw,1.6rem);font-weight:700}
+.subtitle{font-size:.85rem;color:var(--text2);font-weight:400}
+
+/* ─── LAYOUT ─── */
+.app{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;gap:8px}
+.topbar-logo{font-family:var(--font-head);font-weight:800;font-size:1rem;color:var(--green);letter-spacing:.05em;white-space:nowrap}
+.topbar-role{font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);white-space:nowrap}
+.page{display:none;flex:1;padding:16px;max-width:600px;width:100%;margin:0 auto;padding-bottom:80px}
+.page.active{display:block}
+.page-fill{display:none;flex:1;padding:0;width:100%;margin:0}
+.page-fill.active{display:flex;flex-direction:column}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 4px 8px;cursor:pointer;gap:3px;border:none;background:transparent;color:var(--text3);font-family:var(--font-body);font-size:.62rem;font-weight:500;transition:color .15s;min-width:0}
+.bn-item:active{opacity:.7}
+.bn-item.active{color:var(--green)}
+.bn-item .icon{font-size:1.25rem;line-height:1}
+.bn-item .lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+/* ─── CARDS ─── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card-sm{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;margin-bottom:8px}
+.card-accent{border-color:var(--green);background:var(--green-dim)}
+.card-amber{border-color:var(--amber);background:var(--amber-dim)}
+.card-blue{border-color:var(--blue);background:var(--blue-dim)}
+.card-red{border-color:var(--red);background:var(--red-dim)}
+
+/* ─── BUTTONS ─── */
+.btn{display:block;width:100%;padding:14px 20px;border-radius:var(--r2);border:none;font-family:var(--font-body);font-size:.95rem;font-weight:600;cursor:pointer;text-align:center;transition:transform .1s,opacity .1s;letter-spacing:.01em}
+.btn:active{transform:scale(.97);opacity:.85}
+.btn-primary{background:var(--green);color:#0a1a12}
+.btn-amber{background:var(--amber);color:#1a0e00}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.btn-red{background:var(--red-dim);border:1px solid var(--red);color:var(--red)}
+.btn-blue{background:var(--blue-dim);border:1px solid var(--blue);color:var(--blue)}
+.btn-sm{padding:9px 16px;font-size:.8rem;border-radius:8px;width:auto;display:inline-block}
 .btn+.btn{margin-top:8px}
-.T{background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB}
-.A{background:#FAEEDA;color:#BA7517;border-color:#FAC775}
-.G{background:#EAF3DE;color:#3B6D11;border-color:#C0DD97}
-.B{background:#E6F1FB;color:#185FA5;border-color:#B5D4F4}
-.P{background:#EEEDFE;color:#533AB7;border-color:#AFA9EC}
-.R{background:#FCEBEB;color:#A32D2D;border-color:#F7C1C1}
-.sm{padding:6px 13px;font-size:12px;border-radius:8px;width:auto;display:inline-block}
-.badge{display:inline-block;padding:3px 10px;border-radius:8px;font-size:11px;font-weight:500}
-.msg{padding:10px 14px;border-radius:8px;font-size:13px;font-weight:500;text-align:center;margin-top:8px;display:none}
-.msg.on{display:block}
-.divider{height:0.5px;background:var(--color-border-tertiary);margin:12px 0}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 
-/* VISITOR GAME PICK */
-.gcards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}
-.gc{padding:16px 6px;border-radius:12px;border:2px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;text-align:center;font-family:var(--font-sans);transition:border-color .15s,background .15s}
-.gc:active{opacity:.7}
-.gc.on{border-color:#1D9E75;background:#E1F5EE}
-.gc.on .gn{color:#0F6E56}
-.gi{font-size:24px;margin-bottom:5px}
-.gn{font-size:12px;font-weight:500;color:var(--color-text-primary)}
-.gs2{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+/* ─── INPUTS ─── */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.75rem;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
+input,select,textarea{width:100%;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);color:var(--text);font-family:var(--font-body);font-size:.95rem;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--green)}
+input::placeholder{color:var(--text3)}
+textarea{resize:vertical;min-height:60px}
+select option{background:var(--bg2)}
 
-/* HOST PLAYER CARD */
-.pcard{border-radius:12px;padding:16px;margin-bottom:10px;border:2px solid}
-.pcard.fresh{border-color:#1D9E75;background:#E1F5EE}
-.pcard.returning{border-color:#9FE1CB;background:#E1F5EE}
-.pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.pc-pid{font-size:36px;font-weight:500;color:var(--color-text-primary);line-height:1}
-.pc-pill{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500}
-.pill-new{background:#0F6E56;color:#fff}
-.pill-ret{background:#E1F5EE;color:#0F6E56;border:1px solid #9FE1CB}
-.pc-game{font-size:12px;color:var(--color-text-secondary);margin-bottom:4px}
-.pc-reward{font-size:12px;color:var(--color-text-secondary)}
+/* ─── BADGES ─── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:.72rem;font-weight:600;letter-spacing:.02em}
+.badge-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(29,220,140,.3)}
+.badge-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,166,35,.3)}
+.badge-blue{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(74,158,255,.3)}
+.badge-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,92,92,.3)}
+.badge-purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+.badge-muted{background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border)}
 
-/* GAME CHANGE ROW */
-.gcrow{display:flex;gap:6px;margin:8px 0}
-.gcb{flex:1;padding:9px 4px;border-radius:10px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;text-align:center;font-family:var(--font-sans);font-size:11px;font-weight:500;color:var(--color-text-secondary)}
-.gcb:active{opacity:.7}
-.gcb.on{border-color:#1D9E75;background:#E1F5EE;color:#0F6E56}
+/* ─── TOAST ─── */
+#toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-10px);background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px 18px;font-size:.85rem;font-weight:500;z-index:9999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* PLAY-ONLY BANNER */
-.play-only-banner{background:#F1EFE8;border:0.5px solid #D3D1C7;border-radius:8px;padding:10px 13px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.pob-icon{font-size:16px;flex-shrink:0}
-.pob-text{font-size:12px;color:#5F5E5A;line-height:1.5}
+/* ─── LOGIN ─── */
+#login-screen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.login-logo{font-family:var(--font-head);font-size:2.2rem;font-weight:800;color:var(--green);margin-bottom:6px;letter-spacing:-.02em}
+.login-sub{color:var(--text2);font-size:.85rem;margin-bottom:32px;text-align:center}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:340px;margin-bottom:24px}
+.role-card{padding:14px 10px;border-radius:var(--r2);border:2px solid var(--border);background:var(--bg2);cursor:pointer;text-align:center;transition:all .15s;font-family:var(--font-body)}
+.role-card:active{transform:scale(.96)}
+.role-card.sel{border-color:var(--green);background:var(--green-dim)}
+.role-card .ri{font-size:1.6rem;margin-bottom:4px}
+.role-card .rn{font-size:.8rem;font-weight:600;color:var(--text)}
+.role-card .rd{font-size:.7rem;color:var(--text2);margin-top:2px}
+.pin-display{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);transition:all .2s}
+.pin-dot.filled{background:var(--green);border-color:var(--green);box-shadow:0 0 8px rgba(29,220,140,.5)}
+.numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:260px}
+.nk{padding:16px;border-radius:var(--r2);background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--font-head);font-size:1.2rem;font-weight:700;cursor:pointer;text-align:center;transition:all .1s}
+.nk:active{transform:scale(.92);background:var(--green-dim)}
+.nk.del{font-size:.9rem;color:var(--text2)}
+.pin-error{color:var(--red);font-size:.8rem;text-align:center;min-height:20px;margin-top:4px}
 
-/* DARTS */
-.throws{display:flex;gap:8px;justify-content:center;margin:10px 0}
-.ts{width:52px;height:52px;border-radius:50%;border:1.5px solid var(--color-border-secondary);background:var(--color-background-secondary);display:flex;flex-direction:column;align-items:center;justify-content:center}
-.tv{font-size:17px;font-weight:500;color:var(--color-text-primary)}
-.tl2{font-size:9px;color:var(--color-text-secondary);margin-top:1px}
-.zrow{margin-bottom:7px}
-.zt{font-size:10px;font-weight:500;margin-bottom:3px}
-.zbtns{display:flex;gap:4px;flex-wrap:wrap}
-.zb{padding:8px 10px;border-radius:8px;border:0.5px solid;cursor:pointer;font-family:var(--font-sans);font-size:13px;font-weight:500;min-width:40px;text-align:center}
-.zb:active{opacity:.7}
-.mpick{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.mc{padding:12px 8px;border-radius:10px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;text-align:center;font-family:var(--font-sans)}
-.mc.on{border-color:#1D9E75;background:#E1F5EE}
-.mn{font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.mc.on .mn{color:#0F6E56}
-.ms{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
-.rblist{display:flex;flex-direction:column;gap:5px}
-.rb{padding:10px 12px;border-radius:10px;border:1.5px solid;cursor:pointer;font-family:var(--font-sans);font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center}
-.rb:active{opacity:.7}
+/* ─── VISITOR PAGE ─── */
+.v-hero{min-height:55vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 16px;position:relative;overflow:hidden}
+.v-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(29,220,140,.12) 0%,transparent 70%);pointer-events:none}
+.pid-display{font-family:var(--font-head);font-size:clamp(4rem,20vw,8rem);font-weight:800;color:var(--green);line-height:.9;letter-spacing:-.04em;text-shadow:0 0 40px rgba(29,220,140,.4)}
+.pid-label{font-size:.75rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text2);margin-bottom:8px}
 
-/* GOLF */
-.rtabs{display:flex;gap:5px;margin-bottom:10px}
-.rtab{flex:1;padding:8px 4px;border-radius:10px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-secondary);cursor:pointer;text-align:center;font-family:var(--font-sans);font-size:11px;font-weight:500;color:var(--color-text-secondary)}
-.rtab.cur{border-color:#1D9E75;background:#E1F5EE;color:#0F6E56}
-.rtab.done{border-color:#9FE1CB;color:#0F6E56;background:#E1F5EE;opacity:.7}
-.rtab.best{border-color:#BA7517;background:#FAEEDA;color:#BA7517}
-.ball{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--color-border-secondary);background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;font-size:17px}
-.ball.cur{border-color:#1D9E75;background:#E1F5EE}
-.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.hbtn{padding:16px 8px;border-radius:12px;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;font-family:var(--font-sans);text-align:center}
-.hbtn:active{opacity:.7}
-.hbtn.jack{background:#FAEEDA;border-color:#FAC775}
+/* ─── GAME CARDS ─── */
+.game-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.game-card{padding:18px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg2);cursor:pointer;text-align:center;transition:all .15s;position:relative;overflow:hidden}
+.game-card:active{transform:scale(.95)}
+.game-card.chosen{border-color:var(--green);background:var(--green-dim)}
+.game-card.chosen::after{content:'✓';position:absolute;top:6px;right:8px;font-size:.7rem;color:var(--green);font-weight:700}
+.game-card .gi{font-size:2rem;margin-bottom:6px;display:block}
+.game-card .gname{font-family:var(--font-head);font-size:.85rem;font-weight:700;color:var(--text)}
+.game-card .gdesc{font-size:.68rem;color:var(--text2);margin-top:2px}
+.game-card.chosen .gname{color:var(--green)}
 
-/* GUESTBOOK */
-.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.sc{background:var(--color-background-secondary);border-radius:8px;padding:10px 6px;text-align:center}
-.sv{font-size:20px;font-weight:500;color:var(--color-text-primary)}
-.sl2{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
-.gbrow{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:13px;margin-bottom:7px}
-.gbtop{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;cursor:pointer}
-.gbdet{display:none;border-top:0.5px solid var(--color-border-tertiary);margin-top:10px;padding-top:10px}
-.gbdet.on{display:block}
-.chips{display:flex;gap:4px;flex-wrap:wrap;margin:5px 0}
-.chip{padding:4px 8px;font-size:11px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans)}
-.chip.on{background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB}
-.svcchip{padding:6px 7px;font-size:11px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);cursor:pointer;font-family:var(--font-sans);color:var(--color-text-secondary)}
-.svcchip.on{background:#E6F1FB;color:#185FA5;border-color:#B5D4F4;font-weight:500}
-.filtrow{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
-.fb{padding:5px 10px;font-size:11px;border-radius:8px;border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans)}
-.fb.on{background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB}
+/* ─── HOST — GAME SWITCH ─── */
+.game-switch{display:flex;gap:6px;background:var(--bg3);border-radius:var(--r2);padding:4px;margin-bottom:14px}
+.gs-btn{flex:1;padding:9px 4px;border-radius:8px;border:none;background:transparent;color:var(--text2);font-family:var(--font-body);font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;text-align:center}
+.gs-btn.active{background:var(--bg2);color:var(--text);border:1px solid var(--border2)}
+.gs-btn:active{opacity:.7}
+
+/* ─── DARTS ─── */
+.throws-row{display:flex;gap:10px;justify-content:center;margin:12px 0}
+.throw-chip{width:58px;height:58px;border-radius:50%;border:2px solid var(--border);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .2s}
+.throw-chip .tv{font-size:1.1rem;font-weight:700;line-height:1;font-family:var(--font-head)}
+.throw-chip .tl{font-size:.6rem;color:var(--text3);margin-top:2px}
+.zone-grid{display:flex;flex-direction:column;gap:6px}
+.zone-row{padding:10px 14px;border-radius:var(--r2);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all .12s;background:var(--bg3)}
+.zone-row:active{transform:scale(.98)}
+.zone-num-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.znum{padding:9px 0;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:var(--font-head);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .12s;text-align:center;flex:1;min-width:36px}
+.znum:active{transform:scale(.9)}
+
+/* ─── GOLF ─── */
+.round-tabs{display:flex;gap:5px;margin-bottom:12px}
+.rtab{flex:1;padding:9px 4px;border-radius:var(--r2);border:1px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;font-family:var(--font-head);font-size:.78rem;font-weight:700;color:var(--text2);transition:all .15s}
+.rtab.cur{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.rtab.done{border-color:rgba(255,255,255,.2);color:var(--text);background:var(--bg2);opacity:.7}
+.rtab.best{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
+.balls-row{display:flex;gap:10px;justify-content:center;margin:12px 0}
+.ball{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.3rem;transition:all .2s}
+.ball.cur{border-color:var(--green);box-shadow:0 0 12px rgba(29,220,140,.3)}
+.hole-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.hole-btn{padding:20px 8px;border-radius:var(--r);border:2px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;font-family:var(--font-body);transition:all .15s}
+.hole-btn:active{transform:scale(.95)}
+.hole-btn.jack{border-color:var(--amber);background:var(--amber-dim)}
+.hole-btn .hi{font-size:1.8rem;margin-bottom:6px}
+.hole-btn .ht{font-size:.85rem;font-weight:700;color:var(--text);font-family:var(--font-head)}
+.hole-btn .hd{font-size:.72rem;color:var(--text2);margin-top:3px}
+.hole-btn.jack .ht{color:var(--amber)}
+.hole-btn.jack .hd{color:var(--amber)}
+
+/* ─── SPIN ─── */
+.spin-wrap{position:relative;width:min(240px, 70vw);height:min(240px, 70vw);margin:0 auto 16px}
+.spin-pointer{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:1.4rem;z-index:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+
+/* ─── PLAYER STATUS CARD ─── */
+.player-card{border-radius:var(--r);padding:16px;margin-bottom:12px;border:2px solid var(--border)}
+.player-card.fresh{border-color:var(--green);background:var(--green-dim)}
+.player-card.returning{border-color:rgba(255,255,255,.2);background:var(--bg2)}
+.pc-pid{font-family:var(--font-head);font-size:2.8rem;font-weight:800;letter-spacing:-.03em;line-height:1}
+.pc-info{font-size:.8rem;color:var(--text2);margin-top:4px}
+
+/* ─── DASHBOARD ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:14px}
+.stat-val{font-family:var(--font-head);font-size:2rem;font-weight:800;color:var(--green);line-height:1}
+.stat-lbl{font-size:.72rem;color:var(--text2);font-weight:500;margin-top:3px;text-transform:uppercase;letter-spacing:.05em}
+
+/* ─── WINNER'S BOARD ─── */
+.wb-screen{background:#07070f;border-radius:var(--r);overflow:hidden;margin-bottom:12px;position:relative}
+.wb-bg-glow{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 20%,rgba(29,220,140,.08) 0%,transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(245,166,35,.06) 0%,transparent 60%);pointer-events:none}
+.wb-inner{position:relative;z-index:1;padding:20px 16px}
+.ticker-wrap{overflow:hidden;background:rgba(255,255,255,.04);border-radius:8px;padding:6px 0;margin-bottom:12px}
+.ticker-txt{display:inline-block;white-space:nowrap;animation:tick 22s linear infinite;font-size:.75rem;font-weight:600;padding:0 16px;font-family:var(--font-head)}
+@keyframes tick{0%{transform:translateX(60vw)}100%{transform:translateX(-100%)}}
+.wb-row{display:flex;align-items:center;gap:10px;border-radius:10px;padding:10px 12px;margin-bottom:5px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.04)}
+.wb-row.gold{background:rgba(245,166,35,.12);border-color:rgba(245,166,35,.3)}
+.wb-row.silver{background:rgba(29,220,140,.08);border-color:rgba(29,220,140,.2)}
+.wb-pos{font-size:1.1rem;width:22px;flex-shrink:0}
+.wb-name{font-size:.88rem;font-weight:600;color:#fff;font-family:var(--font-head)}
+.wb-game{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:1px}
+.wb-rew{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0}
+
+/* ─── GUESTBOOK ─── */
+.gb-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.gb-row:hover{border-color:var(--border2)}
+.gb-row.expanded{border-color:var(--green)}
+.gb-top{display:flex;gap-12px;align-items:flex-start;gap:10px}
+.gb-name{font-family:var(--font-head);font-size:.95rem;font-weight:700}
+.gb-detail{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);display:none}
+.gb-row.expanded .gb-detail{display:block}
+.chip-row{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0}
+.chip{padding:5px 10px;border-radius:20px;font-size:.72rem;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-family:var(--font-body);transition:all .15s}
+.chip.on{background:var(--green-dim);color:var(--green);border-color:rgba(29,220,140,.4)}
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:6px 0}
+.svc-chip{padding:7px 8px;border-radius:8px;font-size:.72rem;font-weight:600;border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:var(--font-body);text-align:center;transition:all .15s}
+.svc-chip.on{background:var(--blue-dim);color:var(--blue);border-color:rgba(74,158,255,.4)}
+
+/* ─── PRIZE / DIGITAL CARD ─── */
+.digital-card{border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.dc-header{padding:24px;text-align:center;position:relative}
+.dc-logo{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 12px;border:2px solid rgba(29,220,140,.4)}
+.dc-reward-big{font-family:var(--font-head);font-size:clamp(2.2rem,10vw,3.5rem);font-weight:800;line-height:.95;letter-spacing:-.03em;margin:10px 0 5px}
+
+/* ─── ADMIN ─── */
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-lbl{font-size:.9rem;font-weight:600;font-family:var(--font-head)}
+.setting-desc{font-size:.75rem;color:var(--text2);margin-top:3px}
+.counter{display:flex;align-items:center;gap:10px}
+.cc{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:700}
+.cc:active{background:var(--green-dim);border-color:var(--green)}
+.cc-val{font-family:var(--font-head);font-weight:800;font-size:1.1rem;min-width:28px;text-align:center}
+
+/* ─── SUPABASE STATUS ─── */
+.db-status{display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600}
+.db-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.db-dot.connected{background:var(--green);box-shadow:0 0 6px var(--green)}
+.db-dot.disconnected{background:var(--text3)}
+.db-dot.connecting{background:var(--amber);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ─── MISC ─── */
+.divider{height:1px;background:var(--border);margin:14px 0}
+.section-head{font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2)}
+.empty-state .ei{font-size:2.5rem;margin-bottom:10px}
+.empty-state .et{font-size:.9rem}
+.banner{padding:12px 14px;border-radius:var(--r2);font-size:.82rem;line-height:1.6;margin-bottom:10px}
+.banner-green{background:var(--green-dim);border:1px solid rgba(29,220,140,.3);color:var(--green)}
+.banner-amber{background:var(--amber-dim);border:1px solid rgba(245,166,35,.3);color:var(--amber)}
+.banner-muted{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text2)}
+.result-reveal{text-align:center;padding:20px;animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.profit-bar{height:6px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-top:6px}
+.profit-fill{height:100%;border-radius:3px;transition:width .5s ease}
+
+/* ─── RESPONSIVE ─── */
+@media(min-width:480px){
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+  .game-grid{grid-template-columns:repeat(3,1fr)}
+  .role-grid{grid-template-columns:repeat(3,1fr);max-width:460px}
+}
+@media(min-width:640px){
+  .page,.page-fill{max-width:680px}
+  .topbar{padding:14px 24px}
+  .page{padding:20px 24px 90px}
+  .display{font-size:5rem}
+}
+@media(min-width:900px){
+  .app{flex-direction:row}
+  .bottom-nav{position:fixed;left:0;top:0;bottom:0;width:72px;flex-direction:column;border-right:1px solid var(--border);border-top:none;padding:0;padding-top:60px}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:200}
+  .bn-item{flex:none;padding:14px 4px;flex-direction:column;width:100%;font-size:.58rem}
+  .bn-item .icon{font-size:1.3rem}
+  .page,.page-fill{margin-left:72px;max-width:none;width:calc(100% - 72px)}
+  .page{max-width:700px;margin:0 auto;margin-left:calc(72px + ((100% - 72px - 700px)/2));padding-top:80px}
+  .page-fill{margin-left:72px;padding-top:60px}
+}
 </style>
+</head>
+<body>
 
-<div class="nav">
-  <button class="nb on" onclick="go('visitor')">1·Visitor</button>
-  <button class="nb" onclick="go('host')">2·Host</button>
-  <button class="nb" onclick="go('gb')">📋 Guestbook</button>
-</div>
+<!-- ═══ TOAST ═══ -->
+<div id="toast"></div>
 
-<!-- ═══ VISITOR ═══ -->
-<div id="pg-visitor" class="pg on">
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen">
+  <div class="login-logo">⚡ BOOTH</div>
+  <div class="login-sub">Trade Show Game System</div>
 
-  <!-- Entry screen -->
-  <div id="v-entry">
-    <div style="text-align:center;padding:28px 0 16px">
-      <div style="font-size:48px;margin-bottom:10px">🎯</div>
-      <div style="font-size:20px;font-weight:500;margin-bottom:5px">Play & Win</div>
-      <div style="font-size:12px;color:var(--color-text-secondary)">Scan entrance QR or tap to start</div>
+  <div class="role-grid" id="role-grid">
+    <div class="role-card" onclick="selRole('visitor')" data-role="visitor">
+      <div class="ri">🙋</div><div class="rn">Visitor</div><div class="rd">Play & Win</div>
     </div>
-    <button class="btn T" onclick="vStart()">Tap to Start →</button>
+    <div class="role-card" onclick="selRole('host')" data-role="host">
+      <div class="ri">🎯</div><div class="rn">Game Host</div><div class="rd">Score players</div>
+    </div>
+    <div class="role-card" onclick="selRole('prize')" data-role="prize">
+      <div class="ri">🎁</div><div class="rn">Prize Desk</div><div class="rd">Claim rewards</div>
+    </div>
+    <div class="role-card" onclick="selRole('manager')" data-role="manager">
+      <div class="ri">📊</div><div class="rn">Manager</div><div class="rd">Dashboard</div>
+    </div>
+    <div class="role-card" onclick="selRole('admin')" data-role="admin">
+      <div class="ri">👑</div><div class="rn">Admin</div><div class="rd">Full access</div>
+    </div>
   </div>
 
-  <!-- Game pick screen -->
-  <div id="v-pick" style="display:none">
-    <div class="card" style="text-align:center;padding:22px">
-      <div class="lbl" style="display:block;text-align:center;margin-bottom:4px">Your player number</div>
-      <div style="font-size:70px;font-weight:500;line-height:1" id="v-pid">#128</div>
-      <div style="font-size:11px;color:var(--color-text-secondary);margin-top:6px">Show this to the game host</div>
+  <div id="pin-section" style="display:none;flex-direction:column;align-items:center;width:100%;max-width:300px">
+    <div class="pin-display"><div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div><div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div></div>
+    <div class="pin-error" id="pin-error"></div>
+    <div class="numpad" style="margin-top:12px">
+      <button class="nk" onclick="pinKey('1')">1</button><button class="nk" onclick="pinKey('2')">2</button><button class="nk" onclick="pinKey('3')">3</button>
+      <button class="nk" onclick="pinKey('4')">4</button><button class="nk" onclick="pinKey('5')">5</button><button class="nk" onclick="pinKey('6')">6</button>
+      <button class="nk" onclick="pinKey('7')">7</button><button class="nk" onclick="pinKey('8')">8</button><button class="nk" onclick="pinKey('9')">9</button>
+      <button class="nk" onclick="selRole(null)" style="font-size:.75rem;color:var(--text2)">Back</button>
+      <button class="nk" onclick="pinKey('0')">0</button>
+      <button class="nk del" onclick="pinDel()">⌫</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP SHELL ═══ -->
+<div class="app" id="app" style="display:none">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">⚡ BOOTH</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="db-status"><div class="db-dot connecting" id="db-dot"></div><span id="db-lbl">Connecting…</span></div>
+      <div class="topbar-role" id="role-badge">Visitor</div>
+      <button onclick="logout()" style="background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:1rem">⏏</button>
+    </div>
+  </div>
+
+  <!-- Pages -->
+
+  <!-- ── VISITOR ── -->
+  <div class="page" id="pg-visitor">
+
+    <div id="v-entry" style="display:block">
+      <div class="v-hero">
+        <div class="pid-label">Welcome</div>
+        <div class="display" style="color:var(--green);margin-bottom:16px">PLAY<br>&amp; WIN</div>
+        <div class="subtitle" style="margin-bottom:28px">Scan · Play · Win a prize · Everyone wins</div>
+        <button class="btn btn-primary" style="max-width:280px" onclick="vStart()">Tap to Start →</button>
+      </div>
     </div>
 
-    <!-- returning player — first reward shown quietly -->
-    <div id="v-ret-info" style="display:none">
-      <div style="background:#E1F5EE;border:0.5px solid #9FE1CB;border-radius:10px;padding:11px 13px;margin-bottom:10px;display:flex;align-items:center;gap:8px">
-        <span style="font-size:16px">🎁</span>
-        <div>
-          <div style="font-size:12px;font-weight:500;color:#0F6E56">Your reward is locked in</div>
-          <div style="font-size:11px;color:#0F6E56;opacity:.85;margin-top:2px" id="v-ret-reward">Your first result: 25% OFF</div>
+    <div id="v-pick" style="display:none">
+      <div class="card" style="text-align:center;padding:24px">
+        <div class="pid-label">Your player number</div>
+        <div class="pid-display" id="v-pid">#128</div>
+        <div class="subtitle" style="margin-top:8px">Show this to the game host at any table</div>
+      </div>
+
+      <div id="v-ret-banner" style="display:none" class="banner banner-green">
+        🎁 <strong>Your reward is locked in</strong> — <span id="v-ret-txt"></span>. Play again for fun!
+      </div>
+
+      <div class="card">
+        <div class="section-head">Choose your game</div>
+        <div class="subtitle" style="margin-bottom:12px">Change freely until the host records your result</div>
+        <div class="game-grid">
+          <div class="game-card" id="vg-darts" onclick="vPickGame('darts')">
+            <span class="gi">🎯</span><div class="gname">Darts</div><div class="gdesc">Numbers or Rings</div>
+          </div>
+          <div class="game-card" id="vg-golf" onclick="vPickGame('golf')">
+            <span class="gi">⛳</span><div class="gname">Golf</div><div class="gdesc">3 rounds</div>
+          </div>
+          <div class="game-card" id="vg-spin" onclick="vPickGame('spin')">
+            <span class="gi">🎡</span><div class="gname">Spin</div><div class="gdesc">Lucky wheel</div>
+          </div>
         </div>
       </div>
+
+      <div id="v-chosen" style="display:none">
+        <div class="card card-accent" style="text-align:center;padding:18px">
+          <div style="font-size:2rem;margin-bottom:6px" id="v-chosen-icon">🎯</div>
+          <div style="font-family:var(--font-head);font-weight:700;color:var(--green);font-size:1.1rem" id="v-chosen-name">Darts</div>
+          <div class="subtitle" style="margin-top:4px">Head to the table — show your number</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GAME HOST ── -->
+  <div class="page" id="pg-host">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="title">Game Host</div>
+      <div class="badge badge-muted" id="h-plays-today">0 plays</div>
     </div>
 
     <div class="card">
-      <div style="font-size:13px;font-weight:500;margin-bottom:4px">Choose your game</div>
-      <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:10px">Change your mind freely — locked once the host records your result</div>
-      <div class="gcards">
-        <div class="gc" id="vgc-darts" onclick="vPick('darts')">
-          <div class="gi">🎯</div><div class="gn">Darts</div><div class="gs2">Numbers or Rings</div>
-        </div>
-        <div class="gc" id="vgc-golf" onclick="vPick('golf')">
-          <div class="gi">⛳</div><div class="gn">Golf</div><div class="gs2">3 rounds</div>
-        </div>
-        <div class="gc" id="vgc-spin" onclick="vPick('spin')">
-          <div class="gi">🎡</div><div class="gn">Spin</div><div class="gs2">Lucky wheel</div>
+      <div class="field" style="margin-bottom:0">
+        <label>Player number</label>
+        <div style="display:flex;gap:8px">
+          <input type="number" id="h-pid" placeholder="128" style="font-size:1.3rem;font-weight:700;text-align:center" oninput="hostLookup()">
+          <button class="btn btn-primary btn-sm" style="flex-shrink:0;white-space:nowrap" onclick="hostScan()">Scan QR</button>
         </div>
       </div>
     </div>
 
-    <div id="v-go" style="display:none">
-      <div class="card" style="background:#E1F5EE;border-color:#9FE1CB;text-align:center;padding:14px">
-        <div style="font-size:26px;margin-bottom:5px" id="v-go-icon">🎯</div>
-        <div style="font-size:14px;font-weight:500;color:#0F6E56" id="v-go-name">Darts</div>
-        <div style="font-size:11px;color:#0F6E56;opacity:.8;margin-top:3px">Head to the table — show your player number to the host</div>
+    <div id="h-pcard" style="display:none">
+      <div class="player-card" id="h-pcard-inner">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="pc-pid" id="h-pc-pid">#128</div>
+          <span class="badge" id="h-pc-pill"></span>
+        </div>
+        <div class="pc-info" id="h-pc-info"></div>
       </div>
-      <div style="font-size:11px;color:var(--color-text-secondary);text-align:center;margin:6px 0 8px">Changed your mind? Tap another game above before the host records your result.</div>
-      <button class="btn T" onclick="vConfirm()">Let's Go →</button>
-    </div>
-  </div>
-</div>
 
-<!-- ═══ HOST ═══ -->
-<div id="pg-host" class="pg">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <div style="font-size:16px;font-weight:500">Game Host</div>
-    <div style="font-size:11px;color:var(--color-text-secondary)" id="h-count">0 plays today</div>
-  </div>
-
-  <!-- Player lookup -->
-  <div class="card">
-    <label class="lbl">Enter or scan player number</label>
-    <div style="display:flex;gap:8px">
-      <input type="number" id="h-pid-in" placeholder="128" style="font-size:20px;font-weight:500;text-align:center" oninput="hostLookup()">
-      <button class="btn T sm" style="flex-shrink:0" onclick="hostScan()">Scan QR</button>
-    </div>
-  </div>
-
-  <!-- Player card -->
-  <div id="h-pcard" style="display:none">
-    <div class="pcard" id="h-pcard-inner">
-      <div class="pc-top">
-        <div class="pc-pid" id="h-pc-pid">#128</div>
-        <span class="pc-pill" id="h-pc-pill">New player</span>
+      <div id="h-play-only-banner" style="display:none" class="banner banner-muted">
+        ↩ <strong>Play only</strong> — first reward already locked in. This round for fun, not logged.
       </div>
-      <div class="pc-game" id="h-pc-game">Game: not selected</div>
-      <div class="pc-reward" id="h-pc-reward" style="display:none"></div>
-    </div>
 
-    <!-- Play-only silent banner — shown for returning players -->
-    <div id="h-play-only" style="display:none">
-      <div class="play-only-banner">
-        <div class="pob-icon">↩</div>
-        <div class="pob-text">
-          <strong>Play only</strong> — this player already has a reward from their first play. This round is for fun and will not be logged as a new lead.
+      <div class="card-sm">
+        <div class="section-head" style="margin-bottom:6px">Game (player changes freely)</div>
+        <div class="game-switch">
+          <button class="gs-btn" id="gsb-darts" onclick="hostSetGame('darts')">🎯 Darts</button>
+          <button class="gs-btn" id="gsb-golf" onclick="hostSetGame('golf')">⛳ Golf</button>
+          <button class="gs-btn" id="gsb-spin" onclick="hostSetGame('spin')">🎡 Spin</button>
         </div>
       </div>
-    </div>
 
-    <!-- Game change — always available before result recorded -->
-    <div class="card" style="padding:12px;margin-bottom:10px">
-      <div class="lbl" style="margin-bottom:6px">Game (player can change freely)</div>
-      <div class="gcrow">
-        <button class="gcb" id="gcb-darts" onclick="hostSetGame('darts')">🎯 Darts</button>
-        <button class="gcb" id="gcb-golf" onclick="hostSetGame('golf')">⛳ Golf</button>
-        <button class="gcb" id="gcb-spin" onclick="hostSetGame('spin')">🎡 Spin</button>
-      </div>
-    </div>
-
-    <!-- Darts -->
-    <div id="h-darts" style="display:none">
-      <div class="card">
-        <div class="lbl" style="margin-bottom:8px">Mode</div>
-        <div class="mpick">
-          <div class="mc" id="mc-num" onclick="dMode('num')"><div style="font-size:18px;margin-bottom:3px">🔢</div><div class="mn">Numbers</div><div class="ms">3 darts · zones</div></div>
-          <div class="mc" id="mc-ring" onclick="dMode('ring')"><div style="font-size:18px;margin-bottom:3px">🎯</div><div class="mn">Rings</div><div class="ms">3 darts · rings</div></div>
-        </div>
-      </div>
-      <!-- Numbers -->
-      <div id="sec-num" style="display:none">
-        <div class="card">
-          <div class="throws"><div class="ts" id="nts0"><div class="tv" id="ntv0">—</div><div class="tl2">D1</div></div><div class="ts" id="nts1"><div class="tv" id="ntv1">—</div><div class="tl2">D2</div></div><div class="ts" id="nts2"><div class="tv" id="ntv2">—</div><div class="tl2">D3</div></div></div>
-          <div style="text-align:center;min-height:22px" id="n-best"></div>
-        </div>
-        <div class="card">
-          <div class="zrow"><button class="btn A" onclick="nHit(25)" style="font-size:13px">⭐ Bullseye 25 — JACKPOT 25%</button></div>
-          <div class="zrow"><div class="zt" style="color:#533AB7">🔥 Hot 17–20 · 20%</div><div class="zbtns"><button class="zb" style="background:#EEEDFE;color:#533AB7;border-color:#AFA9EC" onclick="nHit(20)">20</button><button class="zb" style="background:#EEEDFE;color:#533AB7;border-color:#AFA9EC" onclick="nHit(19)">19</button><button class="zb" style="background:#EEEDFE;color:#533AB7;border-color:#AFA9EC" onclick="nHit(18)">18</button><button class="zb" style="background:#EEEDFE;color:#533AB7;border-color:#AFA9EC" onclick="nHit(17)">17</button></div></div>
-          <div class="zrow"><div class="zt" style="color:#185FA5">💡 Warm 13–16 · 15%</div><div class="zbtns"><button class="zb" style="background:#E6F1FB;color:#185FA5;border-color:#B5D4F4" onclick="nHit(16)">16</button><button class="zb" style="background:#E6F1FB;color:#185FA5;border-color:#B5D4F4" onclick="nHit(15)">15</button><button class="zb" style="background:#E6F1FB;color:#185FA5;border-color:#B5D4F4" onclick="nHit(14)">14</button><button class="zb" style="background:#E6F1FB;color:#185FA5;border-color:#B5D4F4" onclick="nHit(13)">13</button></div></div>
-          <div class="zrow"><div class="zt" style="color:#0F6E56">⛳ Mid 9–12 · 10%</div><div class="zbtns"><button class="zb" style="background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB" onclick="nHit(12)">12</button><button class="zb" style="background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB" onclick="nHit(11)">11</button><button class="zb" style="background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB" onclick="nHit(10)">10</button><button class="zb" style="background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB" onclick="nHit(9)">9</button></div></div>
-          <div class="zrow"><div class="zt" style="color:#3B6D11">🌱 Low 1–8 · Consult</div><div class="zbtns"><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(8)">8</button><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(7)">7</button><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(6)">6</button><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(5)">5</button><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(4)">4</button><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(3)">3</button><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(2)">2</button><button class="zb" style="background:#EAF3DE;color:#3B6D11;border-color:#C0DD97" onclick="nHit(1)">1</button></div></div>
-          <div class="zrow" style="margin-bottom:0"><div class="zbtns"><button class="zb" style="background:#F1EFE8;color:#5F5E5A;border-color:#D3D1C7;width:100%" onclick="nHit(0)">❌ Miss</button></div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><button class="btn R" onclick="nUndo()">↩ Undo</button><button class="btn T" id="n-award-btn" style="display:none" onclick="nAward()">Award →</button></div>
-        <div class="msg" id="n-msg"></div>
-      </div>
-      <!-- Rings -->
-      <div id="sec-ring" style="display:none">
-        <div class="card">
-          <div class="throws"><div class="ts" id="rts0"><div class="tv" id="rtv0">—</div><div class="tl2">D1</div></div><div class="ts" id="rts1"><div class="tv" id="rtv1">—</div><div class="tl2">D2</div></div><div class="ts" id="rts2"><div class="tv" id="rtv2">—</div><div class="tl2">D3</div></div></div>
-          <div style="text-align:center;min-height:22px" id="r-best"></div>
-        </div>
-        <div class="card">
-          <div style="width:160px;height:160px;margin:0 auto 12px"><svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><circle cx="100" cy="100" r="98" fill="#5F5E5A"/><circle cx="100" cy="100" r="78" fill="#3B6D11"/><circle cx="100" cy="100" r="58" fill="#0F6E56"/><circle cx="100" cy="100" r="38" fill="#185FA5"/><circle cx="100" cy="100" r="20" fill="#533AB7"/><circle cx="100" cy="100" r="9" fill="#BA7517"/><text x="100" y="13" text-anchor="middle" fill="white" font-size="8" font-family="sans-serif">R5·Visit</text><text x="100" y="31" text-anchor="middle" fill="white" font-size="8" font-family="sans-serif">R4·Consult</text><text x="100" y="51" text-anchor="middle" fill="white" font-size="8" font-family="sans-serif">R3·10%</text><text x="100" y="73" text-anchor="middle" fill="white" font-size="8" font-family="sans-serif">R2·15%</text><text x="100" y="95" text-anchor="middle" fill="white" font-size="8" font-family="sans-serif">R1·20%</text><text x="100" y="104" text-anchor="middle" fill="white" font-size="7" font-weight="bold" font-family="sans-serif">★25%</text></svg></div>
-          <div class="rblist">
-            <button class="rb" style="background:#FAEEDA;border-color:#FAC775;color:#BA7517" onclick="rHit(0)">⭐ Bullseye<span class="badge" style="background:#FAC775;color:#BA7517">25%</span></button>
-            <button class="rb" style="background:#EEEDFE;border-color:#AFA9EC;color:#533AB7" onclick="rHit(1)">Ring 1<span class="badge" style="background:#AFA9EC;color:#533AB7">20%</span></button>
-            <button class="rb" style="background:#E6F1FB;border-color:#B5D4F4;color:#185FA5" onclick="rHit(2)">Ring 2<span class="badge" style="background:#B5D4F4;color:#185FA5">15%</span></button>
-            <button class="rb" style="background:#E1F5EE;border-color:#9FE1CB;color:#0F6E56" onclick="rHit(3)">Ring 3<span class="badge" style="background:#9FE1CB;color:#0F6E56">10%</span></button>
-            <button class="rb" style="background:#EAF3DE;border-color:#C0DD97;color:#3B6D11" onclick="rHit(4)">Ring 4<span class="badge" style="background:#C0DD97;color:#3B6D11">Consult</span></button>
-            <button class="rb" style="background:#F1EFE8;border-color:#D3D1C7;color:#5F5E5A" onclick="rHit(5)">Ring 5<span class="badge" style="background:#D3D1C7;color:#5F5E5A">Visit</span></button>
-            <button class="rb" style="background:#FCEBEB;border-color:#F7C1C1;color:#A32D2D" onclick="rHit(6)">Miss<span class="badge" style="background:#F7C1C1;color:#A32D2D">Visit</span></button>
+      <!-- DARTS -->
+      <div id="h-darts" style="display:none">
+        <div class="card-sm">
+          <div class="section-head">Mode</div>
+          <div class="btn-row" style="margin-bottom:0">
+            <button class="btn btn-ghost" id="mc-num" onclick="dMode('num')">🔢 Numbers</button>
+            <button class="btn btn-ghost" id="mc-ring" onclick="dMode('ring')">🎯 Rings</button>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px"><button class="btn R" onclick="rUndo()">↩ Undo</button><button class="btn T" id="r-award-btn" style="display:none" onclick="rAward()">Award →</button></div>
-        <div class="msg" id="r-msg"></div>
-      </div>
-    </div>
 
-    <!-- Golf -->
-    <div id="h-golf" style="display:none">
-      <div class="rtabs"><div class="rtab cur" id="gt0" onclick="gGoRound(0)"><div>1️⃣</div><div id="gtr0" style="font-size:10px">—</div></div><div class="rtab" id="gt1" onclick="gGoRound(1)"><div>2️⃣</div><div id="gtr1" style="font-size:10px">—</div></div><div class="rtab" id="gt2" onclick="gGoRound(2)"><div>3️⃣</div><div id="gtr2" style="font-size:10px">—</div></div></div>
-      <div id="g-play">
-        <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><div style="font-size:13px;font-weight:500" id="g-rlabel">Round 1 of 3</div><div style="font-size:10px;color:var(--color-text-secondary)">3 balls each</div></div><div style="display:flex;gap:8px;justify-content:center;margin:10px 0"><div class="ball cur" id="gb0">⚪</div><div class="ball" id="gb1">⚪</div><div class="ball" id="gb2">⚪</div></div><div style="font-size:12px;color:var(--color-text-secondary);text-align:center" id="g-bstat">Ball 1 — where did it land?</div></div>
-        <div id="g-holes"><div class="hgrid"><button class="hbtn jack" onclick="gHole('jack')"><div style="font-size:22px;margin-bottom:4px">⭐</div><div style="font-size:13px;font-weight:500;color:#BA7517">Jackpot</div><div style="font-size:11px;color:#BA7517">25% OFF</div></button><button class="hbtn" onclick="gHole('reg')"><div style="font-size:22px;margin-bottom:4px">⛳</div><div style="font-size:13px;font-weight:500">Regular</div><div style="font-size:11px;color:var(--color-text-secondary)" id="g-rhint">Ball 1→BI Report</div></button></div><button onclick="gHole('miss')" style="display:block;width:100%;padding:11px;font-size:13px;font-weight:500;border-radius:10px;border:0.5px solid #D3D1C7;background:#F1EFE8;cursor:pointer;color:#5F5E5A;font-family:var(--font-sans)">🌿 Miss — next ball</button></div>
-        <div id="g-rdone" style="display:none"><div class="card" style="text-align:center;padding:13px"><div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:3px" id="g-rdlabel">Round 1</div><div style="font-size:22px;font-weight:500;margin-bottom:4px" id="g-rdtxt">—</div><div id="g-rdbadge"></div></div><button class="btn T" id="g-next-btn" style="display:none" onclick="gNextRound()">Next Round →</button><button class="btn A" id="g-finish-btn" style="display:none" onclick="gFinish()">Final Result →</button></div>
-        <div class="msg" id="g-msg"></div>
-      </div>
-      <div id="g-final" style="display:none">
-        <div id="g-summary" style="display:flex;flex-direction:column;gap:5px;margin-bottom:10px"></div>
-        <div id="g-best-card" class="card" style="text-align:center;padding:16px"><div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:3px">Best result</div><div style="font-size:30px;font-weight:500;margin:5px 0 3px;line-height:1" id="g-best-txt">—</div><div id="g-best-badge"></div><div style="font-size:11px;color:var(--color-text-secondary);margin-top:4px" id="g-best-desc"></div></div>
-        <button class="btn T" onclick="gAward()">Award →</button>
-        <div class="msg" id="g-final-msg"></div>
-      </div>
-    </div>
-
-    <!-- Spin -->
-    <div id="h-spin" style="display:none">
-      <div class="card" style="text-align:center;padding:16px">
-        <div style="position:relative;width:200px;height:200px;margin:0 auto 10px">
-          <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:20px">▼</div>
-          <canvas id="spin-canvas" width="200" height="200"></canvas>
+        <!-- Numbers mode -->
+        <div id="sec-num" style="display:none">
+          <div class="card-sm">
+            <div class="throws-row">
+              <div class="throw-chip" id="nts0"><div class="tv" id="ntv0">—</div><div class="tl">D1</div></div>
+              <div class="throw-chip" id="nts1"><div class="tv" id="ntv1">—</div><div class="tl">D2</div></div>
+              <div class="throw-chip" id="nts2"><div class="tv" id="ntv2">—</div><div class="tl">D3</div></div>
+            </div>
+            <div style="text-align:center;min-height:24px" id="n-best-show"></div>
+          </div>
+          <div class="card-sm">
+            <div class="zone-grid">
+              <div class="zone-row" style="border-color:rgba(245,166,35,.5);background:var(--amber-dim)" onclick="nHit(25)"><span style="font-weight:700;color:var(--amber)">⭐ Bullseye</span><span class="badge badge-amber">JACKPOT 25%</span></div>
+              <div>
+                <div class="zone-row" style="border-color:rgba(167,139,250,.4);background:var(--purple-dim)" onclick="null"><span style="font-weight:700;color:var(--purple)">🔥 Hot Zone 17–20 → 20% OFF</span></div>
+                <div class="zone-num-row" style="margin-top:5px">
+                  <div class="znum" style="border-color:rgba(167,139,250,.4);color:var(--purple)" onclick="nHit(20)">20</div><div class="znum" style="border-color:rgba(167,139,250,.4);color:var(--purple)" onclick="nHit(19)">19</div><div class="znum" style="border-color:rgba(167,139,250,.4);color:var(--purple)" onclick="nHit(18)">18</div><div class="znum" style="border-color:rgba(167,139,250,.4);color:var(--purple)" onclick="nHit(17)">17</div>
+                </div>
+              </div>
+              <div>
+                <div class="zone-row" style="border-color:rgba(74,158,255,.4);background:var(--blue-dim)" onclick="null"><span style="font-weight:700;color:var(--blue)">💡 Warm 13–16 → 15% OFF</span></div>
+                <div class="zone-num-row" style="margin-top:5px">
+                  <div class="znum" style="border-color:rgba(74,158,255,.4);color:var(--blue)" onclick="nHit(16)">16</div><div class="znum" style="border-color:rgba(74,158,255,.4);color:var(--blue)" onclick="nHit(15)">15</div><div class="znum" style="border-color:rgba(74,158,255,.4);color:var(--blue)" onclick="nHit(14)">14</div><div class="znum" style="border-color:rgba(74,158,255,.4);color:var(--blue)" onclick="nHit(13)">13</div>
+                </div>
+              </div>
+              <div>
+                <div class="zone-row" style="border-color:rgba(29,220,140,.4);background:var(--green-dim)" onclick="null"><span style="font-weight:700;color:var(--green)">⛳ Mid 9–12 → 10% OFF</span></div>
+                <div class="zone-num-row" style="margin-top:5px">
+                  <div class="znum" style="border-color:rgba(29,220,140,.4);color:var(--green)" onclick="nHit(12)">12</div><div class="znum" style="border-color:rgba(29,220,140,.4);color:var(--green)" onclick="nHit(11)">11</div><div class="znum" style="border-color:rgba(29,220,140,.4);color:var(--green)" onclick="nHit(10)">10</div><div class="znum" style="border-color:rgba(29,220,140,.4);color:var(--green)" onclick="nHit(9)">9</div>
+                </div>
+              </div>
+              <div>
+                <div class="zone-row" onclick="null"><span style="font-weight:700;color:var(--text2)">🌱 Low 1–8 → Free Consult</span></div>
+                <div class="zone-num-row" style="margin-top:5px">
+                  <div class="znum" onclick="nHit(8)">8</div><div class="znum" onclick="nHit(7)">7</div><div class="znum" onclick="nHit(6)">6</div><div class="znum" onclick="nHit(5)">5</div><div class="znum" onclick="nHit(4)">4</div><div class="znum" onclick="nHit(3)">3</div><div class="znum" onclick="nHit(2)">2</div><div class="znum" onclick="nHit(1)">1</div>
+                </div>
+              </div>
+              <div class="zone-row" style="opacity:.6" onclick="nHit(0)"><span>❌ Miss → Free Site Visit</span></div>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-bottom:12px">
+            <button class="btn btn-red" onclick="nUndo()">↩ Undo</button>
+            <button class="btn btn-primary" id="n-award" style="display:none" onclick="nAward()">Award ✓</button>
+          </div>
         </div>
-        <button class="btn P" id="spin-btn" onclick="doSpin()">🎡 Spin!</button>
-        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:5px" id="spin-hint">Tap to spin</div>
-      </div>
-      <div id="spin-result" style="display:none">
-        <div class="card" style="text-align:center;padding:14px"><div style="font-size:32px;font-weight:500;margin-bottom:5px" id="spin-rtxt">—</div><div id="spin-rbadge"></div></div>
-        <button class="btn T" onclick="spinAward()">Award →</button>
-        <button class="btn R" style="margin-top:8px" onclick="spinReset()">Re-spin</button>
-      </div>
-      <div class="msg" id="spin-msg"></div>
-    </div>
-  </div><!-- end h-pcard -->
-</div>
 
-<!-- ═══ GUESTBOOK ═══ -->
-<div id="pg-gb" class="pg">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <div style="font-size:16px;font-weight:500">📋 Guestbook</div>
-    <button class="btn T sm" onclick="gbExport()">Export CSV</button>
+        <!-- Rings mode -->
+        <div id="sec-ring" style="display:none">
+          <div class="card-sm">
+            <div class="throws-row">
+              <div class="throw-chip" id="rts0"><div class="tv" id="rtv0">—</div><div class="tl">D1</div></div>
+              <div class="throw-chip" id="rts1"><div class="tv" id="rtv1">—</div><div class="tl">D2</div></div>
+              <div class="throw-chip" id="rts2"><div class="tv" id="rtv2">—</div><div class="tl">D3</div></div>
+            </div>
+            <div style="text-align:center;min-height:24px" id="r-best-show"></div>
+          </div>
+          <div class="card-sm">
+            <div style="width:min(180px,55vw);margin:0 auto 14px">
+              <svg viewBox="0 0 200 200" style="width:100%;height:auto"><circle cx="100" cy="100" r="98" fill="#2a1f5e"/><circle cx="100" cy="100" r="78" fill="#1a3a20"/><circle cx="100" cy="100" r="58" fill="#0e3028"/><circle cx="100" cy="100" r="38" fill="#1a2050"/><circle cx="100" cy="100" r="20" fill="#3a1a60"/><circle cx="100" cy="100" r="9" fill="#7a5010"/><text x="100" y="13" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8">R5</text><text x="100" y="31" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8">R4</text><text x="100" y="51" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="8">R3·10%</text><text x="100" y="73" text-anchor="middle" fill="rgba(255,255,255,.6)" font-size="8">R2·15%</text><text x="100" y="95" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8">R1·20%</text><text x="100" y="104" text-anchor="middle" fill="#f5a623" font-size="7" font-weight="bold">★25%</text></svg>
+            </div>
+            <div class="zone-grid">
+              <div class="zone-row" style="border-color:rgba(245,166,35,.5);background:var(--amber-dim)" onclick="rHit(0)"><span style="font-weight:700;color:var(--amber)">⭐ Bullseye</span><span class="badge badge-amber">25%</span></div>
+              <div class="zone-row" style="border-color:rgba(167,139,250,.4)" onclick="rHit(1)"><span style="color:var(--purple)">Ring 1</span><span class="badge badge-purple">20%</span></div>
+              <div class="zone-row" style="border-color:rgba(74,158,255,.4)" onclick="rHit(2)"><span style="color:var(--blue)">Ring 2</span><span class="badge badge-blue">15%</span></div>
+              <div class="zone-row" style="border-color:rgba(29,220,140,.4)" onclick="rHit(3)"><span style="color:var(--green)">Ring 3</span><span class="badge badge-green">10%</span></div>
+              <div class="zone-row" onclick="rHit(4)"><span style="color:var(--text2)">Ring 4</span><span class="badge badge-muted">Consult</span></div>
+              <div class="zone-row" style="opacity:.5" onclick="rHit(5)"><span>Ring 5</span><span class="badge badge-muted">Visit</span></div>
+              <div class="zone-row" style="opacity:.4" onclick="rHit(6)"><span>❌ Miss</span><span class="badge badge-muted">Visit</span></div>
+            </div>
+          </div>
+          <div class="btn-row" style="margin-bottom:12px">
+            <button class="btn btn-red" onclick="rUndo()">↩ Undo</button>
+            <button class="btn btn-primary" id="r-award" style="display:none" onclick="rAward()">Award ✓</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOLF -->
+      <div id="h-golf" style="display:none">
+        <div class="round-tabs"><div class="rtab cur" id="gt0" onclick="gGoRound(0)"><div>1️⃣</div><div id="gtr0" style="font-size:.6rem;margin-top:2px">—</div></div><div class="rtab" id="gt1" onclick="gGoRound(1)"><div>2️⃣</div><div id="gtr1" style="font-size:.6rem;margin-top:2px">—</div></div><div class="rtab" id="gt2" onclick="gGoRound(2)"><div>3️⃣</div><div id="gtr2" style="font-size:.6rem;margin-top:2px">—</div></div></div>
+        <div id="g-play">
+          <div class="card-sm">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:var(--font-head);font-weight:700" id="g-rlabel">Round 1 of 3</span><span class="subtitle">3 balls each</span></div>
+            <div class="balls-row"><div class="ball cur" id="gb0">⚪</div><div class="ball" id="gb1">⚪</div><div class="ball" id="gb2">⚪</div></div>
+            <div class="subtitle" style="text-align:center" id="g-bstat">Ball 1 — where did it land?</div>
+          </div>
+          <div id="g-holes">
+            <div class="hole-grid">
+              <button class="hole-btn jack" onclick="gHole('jack')"><div class="hi">⭐</div><div class="ht">Jackpot hole</div><div class="hd">25% OFF</div></button>
+              <button class="hole-btn" onclick="gHole('reg')"><div class="hi">⛳</div><div class="ht">Regular hole</div><div class="hd" id="g-rhint">Ball 1 → BI Report</div></button>
+            </div>
+            <button onclick="gHole('miss')" class="btn btn-ghost" style="margin-bottom:8px">🌿 Miss — next ball</button>
+          </div>
+          <div id="g-rdone" style="display:none">
+            <div class="card-sm" style="text-align:center"><div class="subtitle" id="g-rdlabel">Round 1</div><div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;margin:6px 0" id="g-rdtxt">—</div><div id="g-rdbadge"></div></div>
+            <button class="btn btn-primary" id="g-next" style="display:none" onclick="gNextRound()">Next Round →</button>
+            <button class="btn btn-amber" id="g-finish" style="display:none" onclick="gFinish()">Final Result →</button>
+          </div>
+        </div>
+        <div id="g-final" style="display:none">
+          <div id="g-summary" style="margin-bottom:10px"></div>
+          <div id="g-best-card" class="card-sm" style="text-align:center;padding:18px"><div class="subtitle">Best result</div><div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;margin:6px 0" id="g-best-txt">—</div><div id="g-best-badge"></div></div>
+          <button class="btn btn-primary" onclick="gAward()">Award ✓</button>
+        </div>
+      </div>
+
+      <!-- SPIN -->
+      <div id="h-spin" style="display:none">
+        <div class="card-sm" style="text-align:center;padding:20px">
+          <div class="spin-wrap"><div class="spin-pointer">▼</div><canvas id="spin-canvas" width="240" height="240"></canvas></div>
+          <button class="btn btn-primary" id="spin-btn" onclick="doSpin()">🎡 Spin!</button>
+          <div class="subtitle" style="margin-top:6px" id="spin-hint">Tap to spin</div>
+        </div>
+        <div id="spin-result" style="display:none">
+          <div class="result-reveal card-sm" style="text-align:center;padding:18px">
+            <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;margin:6px 0" id="spin-rtxt">—</div>
+            <div id="spin-rbadge"></div>
+          </div>
+          <button class="btn btn-primary" onclick="spinAward()">Award ✓</button>
+          <button class="btn btn-ghost" style="margin-top:8px" onclick="spinReset()">Re-spin</button>
+        </div>
+      </div>
+
+    </div><!-- end h-pcard -->
   </div>
-  <div class="sg">
-    <div class="sc"><div class="sv" id="gs1">0</div><div class="sl2">visitors</div></div>
-    <div class="sc"><div class="sv" id="gs2">0</div><div class="sl2">hot leads</div></div>
-    <div class="sc"><div class="sv" id="gs3">0</div><div class="sl2">with notes</div></div>
-    <div class="sc"><div class="sv" id="gs4">0</div><div class="sl2">svc interest</div></div>
+
+  <!-- ── PRIZE DESK / DIGITAL CARD ── -->
+  <div class="page" id="pg-prize">
+    <div class="title" style="margin-bottom:14px">Prize Desk</div>
+
+    <div id="prize-lookup">
+      <div class="card">
+        <div class="field" style="margin-bottom:0">
+          <label>Player number</label>
+          <input type="number" id="prize-pid" placeholder="128" style="font-size:1.3rem;font-weight:700;text-align:center" oninput="prizeLookup()">
+        </div>
+      </div>
+    </div>
+
+    <div id="prize-card" style="display:none">
+      <!-- Digital card shown to visitor -->
+      <div class="digital-card card">
+        <div class="dc-header" style="background:linear-gradient(135deg, var(--green-dim), var(--bg2))">
+          <div class="dc-logo" style="background:var(--green-dim);color:var(--green)" id="dc-logo">🏢</div>
+          <div style="font-family:var(--font-head);font-size:1.1rem;font-weight:800" id="dc-name">Your Company</div>
+          <div class="subtitle" id="dc-tag">We help you grow</div>
+          <div class="subtitle" style="margin-top:2px;font-size:.75rem" id="dc-contact"></div>
+          <div class="divider"></div>
+          <div class="subtitle" style="margin-bottom:4px">Your reward</div>
+          <div class="dc-reward-big" id="dc-reward">—</div>
+          <div style="font-size:.75rem;color:var(--text2)" id="dc-valid">Valid 90 days</div>
+          <div class="badge badge-muted" style="margin-top:8px" id="dc-voucher"></div>
+        </div>
+      </div>
+
+      <!-- Claim form -->
+      <div class="card" id="prize-form">
+        <div class="section-head">Your details</div>
+        <div class="field"><label>Name *</label><input id="pf-name" placeholder="Jane Mwangi" oninput="pfPreview()"></div>
+        <div class="field"><label>Phone (WhatsApp) *</label><input id="pf-phone" type="tel" placeholder="+254 700 000 000" oninput="pfPreview()"></div>
+        <div class="field"><label>Email</label><input id="pf-email" type="email" placeholder="jane@example.com"></div>
+        <div class="field"><label>Company</label><input id="pf-company" placeholder="Your company"></div>
+        <button class="btn btn-primary" onclick="pfSave()">Save Contact &amp; Claim Reward →</button>
+      </div>
+
+      <!-- Post-claim: WhatsApp + vCard -->
+      <div id="prize-claimed" style="display:none">
+        <div class="card card-accent" style="text-align:center;padding:20px">
+          <div style="font-size:2rem;margin-bottom:8px">🎉</div>
+          <div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;color:var(--green);margin-bottom:4px">Reward Claimed!</div>
+          <div class="subtitle" id="pc-summary"></div>
+        </div>
+        <button class="btn btn-primary" onclick="pfWhatsApp()">💬 Send Receipt via WhatsApp</button>
+        <button class="btn btn-ghost" style="margin-top:8px" onclick="pfVcard()">📇 Save Contact (vCard)</button>
+        <button class="btn btn-ghost" style="margin-top:8px" onclick="pfReset()">Next Visitor →</button>
+      </div>
+    </div>
   </div>
-  <div class="filtrow">
-    <button class="fb on" onclick="gbFilt(this,'all')">All</button>
-    <button class="fb" onclick="gbFilt(this,'hot')">Hot leads</button>
-    <button class="fb" onclick="gbFilt(this,'noted')">Has notes</button>
-    <button class="fb" onclick="gbFilt(this,'svc')">Svc interest</button>
-    <button class="fb" onclick="gbFilt(this,'disc')">Won discount</button>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="page" id="pg-dash">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="title">Dashboard</div>
+      <button class="btn btn-ghost btn-sm" onclick="loadDash()">↻ Refresh</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-val" id="ds-players">0</div><div class="stat-lbl">Players</div></div>
+      <div class="stat-card"><div class="stat-val" id="ds-claimed" style="color:var(--amber)">0</div><div class="stat-lbl">Claimed</div></div>
+      <div class="stat-card"><div class="stat-val" id="ds-hot" style="color:var(--red)">0</div><div class="stat-lbl">Hot leads</div></div>
+      <div class="stat-card"><div class="stat-val" id="ds-rate" style="color:var(--blue)">0</div><div class="stat-lbl">Per hour</div></div>
+    </div>
+
+    <!-- Golden round timer -->
+    <div class="card card-amber" style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px">
+      <div><div style="font-family:var(--font-head);font-weight:700;color:var(--amber);letter-spacing:.1em;font-size:.8rem">⚡ GOLDEN ROUND IN</div><div class="subtitle" style="margin-top:2px">Everyone gathers · jackpot spin</div></div>
+      <div style="font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--amber)" id="golden-timer">30:00</div>
+    </div>
+
+    <!-- Game breakdown -->
+    <div class="card">
+      <div class="section-head">Games breakdown</div>
+      <div id="game-breakdown"></div>
+    </div>
+
+    <!-- Reward distribution -->
+    <div class="card">
+      <div class="section-head">Reward distribution</div>
+      <div id="reward-dist"></div>
+    </div>
+
+    <!-- Recent winners -->
+    <div class="card">
+      <div class="section-head">Recent winners</div>
+      <div id="recent-winners"></div>
+    </div>
   </div>
-  <div id="gb-list"></div>
-  <div style="font-size:11px;color:var(--color-text-secondary);text-align:center;padding:8px 0">Only first plays logged. Extra plays tracked silently but not shown here.</div>
+
+  <!-- ── WINNER'S BOARD ── -->
+  <div class="page" id="pg-board">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div class="title">Winner's Board</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="loadWB()">↻</button>
+        <button class="btn btn-primary btn-sm" onclick="wbFull()">Fullscreen</button>
+      </div>
+    </div>
+    <div class="subtitle" style="margin-bottom:12px">Display on a TV or booth monitor</div>
+
+    <div class="wb-screen" id="wb-screen">
+      <div class="wb-bg-glow"></div>
+      <div class="wb-inner">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--green);margin-bottom:5px;font-weight:600" id="wb-coname">YOUR COMPANY</div>
+          <div style="font-family:var(--font-head);font-size:clamp(1.4rem,5vw,2rem);font-weight:800;color:#fff;margin-bottom:3px" id="wb-headline">🏆 Today's Winners</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.4)">Play · Win · Everyone wins something</div>
+        </div>
+        <div class="ticker-wrap"><div class="ticker-txt" id="wb-ticker" style="color:var(--green)">🎯 Darts &nbsp;·&nbsp; ⛳ Golf &nbsp;·&nbsp; 🎡 Spin &nbsp;&nbsp;|&nbsp;&nbsp; Win up to 25% OFF &nbsp;&nbsp;|&nbsp;&nbsp; Free consultation guaranteed &nbsp;&nbsp;|&nbsp;&nbsp;</div></div>
+        <div style="background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.25);border-radius:10px;padding:11px;text-align:center;margin-bottom:12px">
+          <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:3px">⭐ Jackpot Winners Today</div>
+          <div style="font-family:var(--font-head);font-size:2rem;font-weight:800;color:var(--amber)" id="wb-jp">0</div>
+        </div>
+        <div id="wb-list" style="margin-bottom:12px"></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px">
+          <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:8px;text-align:center"><div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:#fff" id="wb-total">0</div><div style="font-size:.65rem;color:rgba(255,255,255,.4);margin-top:1px">players</div></div>
+          <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:8px;text-align:center"><div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--green)">3</div><div style="font-size:.65rem;color:rgba(255,255,255,.4);margin-top:1px">games</div></div>
+          <div style="background:rgba(255,255,255,.05);border-radius:8px;padding:8px;text-align:center"><div style="font-family:var(--font-head);font-size:1.4rem;font-weight:800;color:var(--amber)">25%</div><div style="font-size:.65rem;color:rgba(255,255,255,.4);margin-top:1px">max off</div></div>
+        </div>
+        <div style="background:rgba(29,220,140,.08);border:1px solid rgba(29,220,140,.2);border-radius:10px;padding:11px;text-align:center">
+          <div style="font-family:var(--font-head);font-weight:700;color:var(--green);margin-bottom:2px">🎯 Scan QR at entrance to play now</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.35)">Free · 2 minutes · Everyone wins something</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GUESTBOOK ── -->
+  <div class="page" id="pg-gb">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="title">Guestbook</div>
+      <button class="btn btn-ghost btn-sm" onclick="gbExport()">Export CSV</button>
+    </div>
+    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-card"><div class="stat-val" id="gbs1">0</div><div class="stat-lbl">Visitors</div></div>
+      <div class="stat-card"><div class="stat-val" id="gbs2" style="color:var(--red)">0</div><div class="stat-lbl">Hot</div></div>
+      <div class="stat-card"><div class="stat-val" id="gbs3" style="color:var(--blue)">0</div><div class="stat-lbl">Notes</div></div>
+      <div class="stat-card"><div class="stat-val" id="gbs4" style="color:var(--amber)">0</div><div class="stat-lbl">Svc interest</div></div>
+    </div>
+    <div class="chip-row" style="margin-bottom:12px" id="gb-filters">
+      <button class="chip on" onclick="gbFilt(this,'all')">All</button>
+      <button class="chip" onclick="gbFilt(this,'hot')">🔥 Hot leads</button>
+      <button class="chip" onclick="gbFilt(this,'noted')">📝 Notes</button>
+      <button class="chip" onclick="gbFilt(this,'svc')">🔧 Svc interest</button>
+      <button class="chip" onclick="gbFilt(this,'disc')">🏷 Discount</button>
+    </div>
+    <div id="gb-list"></div>
+  </div>
+
+  <!-- ── ADMIN ── -->
+  <div class="page" id="pg-admin">
+    <div class="title" style="margin-bottom:14px">Admin Settings</div>
+
+    <!-- Supabase config -->
+    <div class="card">
+      <div class="section-head">Supabase Backend</div>
+      <div class="field"><label>Project URL</label><input id="sb-url" placeholder="https://xxxx.supabase.co" oninput="sbSave()"></div>
+      <div class="field"><label>Anon key</label><input id="sb-key" placeholder="eyJhbGci..." oninput="sbSave()"></div>
+      <button class="btn btn-primary" onclick="sbConnect()">Connect &amp; Test</button>
+      <div class="banner banner-muted" style="margin-top:10px;font-size:.78rem">
+        1. Go to supabase.com → New Project<br>
+        2. Settings → API → copy URL + anon key<br>
+        3. Run the SQL schema below in SQL Editor
+      </div>
+      <details style="margin-top:10px">
+        <summary style="cursor:pointer;font-size:.8rem;color:var(--text2);font-weight:600">Show SQL schema ▾</summary>
+        <pre style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:.72rem;color:var(--text);overflow-x:auto;margin-top:8px;line-height:1.7">-- Run in Supabase SQL editor
+CREATE TABLE results (
+  pid        integer PRIMARY KEY,
+  reward     text NOT NULL,
+  game       text NOT NULL,
+  reward_bg  text, reward_col text,
+  created_at timestamptz DEFAULT now()
+);
+CREATE TABLE visitors (
+  id         integer PRIMARY KEY,
+  name       text,
+  phone      text,
+  email      text,
+  company    text,
+  reward     text,
+  game       text,
+  voucher    text,
+  tags       text[],
+  svcs       text[],
+  note       text,
+  created_at timestamptz DEFAULT now()
+);
+CREATE TABLE counters (
+  name  text PRIMARY KEY,
+  value integer DEFAULT 100
+);
+INSERT INTO counters VALUES ('ticket', 100);
+ALTER TABLE results  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE visitors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE counters ENABLE ROW LEVEL SECURITY;
+-- Disable RLS for event day (re-enable after):
+ALTER TABLE results  DISABLE ROW LEVEL SECURITY;
+ALTER TABLE visitors DISABLE ROW LEVEL SECURITY;
+ALTER TABLE counters DISABLE ROW LEVEL SECURITY;</pre>
+      </details>
+    </div>
+
+    <!-- Branding -->
+    <div class="card">
+      <div class="section-head">Company Branding</div>
+      <div class="field"><label>Company name</label><input id="br-name" placeholder="Your Company Name" oninput="brSave()"></div>
+      <div class="field"><label>Tagline</label><input id="br-tag" placeholder="We help you grow · Nairobi" oninput="brSave()"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="field"><label>Phone (WhatsApp)</label><input id="br-phone" placeholder="+254700000000" oninput="brSave()"></div>
+        <div class="field"><label>Email</label><input id="br-email" placeholder="hello@co.ke" oninput="brSave()"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="field"><label>WhatsApp no.</label><input id="br-wa" placeholder="254700000000" oninput="brSave()"></div>
+        <div class="field"><label>Logo emoji</label><input id="br-emoji" placeholder="🏢" maxlength="2" oninput="brSave()"></div>
+      </div>
+      <div class="field"><label>Voucher valid (days)</label><input id="br-days" type="number" placeholder="90" oninput="brSave()"></div>
+    </div>
+
+    <!-- Services -->
+    <div class="card">
+      <div class="section-head">Services</div>
+      <div id="svc-editor"></div>
+    </div>
+
+    <!-- PINs -->
+    <div class="card">
+      <div class="section-head">Role PINs</div>
+      <div id="pin-editor"></div>
+    </div>
+
+    <!-- Ticket counter -->
+    <div class="card">
+      <div class="section-head">Ticket counter</div>
+      <div class="setting-row" style="border:none;padding:0">
+        <div><div class="setting-lbl">Starting number</div><div class="setting-desc">Current: <span id="adm-ticket">100</span></div></div>
+        <div class="counter">
+          <div class="cc" onclick="adjTicket(-10)">−</div>
+          <div class="cc-val" id="adm-tick-val">100</div>
+          <div class="cc" onclick="adjTicket(10)">+</div>
+        </div>
+      </div>
+      <button class="btn btn-red" style="margin-top:12px;width:auto;padding:9px 16px;font-size:.8rem" onclick="resetData()">⚠ Reset All Data</button>
+    </div>
+  </div>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bn-item" data-pg="visitor" onclick="navTo('visitor')"><span class="icon">🙋</span><span class="lbl">Visitor</span></button>
+    <button class="bn-item" data-pg="host" onclick="navTo('host')" id="nav-host"><span class="icon">🎯</span><span class="lbl">Host</span></button>
+    <button class="bn-item" data-pg="prize" onclick="navTo('prize')" id="nav-prize"><span class="icon">🎁</span><span class="lbl">Prize</span></button>
+    <button class="bn-item" data-pg="dash" onclick="navTo('dash')" id="nav-dash"><span class="icon">📊</span><span class="lbl">Dash</span></button>
+    <button class="bn-item" data-pg="board" onclick="navTo('board')" id="nav-board"><span class="icon">🏆</span><span class="lbl">Board</span></button>
+    <button class="bn-item" data-pg="gb" onclick="navTo('gb')" id="nav-gb"><span class="icon">📋</span><span class="lbl">Guests</span></button>
+    <button class="bn-item" data-pg="admin" onclick="navTo('admin')" id="nav-admin"><span class="icon">⚙</span><span class="lbl">Admin</span></button>
+  </nav>
 </div>
 
 <script>
+// ═══════════════════════════════════════════
+//  BOOTH SYSTEM — Complete JS
+// ═══════════════════════════════════════════
+
+// ─── CONFIG ───────────────────────────────
+var BRAND = {
+  name:'Your Company Name', tag:'We help you grow · Nairobi',
+  phone:'+254 700 000 000', email:'hello@company.com',
+  wa:'254700000000', emoji:'🏢', days:'90'
+};
+var SVCS = [
+  {i:'🔒',n:'Security Audit'},{i:'🌐',n:'Network Audit'},
+  {i:'⚡',n:'Smart Installation'},{i:'🔄',n:'Workflow Automation'},
+  {i:'📊',n:'Data Management'},{i:'🧠',n:'Business Intelligence'}
+];
+var PINS = {visitor:'0000',host:'2222',prize:'3333',manager:'4444',admin:'1111'};
+var ROLE_PAGES = {
+  visitor:['visitor'],
+  host:['visitor','host'],
+  prize:['visitor','prize'],
+  manager:['visitor','dash','board','gb'],
+  admin:['visitor','host','prize','dash','board','gb','admin']
+};
+var RORDER = ['JACKPOT 25% OFF','25% OFF','20% OFF','15% OFF','10% OFF',
+              'Free BI Report','Free Net Scan','Priority Queue',
+              'Free Consult','Free Site Visit'];
+var REWARD_MAP = {
+  'JACKPOT 25% OFF':{bg:'rgba(245,166,35,.2)',col:'#f5a623',cls:'badge-amber'},
+  '25% OFF':{bg:'rgba(245,166,35,.15)',col:'#f5a623',cls:'badge-amber'},
+  '20% OFF':{bg:'rgba(167,139,250,.15)',col:'#a78bfa',cls:'badge-purple'},
+  '15% OFF':{bg:'rgba(74,158,255,.15)',col:'#4a9eff',cls:'badge-blue'},
+  '10% OFF':{bg:'rgba(29,220,140,.15)',col:'#1ddc8c',cls:'badge-green'},
+  'Free BI Report':{bg:'rgba(167,139,250,.15)',col:'#a78bfa',cls:'badge-purple'},
+  'Free Net Scan':{bg:'rgba(29,220,140,.15)',col:'#1ddc8c',cls:'badge-green'},
+  'Priority Queue':{bg:'rgba(74,158,255,.15)',col:'#4a9eff',cls:'badge-blue'},
+  'Free Consult':{bg:'rgba(255,255,255,.08)',col:'#8b8fa8',cls:'badge-muted'},
+  'Free Site Visit':{bg:'rgba(255,255,255,.06)',col:'#5a5e74',cls:'badge-muted'}
+};
+var GRES = {
+  jack:{r:'JACKPOT 25% OFF',i:'⭐',d:'Gold star hole'},
+  r0:{r:'Free BI Report',i:'📊',d:'BI snapshot in 5 days'},
+  r1:{r:'Priority Queue',i:'🚀',d:'Skip the queue'},
+  r2:{r:'Free Net Scan',i:'🌐',d:'Full network scan'},
+  miss:{r:'Free Consult',i:'💬',d:'30-min strategy session'}
+};
+var SEGS=[
+  {l:'25% OFF',bg:'#f5a623'},{l:'Free BI',bg:'#a78bfa'},
+  {l:'20% OFF',bg:'#4a9eff'},{l:'Free Scan',bg:'#1ddc8c'},
+  {l:'15% OFF',bg:'#3bab6e'},{l:'Consult',bg:'#5a5e74'},
+  {l:'10% OFF',bg:'#c15a1a'},{l:'Free Visit',bg:'#4a3fa5'}
+];
 var TAGS=['hot lead','warm lead','follow up','callback','not interested','premium','bulk order'];
-var SVCS=['🔒 Security Audit','🌐 Network Audit','⚡ Smart Installation','🔄 Workflow Automation','📊 Data Management','🧠 Business Intelligence'];
-var RORDER=['JACKPOT 25% OFF','25% OFF','20% OFF','15% OFF','10% OFF','Free BI Report','Free Net Scan','Priority Queue','Free Consult','Free Site Visit'];
-var GRES={jack:{r:'JACKPOT 25% OFF',bg:'#FAEEDA',col:'#BA7517',d:'Gold star hole',i:'⭐'},r0:{r:'Free BI Report',bg:'#EEEDFE',col:'#533AB7',d:'BI snapshot in 5 days',i:'📊'},r1:{r:'Priority Queue',bg:'#E6F1FB',col:'#185FA5',d:'Skip the queue',i:'🚀'},r2:{r:'Free Net Scan',bg:'#E1F5EE',col:'#0F6E56',d:'Full network scan',i:'🌐'},miss:{r:'Free Consultation',bg:'#EAF3DE',col:'#3B6D11',d:'30-min strategy session',i:'💬'}};
-var SEGS=[{l:'25% OFF',bg:'#BA7517',tc:'#fff'},{l:'Free BI Report',bg:'#533AB7',tc:'#fff'},{l:'20% OFF',bg:'#185FA5',tc:'#fff'},{l:'Free Net Scan',bg:'#0F6E56',tc:'#fff'},{l:'15% OFF',bg:'#3B6D11',tc:'#fff'},{l:'Free Consult',bg:'#5F5E5A',tc:'#fff'},{l:'10% OFF',bg:'#993C1D',tc:'#fff'},{l:'Free Visit',bg:'#533AB7',tc:'#fff'}];
 
-// Core state
-var currentPid=128, hostPid=null, vGameChoice=null, hostGame=null;
-var nThrows=[], rThrows=[], curMode=null;
-var gRounds=[{result:null},{result:null},{result:null}], gCurRound=0, gCurBall=0, gRoundDone=false;
-var spinResult=null, spinAngle=0, spinning=false, gbFiltVal='all';
+// ─── STATE ────────────────────────────────
+var currentRole = null, currentPid = 99, hostPid = null;
+var vGameChoice = null, hostGame = null;
+var playerMap = {};  // pid -> {firstReward,firstGame,playCount}
+var visitors = [];
+var gbFiltVal = 'all';
+var nThrows=[], rThrows=[];
+var gRounds=[{r:null},{r:null},{r:null}], gCurRound=0, gCurBall=0, gRoundDone=false;
+var spinResult=null, spinAngle=0, spinning=false;
+var SB = null; // Supabase client
+var pinEntry = '', pinRole = null;
+var startTime = Date.now();
 
-// playerMap: pid -> {firstResult, firstGame, playCount}
-var playerMap={};
-// visitors: first-play guestbook entries only
-var visitors=[];
-var gbNextId=200;
-
-// seed demo data
-(function(){
-  var demos=[
-    {id:125,name:'James Otieno',phone:'+254712345678',email:'james@co.ke',company:'Otieno & Sons',reward:'25% OFF',rewardBg:'#FAEEDA',rewardCol:'#BA7517',game:'Darts',note:'Interested in security package.',tags:['hot lead','premium'],svcs:['🔒 Security Audit'],time:new Date(Date.now()-3600000)},
-    {id:126,name:'Sarah Kamau',phone:'+254723456789',email:'',company:'',reward:'Free Consult',rewardBg:'#EAF3DE',rewardCol:'#3B6D11',game:'Golf',note:'',tags:[],svcs:[],time:new Date(Date.now()-2000000)},
-    {id:127,name:'David Mwangi',phone:'+254734567890',email:'david@biz.ke',company:'Mwangi Tech',reward:'15% OFF',rewardBg:'#E6F1FB',rewardCol:'#185FA5',game:'Spin',note:'Wants workflow automation.',tags:['follow up'],svcs:['🔄 Workflow Automation'],time:new Date(Date.now()-900000)},
-  ];
-  demos.forEach(function(d){
-    visitors.push(d);
-    playerMap[d.id]={firstReward:d.reward,firstBg:d.rewardBg,firstCol:d.rewardCol,firstGame:d.game,playCount:1};
-  });
-  // simulate player 125 played again (not in guestbook, just playCount++)
-  playerMap[125].playCount=3;
-  playerMap[126].playCount=2;
+// ─── LOAD SAVED CONFIG ────────────────────
+(function init(){
+  var saved = localStorage.getItem('booth_brand');
+  if(saved) try{ BRAND=JSON.parse(saved); }catch(e){}
+  var savedPins = localStorage.getItem('booth_pins');
+  if(savedPins) try{ PINS=JSON.parse(savedPins); }catch(e){}
+  var savedSvcs = localStorage.getItem('booth_svcs');
+  if(savedSvcs) try{ SVCS=JSON.parse(savedSvcs); }catch(e){}
+  var savedPid = localStorage.getItem('booth_pid');
+  if(savedPid) currentPid = parseInt(savedPid)||99;
+  // auto-login visitor from URL
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('role')==='visitor') loginAs('visitor');
+  // try supabase reconnect
+  var sbUrl=localStorage.getItem('sb_url'), sbKey=localStorage.getItem('sb_key');
+  if(sbUrl&&sbKey) sbConnectWith(sbUrl,sbKey);
+  // seed demo data if empty
+  if(!visitors.length) seedDemo();
 })();
 
-/* ── NAV ── */
-function go(id){
-  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
-  document.getElementById('pg-'+id).classList.add('on');
-  var map={visitor:0,host:1,gb:2};
-  document.querySelectorAll('.nb')[map[id]].classList.add('on');
-  if(id==='gb')renderGB();
-  if(id==='host'&&!spinning)drawWheel();
+function seedDemo(){
+  visitors=[
+    {id:125,name:'James Otieno',phone:'+254712345678',email:'james@co.ke',company:'Otieno & Sons',
+     reward:'JACKPOT 25% OFF',game:'Darts',voucher:'BOOTH-JP25',tags:['hot lead','premium'],svcs:['🔒 Security Audit'],note:'Interested in full security package.',created_at:new Date(Date.now()-3600000)},
+    {id:126,name:'Sarah Kamau',phone:'+254723456789',email:'',company:'',
+     reward:'Free Consult',game:'Golf',voucher:'BOOTH-FC01',tags:[],svcs:[],note:'',created_at:new Date(Date.now()-2000000)},
+    {id:127,name:'David Mwangi',phone:'+254734567890',email:'david@biz.ke',company:'Mwangi Tech',
+     reward:'15% OFF',game:'Spin',voucher:'BOOTH-15M3',tags:['follow up'],svcs:['🔄 Workflow Automation'],note:'Wants workflow automation.',created_at:new Date(Date.now()-900000)},
+  ];
+  visitors.forEach(function(v){
+    playerMap[v.id]={firstReward:v.reward,firstGame:v.game,playCount:1};
+  });
+  playerMap[125].playCount=2; // James played twice
 }
-function showMsg(id,txt,bg,col){var el=document.getElementById(id);if(!el)return;el.textContent=txt;el.style.background=bg;el.style.color=col;el.style.border='0.5px solid '+col;el.className='msg on';setTimeout(function(){el.className='msg';},2800);}
 
-/* ── VISITOR ── */
-function vStart(){
+// ─── SUPABASE ─────────────────────────────
+function sbConnectWith(url,key){
+  try{
+    var s=window.supabase||supabase;
+    SB=s.createClient(url,key);
+    setDbStatus('connecting');
+    SB.from('counters').select('value').eq('name','ticket').single()
+      .then(function(res){
+        if(res.error) throw res.error;
+        setDbStatus('connected');
+        if(res.data) currentPid=res.data.value;
+        loadFromDB();
+      }).catch(function(){setDbStatus('disconnected');});
+  }catch(e){setDbStatus('disconnected');}
+}
+function sbSave(){
+  localStorage.setItem('sb_url',document.getElementById('sb-url').value);
+  localStorage.setItem('sb_key',document.getElementById('sb-key').value);
+}
+function sbConnect(){
+  var url=document.getElementById('sb-url').value.trim();
+  var key=document.getElementById('sb-key').value.trim();
+  if(!url||!key){toast('Enter URL and key','amber');return;}
+  localStorage.setItem('sb_url',url);localStorage.setItem('sb_key',key);
+  sbConnectWith(url,key);
+  toast('Connecting to Supabase…');
+}
+function setDbStatus(s){
+  var dot=document.getElementById('db-dot'),lbl=document.getElementById('db-lbl');
+  if(!dot)return;
+  dot.className='db-dot '+s;
+  lbl.textContent=s==='connected'?'Live':s==='connecting'?'Connecting…':'Offline';
+}
+async function loadFromDB(){
+  if(!SB)return;
+  try{
+    var r=await SB.from('visitors').select('*').order('created_at',{ascending:false});
+    if(r.data&&r.data.length) visitors=r.data.map(function(v){v.created_at=new Date(v.created_at);return v;});
+    var res=await SB.from('results').select('*');
+    if(res.data) res.data.forEach(function(p){
+      playerMap[p.pid]={firstReward:p.reward,firstGame:p.game,playCount:1};
+    });
+  }catch(e){}
+}
+async function dbWriteResult(pid,reward,game,bg,col){
+  if(!SB)return;
+  await SB.from('results').upsert({pid,reward,game,reward_bg:bg,reward_col:col});
+}
+async function dbWriteVisitor(v){
+  if(!SB)return;
+  await SB.from('visitors').upsert({
+    id:v.id,name:v.name,phone:v.phone,email:v.email||'',company:v.company||'',
+    reward:v.reward,game:v.game,voucher:v.voucher,
+    tags:v.tags||[],svcs:v.svcs||[],note:v.note||''
+  });
+}
+async function dbUpdateVisitor(v){
+  if(!SB)return;
+  await SB.from('visitors').update({tags:v.tags,svcs:v.svcs,note:v.note}).eq('id',v.id);
+}
+async function nextTicket(){
+  if(SB){
+    try{
+      var r=await SB.rpc('next_ticket');
+      if(r.data) return r.data;
+    }catch(e){}
+  }
+  // fallback: local increment
   currentPid++;
-  document.getElementById('v-pid').textContent='#'+currentPid;
+  localStorage.setItem('booth_pid',currentPid);
+  return currentPid;
+}
+
+// ─── LOGIN ────────────────────────────────
+function selRole(role){
+  pinRole=role;pinEntry='';
+  document.getElementById('role-grid').style.display='none';
+  var ps=document.getElementById('pin-section');
+  if(!role){
+    ps.style.display='none';
+    document.getElementById('role-grid').style.display='grid';
+    return;
+  }
+  ps.style.display='flex';
+  updatePinDots();
+  // visitors go straight in
+  if(role==='visitor'){pinEntry='0000';checkPin();}
+}
+function pinKey(k){
+  if(pinEntry.length>=4)return;
+  pinEntry+=k;updatePinDots();
+  if(pinEntry.length===4) setTimeout(checkPin,120);
+}
+function pinDel(){pinEntry=pinEntry.slice(0,-1);updatePinDots();document.getElementById('pin-error').textContent='';}
+function updatePinDots(){
+  for(var i=0;i<4;i++){
+    document.getElementById('pd'+i).classList.toggle('filled',i<pinEntry.length);
+  }
+}
+function checkPin(){
+  var expected=PINS[pinRole];
+  if(pinEntry===expected){
+    loginAs(pinRole);
+  } else {
+    document.getElementById('pin-error').textContent='Wrong PIN — try again';
+    pinEntry='';updatePinDots();
+  }
+}
+function loginAs(role){
+  currentRole=role;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('role-badge').textContent=
+    {visitor:'Visitor',host:'Game Host',prize:'Prize Desk',manager:'Manager',admin:'Admin'}[role];
+  // Show/hide nav items
+  var allowed=ROLE_PAGES[role]||[];
+  var navMap={visitor:'visitor',host:'host',prize:'prize',dash:'dash',board:'board',gb:'gb',admin:'admin'};
+  document.querySelectorAll('.bn-item').forEach(function(btn){
+    var pg=btn.getAttribute('data-pg');
+    btn.style.display=allowed.indexOf(pg)>=0?'':'none';
+  });
+  // Navigate to first allowed page
+  navTo(allowed[0]||'visitor');
+  // Load admin fields
+  if(role==='admin') buildAdminForms();
+}
+function logout(){
+  currentRole=null;pinEntry='';pinRole=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pin-section').style.display='none';
+  document.getElementById('role-grid').style.display='grid';
+  document.getElementById('pin-error').textContent='';
+}
+
+// ─── NAVIGATION ───────────────────────────
+function navTo(pg){
+  document.querySelectorAll('.page,.page-fill').forEach(function(p){p.classList.remove('active');});
+  var el=document.getElementById('pg-'+pg);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.bn-item').forEach(function(b){
+    b.classList.toggle('active',b.getAttribute('data-pg')===pg);
+  });
+  if(pg==='dash') loadDash();
+  if(pg==='board') loadWB();
+  if(pg==='gb') renderGB();
+  if(pg==='host'&&!spinning) drawWheel();
+}
+
+// ─── TOAST ────────────────────────────────
+var toastT;
+function toast(msg,type){
+  var el=document.getElementById('toast');
+  el.textContent=msg;
+  el.style.borderColor=type==='green'?'var(--green)':type==='amber'?'var(--amber)':type==='red'?'var(--red)':'var(--border2)';
+  el.style.color=type==='green'?'var(--green)':type==='amber'?'var(--amber)':type==='red'?'var(--red)':'var(--text)';
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT=setTimeout(function(){el.classList.remove('show');},2400);
+}
+
+// ─── VISITOR ──────────────────────────────
+async function vStart(){
+  var pid=await nextTicket();
+  currentPid=pid;
+  document.getElementById('v-pid').textContent='#'+pid;
   document.getElementById('v-entry').style.display='none';
   document.getElementById('v-pick').style.display='block';
   vGameChoice=null;
-  ['darts','golf','spin'].forEach(function(g){document.getElementById('vgc-'+g).classList.remove('on');});
-  document.getElementById('v-go').style.display='none';
-  // show returning info quietly if they've played before
-  var rec=playerMap[currentPid];
-  var retInfo=document.getElementById('v-ret-info');
+  ['darts','golf','spin'].forEach(function(g){document.getElementById('vg-'+g).classList.remove('chosen');});
+  document.getElementById('v-chosen').style.display='none';
+  var rec=playerMap[pid];
+  var rb=document.getElementById('v-ret-banner');
   if(rec&&rec.playCount>0){
-    retInfo.style.display='block';
-    document.getElementById('v-ret-reward').textContent='Your first result: '+rec.firstReward+' — this is your reward.';
-  } else {
-    retInfo.style.display='none';
-  }
+    rb.style.display='block';
+    document.getElementById('v-ret-txt').textContent='your first result: '+rec.firstReward;
+  } else rb.style.display='none';
 }
-function vPick(g){
+function vPickGame(g){
   vGameChoice=g;
-  ['darts','golf','spin'].forEach(function(x){document.getElementById('vgc-'+x).classList.remove('on');});
-  document.getElementById('vgc-'+g).classList.add('on');
+  ['darts','golf','spin'].forEach(function(x){document.getElementById('vg-'+x).classList.remove('chosen');});
+  document.getElementById('vg-'+g).classList.add('chosen');
   var icons={darts:'🎯',golf:'⛳',spin:'🎡'};
   var names={darts:'Darts',golf:'Golf Putt',spin:'Spin Wheel'};
-  document.getElementById('v-go-icon').textContent=icons[g];
-  document.getElementById('v-go-name').textContent=names[g];
-  document.getElementById('v-go').style.display='block';
+  document.getElementById('v-chosen-icon').textContent=icons[g];
+  document.getElementById('v-chosen-name').textContent=names[g];
+  document.getElementById('v-chosen').style.display='block';
 }
-function vConfirm(){}
 
-/* ── HOST ── */
-function hostScan(){document.getElementById('h-pid-in').value=currentPid;hostLookup();}
+// ─── HOST LOOKUP ──────────────────────────
+function hostScan(){document.getElementById('h-pid').value=currentPid;hostLookup();}
 function hostLookup(){
-  var raw=document.getElementById('h-pid-in').value;
+  var raw=document.getElementById('h-pid').value;
   var pid=parseInt(raw);
   if(!raw||isNaN(pid)){document.getElementById('h-pcard').style.display='none';hostPid=null;return;}
   hostPid=pid;
   var rec=playerMap[pid];
   var isFirst=!rec||rec.playCount===0;
-  var card=document.getElementById('h-pcard-inner');
-  var pill=document.getElementById('h-pc-pill');
+  var inner=document.getElementById('h-pcard-inner');
   document.getElementById('h-pc-pid').textContent='#'+pid;
-  // Set game from visitor choice if available
+  var pill=document.getElementById('h-pc-pill');
+  if(isFirst){
+    inner.className='player-card fresh';
+    pill.className='badge badge-green';pill.textContent='New player ⭐';
+    document.getElementById('h-pc-info').textContent='First play — reward eligible';
+    document.getElementById('h-play-only-banner').style.display='none';
+  } else {
+    inner.className='player-card returning';
+    pill.className='badge badge-muted';pill.textContent='Returning · play '+(rec.playCount+1);
+    document.getElementById('h-pc-info').textContent='First reward: '+rec.firstReward;
+    document.getElementById('h-play-only-banner').style.display='block';
+  }
   hostGame=vGameChoice||'darts';
   updateHostGameBtns(hostGame);
   showHostGameUI(hostGame);
-  if(isFirst){
-    card.className='pcard fresh';
-    pill.className='pc-pill pill-new';pill.textContent='New player';
-    document.getElementById('h-pc-game').textContent='Game: '+hostGameLabel(hostGame);
-    document.getElementById('h-pc-reward').style.display='none';
-    document.getElementById('h-play-only').style.display='none';
-  } else {
-    card.className='pcard returning';
-    pill.className='pc-pill pill-ret';pill.textContent='Returning · play '+(rec.playCount+1);
-    document.getElementById('h-pc-game').textContent='Game: '+hostGameLabel(hostGame);
-    var rewEl=document.getElementById('h-pc-reward');
-    rewEl.style.display='block';
-    rewEl.textContent='First reward: '+rec.firstReward+' (this play is for fun)';
-    document.getElementById('h-play-only').style.display='block';
-  }
   document.getElementById('h-pcard').style.display='block';
-  document.getElementById('h-count').textContent=Object.values(playerMap).reduce(function(s,p){return s+p.playCount;},0)+' plays today';
 }
-function hostGameLabel(g){var m={darts:'🎯 Darts',golf:'⛳ Golf',spin:'🎡 Spin'};return m[g]||g;}
 function hostSetGame(g){
-  hostGame=g;
-  updateHostGameBtns(g);
-  showHostGameUI(g);
-  document.getElementById('h-pc-game').textContent='Game: '+hostGameLabel(g);
+  hostGame=g;updateHostGameBtns(g);showHostGameUI(g);
 }
-function updateHostGameBtns(g){['darts','golf','spin'].forEach(function(x){document.getElementById('gcb-'+x).className='gcb'+(x===g?' on':'');});}
+function updateHostGameBtns(g){
+  ['darts','golf','spin'].forEach(function(x){
+    document.getElementById('gsb-'+x).classList.toggle('active',x===g);
+  });
+}
 function showHostGameUI(g){
-  document.getElementById('h-darts').style.display=g==='darts'?'block':'none';
-  document.getElementById('h-golf').style.display=g==='golf'?'block':'none';
-  document.getElementById('h-spin').style.display=g==='spin'?'block':'none';
-  if(g==='golf')gFullReset();
+  ['darts','golf','spin'].forEach(function(x){
+    document.getElementById('h-'+x).style.display=x===g?'block':'none';
+  });
+  if(g==='golf'){gFullReset();}
   if(g==='spin'){drawWheel();spinReset();}
-  if(g==='darts'){nClear();rClear();curMode=null;document.getElementById('mc-num').classList.remove('on');document.getElementById('mc-ring').classList.remove('on');document.getElementById('sec-num').style.display='none';document.getElementById('sec-ring').style.display='none';}
+  if(g==='darts'){nClear();rClear();document.getElementById('mc-num').classList.remove('active');document.getElementById('mc-ring').classList.remove('active');document.getElementById('sec-num').style.display='none';document.getElementById('sec-ring').style.display='none';}
 }
 
-/* ── RECORD RESULT — core logic ── */
-function recordResult(game, reward, bg, col){
+// ─── RECORD RESULT ────────────────────────
+function recordResult(game,reward,bg,col){
   if(!hostPid)return;
   var rec=playerMap[hostPid];
   var isFirst=!rec||rec.playCount===0;
-  // always increment play count
-  if(!playerMap[hostPid])playerMap[hostPid]={firstReward:null,firstBg:null,firstCol:null,firstGame:null,playCount:0};
+  if(!playerMap[hostPid]) playerMap[hostPid]={firstReward:null,firstGame:null,playCount:0};
   playerMap[hostPid].playCount++;
   if(isFirst){
-    // record first result
     playerMap[hostPid].firstReward=reward;
-    playerMap[hostPid].firstBg=bg;
-    playerMap[hostPid].firstCol=col;
     playerMap[hostPid].firstGame=game;
-    // add to guestbook only on first play
-    visitors.unshift({
-      id:hostPid,name:'Player #'+hostPid,phone:'',email:'',company:'',
-      reward:reward,rewardBg:bg,rewardCol:col,game:game,
-      note:'',tags:[],svcs:[],time:new Date()
-    });
+    dbWriteResult(hostPid,reward,game,bg,col);
   }
-  // update count display
-  document.getElementById('h-count').textContent=
-    Object.values(playerMap).reduce(function(s,p){return s+p.playCount;},0)+' plays today';
-  // toast
-  var label=isFirst?'⭐ Rewarded':'↩ Play only (no new reward)';
-  var toastId=game==='golf'?'g-final-msg':game.includes('ring')?'r-msg':game==='spin'?'spin-msg':'n-msg';
-  showMsg(toastId,'Player #'+hostPid+' → '+reward+' · '+label,isFirst?'#EAF3DE':'#F1EFE8',isFirst?'#3B6D11':'#5F5E5A');
-  // clear after a moment
+  var label=isFirst?'⭐ Rewarded':'↩ Play only';
+  toast('Player #'+hostPid+' → '+reward+' · '+label, isFirst?'green':'');
+  var totalPlays=Object.values(playerMap).reduce(function(s,p){return s+p.playCount;},0);
+  document.getElementById('h-plays-today').textContent=totalPlays+' plays today';
   setTimeout(function(){
     document.getElementById('h-pcard').style.display='none';
-    document.getElementById('h-pid-in').value='';
+    document.getElementById('h-pid').value='';
     hostPid=null;hostGame=null;
-  },1800);
+  },1400);
 }
 
-/* ── DARTS ── */
-function dMode(m){curMode=m;document.getElementById('mc-num').classList.toggle('on',m==='num');document.getElementById('mc-ring').classList.toggle('on',m==='ring');document.getElementById('sec-num').style.display=m==='num'?'block':'none';document.getElementById('sec-ring').style.display=m==='ring'?'block':'none';}
-function nZone(n){if(n===25)return{r:'JACKPOT 25% OFF',bg:'#FAEEDA',col:'#BA7517'};if(n>=17)return{r:'20% OFF',bg:'#EEEDFE',col:'#533AB7'};if(n>=13)return{r:'15% OFF',bg:'#E6F1FB',col:'#185FA5'};if(n>=9)return{r:'10% OFF',bg:'#E1F5EE',col:'#0F6E56'};if(n>=1)return{r:'Free Consult',bg:'#EAF3DE',col:'#3B6D11'};return{r:'Free Site Visit',bg:'#F1EFE8',col:'#5F5E5A'};}
+// ─── DARTS ────────────────────────────────
+function dMode(m){
+  document.getElementById('mc-num').classList.toggle('active',m==='num');
+  document.getElementById('mc-ring').classList.toggle('active',m==='ring');
+  document.getElementById('mc-num').style.borderColor=m==='num'?'var(--green)':'';
+  document.getElementById('mc-ring').style.borderColor=m==='ring'?'var(--green)':'';
+  document.getElementById('sec-num').style.display=m==='num'?'block':'none';
+  document.getElementById('sec-ring').style.display=m==='ring'?'block':'none';
+}
+function nZone(n){
+  if(n===25)return{r:'JACKPOT 25% OFF',bg:'rgba(245,166,35,.2)',col:'#f5a623'};
+  if(n>=17)return{r:'20% OFF',bg:'rgba(167,139,250,.15)',col:'#a78bfa'};
+  if(n>=13)return{r:'15% OFF',bg:'rgba(74,158,255,.15)',col:'#4a9eff'};
+  if(n>=9)return{r:'10% OFF',bg:'rgba(29,220,140,.15)',col:'#1ddc8c'};
+  if(n>=1)return{r:'Free Consult',bg:'rgba(255,255,255,.08)',col:'#8b8fa8'};
+  return{r:'Free Site Visit',bg:'rgba(255,255,255,.05)',col:'#5a5e74'};
+}
 function nBest(){return nThrows.reduce(function(a,b){return RORDER.indexOf(nZone(a).r)<=RORDER.indexOf(nZone(b).r)?a:b;});}
-function nClear(){nThrows=[];for(var i=0;i<3;i++){var ts=document.getElementById('nts'+i),tv=document.getElementById('ntv'+i);ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}document.getElementById('n-best').innerHTML='';document.getElementById('n-award-btn').style.display='none';}
-function nRefresh(){for(var i=0;i<3;i++){var ts=document.getElementById('nts'+i),tv=document.getElementById('ntv'+i);if(i<nThrows.length){var z=nZone(nThrows[i]);ts.style.background=z.bg;ts.style.borderColor=z.col;tv.textContent=nThrows[i]===25?'★':nThrows[i]===0?'✕':String(nThrows[i]);tv.style.color=z.col;}else{ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}}if(nThrows.length>0){var bz=nZone(nBest());document.getElementById('n-best').innerHTML='<span class="badge" style="background:'+bz.bg+';color:'+bz.col+'">Best → '+bz.r+'</span>';}else document.getElementById('n-best').innerHTML='';document.getElementById('n-award-btn').style.display=nThrows.length===3?'block':'none';}
-function nHit(n){if(nThrows.length>=3){showMsg('n-msg','All 3 thrown — Award or Undo','#EAF3DE','#3B6D11');return;}nThrows.push(n);nRefresh();}
+function nClear(){nThrows=[];for(var i=0;i<3;i++){var ts=document.getElementById('nts'+i),tv=document.getElementById('ntv'+i);ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}document.getElementById('n-best-show').innerHTML='';var nb=document.getElementById('n-award');if(nb)nb.style.display='none';}
+function nRefresh(){
+  for(var i=0;i<3;i++){
+    var ts=document.getElementById('nts'+i),tv=document.getElementById('ntv'+i);
+    if(i<nThrows.length){var z=nZone(nThrows[i]);ts.style.background=z.bg;ts.style.borderColor=z.col;tv.textContent=nThrows[i]===25?'★':nThrows[i]===0?'✕':String(nThrows[i]);tv.style.color=z.col;}
+    else{ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}
+  }
+  if(nThrows.length>0){var bz=nZone(nBest());document.getElementById('n-best-show').innerHTML='<span class="badge '+( REWARD_MAP[bz.r]||{cls:'badge-muted'}).cls+'">Best → '+bz.r+'</span>';}
+  else document.getElementById('n-best-show').innerHTML='';
+  var nb=document.getElementById('n-award');if(nb)nb.style.display=nThrows.length===3?'inline-block':'none';
+}
+function nHit(n){if(nThrows.length>=3){toast('All 3 thrown — Award or Undo');return;}nThrows.push(n);nRefresh();}
 function nUndo(){if(!nThrows.length)return;nThrows.pop();nRefresh();}
-function nAward(){var z=nZone(nBest());recordResult('darts',z.r,z.bg,z.col);nClear();}
-var RINGS2=[{r:'JACKPOT 25% OFF',bg:'#FAEEDA',col:'#BA7517'},{r:'20% OFF',bg:'#EEEDFE',col:'#533AB7'},{r:'15% OFF',bg:'#E6F1FB',col:'#185FA5'},{r:'10% OFF',bg:'#E1F5EE',col:'#0F6E56'},{r:'Free Consult',bg:'#EAF3DE',col:'#3B6D11'},{r:'Free Site Visit',bg:'#F1EFE8',col:'#5F5E5A'},{r:'Free Site Visit',bg:'#FCEBEB',col:'#A32D2D'}];
-function rBestR(){return rThrows.reduce(function(a,b){return RORDER.indexOf(RINGS2[a].r)<=RORDER.indexOf(RINGS2[b].r)?a:b;});}
-function rClear(){rThrows=[];for(var i=0;i<3;i++){var ts=document.getElementById('rts'+i),tv=document.getElementById('rtv'+i);ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}document.getElementById('r-best').innerHTML='';document.getElementById('r-award-btn').style.display='none';}
-function rRefresh(){for(var i=0;i<3;i++){var ts=document.getElementById('rts'+i),tv=document.getElementById('rtv'+i);if(i<rThrows.length){var ring=RINGS2[rThrows[i]];ts.style.background=ring.bg;ts.style.borderColor=ring.col;tv.textContent=rThrows[i]===0?'★':rThrows[i]===6?'✕':'R'+rThrows[i];tv.style.color=ring.col;}else{ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}}if(rThrows.length>0){var br=RINGS2[rBestR()];document.getElementById('r-best').innerHTML='<span class="badge" style="background:'+br.bg+';color:'+br.col+'">Best → '+br.r+'</span>';}else document.getElementById('r-best').innerHTML='';document.getElementById('r-award-btn').style.display=rThrows.length===3?'block':'none';}
-function rHit(idx){if(rThrows.length>=3){showMsg('r-msg','All 3 thrown','#EAF3DE','#3B6D11');return;}rThrows.push(idx);rRefresh();}
+function nAward(){var z=nZone(nBest());recordResult('Darts',z.r,z.bg,z.col);nClear();}
+
+var RINGS=[
+  {r:'JACKPOT 25% OFF',bg:'rgba(245,166,35,.2)',col:'#f5a623'},
+  {r:'20% OFF',bg:'rgba(167,139,250,.15)',col:'#a78bfa'},
+  {r:'15% OFF',bg:'rgba(74,158,255,.15)',col:'#4a9eff'},
+  {r:'10% OFF',bg:'rgba(29,220,140,.15)',col:'#1ddc8c'},
+  {r:'Free Consult',bg:'rgba(255,255,255,.08)',col:'#8b8fa8'},
+  {r:'Free Site Visit',bg:'rgba(255,255,255,.05)',col:'#5a5e74'},
+  {r:'Free Site Visit',bg:'rgba(255,255,255,.05)',col:'#5a5e74'}
+];
+function rBest(){return rThrows.reduce(function(a,b){return RORDER.indexOf(RINGS[a].r)<=RORDER.indexOf(RINGS[b].r)?a:b;});}
+function rClear(){rThrows=[];for(var i=0;i<3;i++){var ts=document.getElementById('rts'+i),tv=document.getElementById('rtv'+i);ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}document.getElementById('r-best-show').innerHTML='';var rb=document.getElementById('r-award');if(rb)rb.style.display='none';}
+function rRefresh(){
+  for(var i=0;i<3;i++){
+    var ts=document.getElementById('rts'+i),tv=document.getElementById('rtv'+i);
+    if(i<rThrows.length){var ring=RINGS[rThrows[i]];ts.style.background=ring.bg;ts.style.borderColor=ring.col;tv.textContent=rThrows[i]===0?'★':rThrows[i]===6?'✕':'R'+rThrows[i];tv.style.color=ring.col;}
+    else{ts.style.background='';ts.style.borderColor='';tv.textContent='—';tv.style.color='';}
+  }
+  if(rThrows.length>0){var br=RINGS[rBest()];document.getElementById('r-best-show').innerHTML='<span class="badge '+(REWARD_MAP[br.r]||{cls:'badge-muted'}).cls+'">Best → '+br.r+'</span>';}
+  else document.getElementById('r-best-show').innerHTML='';
+  var rb=document.getElementById('r-award');if(rb)rb.style.display=rThrows.length===3?'inline-block':'none';
+}
+function rHit(idx){if(rThrows.length>=3){toast('All 3 thrown');return;}rThrows.push(idx);rRefresh();}
 function rUndo(){if(!rThrows.length)return;rThrows.pop();rRefresh();}
-function rAward(){var ring=RINGS2[rBestR()];recordResult('darts (rings)',ring.r,ring.bg,ring.col);rClear();}
+function rAward(){var ring=RINGS[rBest()];recordResult('Darts (Rings)',ring.r,ring.bg,ring.col);rClear();}
 
-/* ── GOLF ── */
-function gFullReset(){gRounds=[{result:null},{result:null},{result:null}];gCurRound=0;document.getElementById('g-final').style.display='none';document.getElementById('g-play').style.display='block';for(var i=0;i<3;i++){document.getElementById('gt'+i).className='rtab'+(i===0?' cur':'');document.getElementById('gtr'+i).textContent='—';}gStartRound(0);}
-function gStartRound(r){gCurRound=r;gCurBall=0;gRoundDone=false;document.getElementById('g-rlabel').textContent='Round '+(r+1)+' of 3';document.getElementById('g-rhint').textContent='Ball 1→BI Report';document.getElementById('g-bstat').textContent='Ball 1 — where did it land?';for(var i=0;i<3;i++){var b=document.getElementById('gb'+i);b.className='ball'+(i===0?' cur':'');b.style.background='';b.style.borderColor='';b.textContent='⚪';}document.getElementById('g-holes').style.display='block';document.getElementById('g-rdone').style.display='none';document.getElementById('g-msg').className='msg';for(var j=0;j<3;j++){var t=document.getElementById('gt'+j);if(j===r)t.className='rtab cur';else if(gRounds[j].result)t.className='rtab done';else t.className='rtab';}}
-function gGoRound(r){if(gRounds[r].result||r===gCurRound)gStartRound(r);}
-function gBestIdx(){var best=0;for(var i=1;i<3;i++){if(!gRounds[i].result)continue;if(!gRounds[best].result){best=i;continue;}if(RORDER.indexOf(gRounds[i].result.r)<RORDER.indexOf(gRounds[best].result.r))best=i;}return best;}
-function gHole(type){if(gRoundDone)return;var b=document.getElementById('gb'+gCurBall);if(type==='miss'){b.className='ball';b.style.opacity='.4';b.textContent='✕';gCurBall++;if(gCurBall<3){document.getElementById('gb'+gCurBall).className='ball cur';document.getElementById('g-bstat').textContent='Ball '+(gCurBall+1)+' — where did it land?';document.getElementById('g-rhint').textContent=['Ball 2→Priority Queue','Ball 3→Free Net Scan'][gCurBall-1]||'';}else{gRoundDone=true;gEndRound(GRES.miss);}}else{gRoundDone=true;var res=type==='jack'?GRES.jack:GRES['r'+gCurBall];b.className='ball';b.style.background=res.bg;b.style.borderColor=res.col;b.textContent=res.i;gEndRound(res);}}
-function gEndRound(res){gRounds[gCurRound].result=res;document.getElementById('g-holes').style.display='none';document.getElementById('g-rdlabel').textContent='Round '+(gCurRound+1);document.getElementById('g-rdtxt').textContent=res.r;document.getElementById('g-rdbadge').innerHTML='<span class="badge" style="background:'+res.bg+';color:'+res.col+'">'+res.r+'</span>';document.getElementById('g-rdone').style.display='block';document.getElementById('gtr'+gCurRound).textContent=res.i+' '+res.r;document.getElementById('gt'+gCurRound).className=gCurRound===gBestIdx()?'rtab best':'rtab done';document.getElementById('g-next-btn').style.display=gCurRound<2?'block':'none';document.getElementById('g-finish-btn').style.display=gCurRound===2?'block':'none';}
+// ─── GOLF ─────────────────────────────────
+function gFullReset(){
+  gRounds=[{r:null},{r:null},{r:null}];gCurRound=0;
+  document.getElementById('g-final').style.display='none';
+  document.getElementById('g-play').style.display='block';
+  for(var i=0;i<3;i++){document.getElementById('gt'+i).className='rtab'+(i===0?' cur':'');document.getElementById('gtr'+i).textContent='—';}
+  gStartRound(0);
+}
+function gStartRound(r){
+  gCurRound=r;gCurBall=0;gRoundDone=false;
+  document.getElementById('g-rlabel').textContent='Round '+(r+1)+' of 3';
+  document.getElementById('g-rhint').textContent='Ball 1 → BI Report';
+  document.getElementById('g-bstat').textContent='Ball 1 — where did it land?';
+  for(var i=0;i<3;i++){var b=document.getElementById('gb'+i);b.className='ball'+(i===0?' cur':'');b.style.background='';b.style.borderColor='';b.textContent='⚪';}
+  document.getElementById('g-holes').style.display='block';
+  document.getElementById('g-rdone').style.display='none';
+  for(var j=0;j<3;j++){var t=document.getElementById('gt'+j);t.className=j===r?'rtab cur':gRounds[j].r?'rtab done':'rtab';}
+}
+function gGoRound(r){if(gRounds[r].r||r===gCurRound)gStartRound(r);}
+function gBestIdx(){var best=0;for(var i=1;i<3;i++){if(!gRounds[i].r)continue;if(!gRounds[best].r){best=i;continue;}if(RORDER.indexOf(gRounds[i].r.r)<RORDER.indexOf(gRounds[best].r.r))best=i;}return best;}
+function gHole(type){
+  if(gRoundDone)return;
+  var b=document.getElementById('gb'+gCurBall);
+  if(type==='miss'){
+    b.className='ball';b.style.opacity='.4';b.textContent='✕';gCurBall++;
+    if(gCurBall<3){
+      document.getElementById('gb'+gCurBall).className='ball cur';
+      document.getElementById('g-bstat').textContent='Ball '+(gCurBall+1)+' — where did it land?';
+      document.getElementById('g-rhint').textContent=['Ball 2 → Priority Queue','Ball 3 → Net Scan'][gCurBall-1]||'';
+    } else {gRoundDone=true;gEndRound(GRES.miss);}
+  } else {
+    gRoundDone=true;
+    var res=type==='jack'?GRES.jack:GRES['r'+gCurBall];
+    var rm=REWARD_MAP[res.r]||{bg:'rgba(255,255,255,.08)',col:'#8b8fa8'};
+    b.className='ball';b.style.background=rm.bg;b.style.borderColor=rm.col;b.textContent=res.i;
+    gEndRound(res);
+  }
+}
+function gEndRound(res){
+  var rm=REWARD_MAP[res.r]||{bg:'rgba(255,255,255,.08)',col:'#8b8fa8',cls:'badge-muted'};
+  gRounds[gCurRound].r=res;
+  document.getElementById('g-holes').style.display='none';
+  document.getElementById('g-rdlabel').textContent='Round '+(gCurRound+1);
+  document.getElementById('g-rdtxt').textContent=res.r;
+  document.getElementById('g-rdbadge').innerHTML='<span class="badge '+rm.cls+'">'+res.r+'</span>';
+  document.getElementById('g-rdone').style.display='block';
+  document.getElementById('gtr'+gCurRound).textContent=res.i+' '+res.r;
+  document.getElementById('gt'+gCurRound).className=gCurRound===gBestIdx()?'rtab best':'rtab done';
+  document.getElementById('g-next').style.display=gCurRound<2?'block':'none';
+  document.getElementById('g-finish').style.display=gCurRound===2?'block':'none';
+}
 function gNextRound(){gStartRound(gCurRound+1);}
-function gFinish(){document.getElementById('g-play').style.display='none';document.getElementById('g-final').style.display='block';var bi=gBestIdx();for(var i=0;i<3;i++)document.getElementById('gt'+i).className=i===bi?'rtab best':'rtab done';var icons=['1️⃣','2️⃣','3️⃣'],html='';for(var j=0;j<3;j++){var res=gRounds[j].result||{r:'—',bg:'#F1EFE8',col:'#5F5E5A'};var isB=j===bi;html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:8px;margin-bottom:4px;background:'+(isB?'#FAEEDA':'var(--color-background-secondary)')+'"><span style="font-size:13px;font-weight:500;color:'+(isB?'#BA7517':'var(--color-text-primary)')+'">'+icons[j]+' Round '+(j+1)+(isB?' ⭐':'')+'</span><span class="badge" style="background:'+res.bg+';color:'+res.col+'">'+res.r+'</span></div>';}document.getElementById('g-summary').innerHTML=html;var best=gRounds[bi].result;document.getElementById('g-best-txt').textContent=best.r;document.getElementById('g-best-txt').style.color=best.col;document.getElementById('g-best-badge').innerHTML='<span class="badge" style="background:'+best.bg+';color:'+best.col+'">Round '+(bi+1)+' wins</span>';document.getElementById('g-best-desc').textContent=best.d;document.getElementById('g-best-card').style.background=best.bg;document.getElementById('g-best-card').style.borderColor=best.col;}
-function gAward(){var best=gRounds[gBestIdx()].result;recordResult('golf',best.r,best.bg,best.col);}
+function gFinish(){
+  document.getElementById('g-play').style.display='none';
+  document.getElementById('g-final').style.display='block';
+  var bi=gBestIdx();
+  var icons=['1️⃣','2️⃣','3️⃣'];
+  var html='';
+  for(var j=0;j<3;j++){
+    var res=gRounds[j].r||{r:'—'};var isB=j===bi;
+    var rm=REWARD_MAP[res.r]||{cls:'badge-muted'};
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:8px;margin-bottom:5px;background:'+(isB?'var(--amber-dim)':'var(--bg3)')+'">'+
+      '<span style="font-family:var(--font-head);font-weight:700;color:'+(isB?'var(--amber)':'var(--text)')+'">'+icons[j]+' Round '+(j+1)+(isB?' ⭐':'')+'</span>'+
+      '<span class="badge '+rm.cls+'">'+res.r+'</span></div>';
+  }
+  document.getElementById('g-summary').innerHTML=html;
+  var best=gRounds[bi].r;
+  var rm=REWARD_MAP[best.r]||{bg:'var(--bg3)',col:'var(--text)',cls:'badge-muted'};
+  document.getElementById('g-best-txt').textContent=best.r;
+  document.getElementById('g-best-txt').style.color=rm.col;
+  document.getElementById('g-best-badge').innerHTML='<span class="badge '+rm.cls+'">Round '+(bi+1)+' wins</span>';
+  document.getElementById('g-best-card').style.background=rm.bg;
+}
+function gAward(){var best=gRounds[gBestIdx()].r;var rm=REWARD_MAP[best.r]||{bg:'',col:''};recordResult('Golf',best.r,rm.bg,rm.col);}
 
-/* ── SPIN ── */
-function drawWheel(ang){var c=document.getElementById('spin-canvas');if(!c)return;var ctx=c.getContext('2d'),cx=100,cy=100,r=98,n=SEGS.length,arc=2*Math.PI/n,a=ang!==undefined?ang:spinAngle;ctx.clearRect(0,0,200,200);SEGS.forEach(function(seg,i){var s=a+i*arc-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,s+arc);ctx.closePath();ctx.fillStyle=seg.bg;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);ctx.textAlign='right';ctx.fillStyle=seg.tc;ctx.font='bold 9px sans-serif';var words=seg.l.split(' ');words.forEach(function(w,wi){ctx.fillText(w,r-5,wi*11-(words.length-1)*5);});ctx.restore();});ctx.beginPath();ctx.arc(cx,cy,11,0,2*Math.PI);ctx.fillStyle='#fff';ctx.fill();}
-function doSpin(){if(spinning)return;spinning=true;document.getElementById('spin-btn').disabled=true;document.getElementById('spin-result').style.display='none';document.getElementById('spin-hint').textContent='Spinning...';var extra=Math.PI*8+Math.random()*Math.PI*4,dur=3200,start=performance.now(),from=spinAngle;function frame(now){var t=Math.min((now-start)/dur,1),ease=1-Math.pow(1-t,4),cur=from+extra*ease;drawWheel(cur);if(t<1){requestAnimationFrame(frame);}else{spinAngle=cur%(2*Math.PI);drawWheel(spinAngle);spinning=false;document.getElementById('spin-btn').disabled=false;var n=SEGS.length,arc=2*Math.PI/n,norm=(((-spinAngle%(2*Math.PI))+2*Math.PI+Math.PI/2))%(2*Math.PI),idx=Math.floor(norm/arc)%n;spinResult=SEGS[idx];document.getElementById('spin-rtxt').textContent=spinResult.l;document.getElementById('spin-rbadge').innerHTML='<span class="badge" style="background:'+spinResult.bg+';color:'+spinResult.tc+'">'+spinResult.l+'</span>';document.getElementById('spin-result').style.display='block';document.getElementById('spin-hint').textContent='Award to record';}}requestAnimationFrame(frame);}
+// ─── SPIN ─────────────────────────────────
+function drawWheel(ang){
+  var c=document.getElementById('spin-canvas');if(!c)return;
+  var ctx=c.getContext('2d'),cx=120,cy=120,r=115,n=SEGS.length,arc=2*Math.PI/n,a=ang!==undefined?ang:spinAngle;
+  ctx.clearRect(0,0,240,240);
+  SEGS.forEach(function(seg,i){
+    var s=a+i*arc-Math.PI/2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,s+arc);ctx.closePath();
+    ctx.fillStyle=seg.bg;ctx.fill();ctx.strokeStyle='rgba(0,0,0,.3)';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);ctx.textAlign='right';
+    ctx.fillStyle='#fff';ctx.font='bold 10px "Syne",sans-serif';
+    var words=seg.l.split(' ');
+    words.forEach(function(w,wi){ctx.fillText(w,r-8,wi*12-(words.length-1)*6);});
+    ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,14,0,2*Math.PI);ctx.fillStyle='var(--bg)';ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=2;ctx.stroke();
+}
+function doSpin(){
+  if(spinning)return;spinning=true;
+  document.getElementById('spin-btn').disabled=true;
+  document.getElementById('spin-result').style.display='none';
+  document.getElementById('spin-hint').textContent='Spinning…';
+  var extra=Math.PI*8+Math.random()*Math.PI*4,dur=3400,start=performance.now(),from=spinAngle;
+  function frame(now){
+    var t=Math.min((now-start)/dur,1),ease=1-Math.pow(1-t,4),cur=from+extra*ease;
+    drawWheel(cur);
+    if(t<1){requestAnimationFrame(frame);}
+    else{
+      spinAngle=cur%(2*Math.PI);drawWheel(spinAngle);spinning=false;
+      document.getElementById('spin-btn').disabled=false;
+      var n2=SEGS.length,arc=2*Math.PI/n2;
+      var norm=(((-spinAngle%(2*Math.PI))+2*Math.PI+Math.PI/2))%(2*Math.PI);
+      var idx=Math.floor(norm/arc)%n2;
+      spinResult=SEGS[idx];
+      document.getElementById('spin-rtxt').textContent=spinResult.l;
+      var rm=REWARD_MAP[spinResult.l]||{cls:'badge-muted'};
+      document.getElementById('spin-rbadge').innerHTML='<span class="badge '+rm.cls+'">'+spinResult.l+'</span>';
+      document.getElementById('spin-result').style.display='block';
+      document.getElementById('spin-hint').textContent='Award to record';
+    }
+  }
+  requestAnimationFrame(frame);
+}
 function spinReset(){spinResult=null;document.getElementById('spin-result').style.display='none';document.getElementById('spin-hint').textContent='Tap to spin';}
-function spinAward(){if(!spinResult)return;recordResult('spin',spinResult.l,spinResult.bg,spinResult.tc);}
+function spinAward(){if(!spinResult)return;var rm=REWARD_MAP[spinResult.l]||{bg:'',col:''};recordResult('Spin',spinResult.l,rm.bg,rm.col);spinReset();}
 
-/* ── GUESTBOOK ── */
-function gbFilt(btn,f){gbFiltVal=f;document.querySelectorAll('.fb').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderGB();}
+// ─── PRIZE DESK ───────────────────────────
+var prizeVisitor=null;
+function prizeLookup(){
+  var pid=parseInt(document.getElementById('prize-pid').value);
+  if(!pid){document.getElementById('prize-card').style.display='none';return;}
+  var rec=playerMap[pid];
+  var existing=visitors.find(function(v){return v.id===pid;});
+  var reward=rec?rec.firstReward:'Free Consult';
+  var rm=REWARD_MAP[reward]||{bg:'var(--green-dim)',col:'var(--green)'};
+  prizeVisitor={id:pid,reward:reward,game:rec?rec.firstGame:'',
+    voucher:'BOOTH-'+Math.random().toString(36).substr(2,4).toUpperCase()};
+  // digital card
+  document.getElementById('dc-logo').textContent=BRAND.emoji;
+  document.getElementById('dc-name').textContent=BRAND.name;
+  document.getElementById('dc-tag').textContent=BRAND.tag;
+  document.getElementById('dc-contact').textContent=BRAND.phone+' · '+BRAND.email;
+  document.getElementById('dc-reward').textContent=reward;
+  document.getElementById('dc-reward').style.color=rm.col;
+  document.getElementById('dc-valid').textContent='Valid '+BRAND.days+' days';
+  document.getElementById('dc-voucher').textContent=prizeVisitor.voucher;
+  // if already claimed, show post-claim
+  if(existing){
+    prizeVisitor=Object.assign(prizeVisitor,{name:existing.name,phone:existing.phone,email:existing.email,company:existing.company});
+    document.getElementById('prize-form').style.display='none';
+    document.getElementById('prize-claimed').style.display='block';
+    document.getElementById('pc-summary').textContent='Player #'+pid+' · '+reward+' · '+prizeVisitor.voucher;
+  } else {
+    document.getElementById('prize-form').style.display='block';
+    document.getElementById('prize-claimed').style.display='none';
+  }
+  document.getElementById('prize-card').style.display='block';
+}
+function pfPreview(){
+  var name=document.getElementById('pf-name').value;
+  if(name&&prizeVisitor) document.getElementById('dc-name').textContent=name||BRAND.name;
+}
+async function pfSave(){
+  var name=document.getElementById('pf-name').value.trim();
+  var phone=document.getElementById('pf-phone').value.trim();
+  if(!name||!phone){toast('Name and phone required','amber');return;}
+  prizeVisitor.name=name;prizeVisitor.phone=phone;
+  prizeVisitor.email=document.getElementById('pf-email').value.trim();
+  prizeVisitor.company=document.getElementById('pf-company').value.trim();
+  prizeVisitor.tags=[];prizeVisitor.svcs=[];prizeVisitor.note='';
+  prizeVisitor.created_at=new Date();
+  visitors.unshift(prizeVisitor);
+  await dbWriteVisitor(prizeVisitor);
+  document.getElementById('prize-form').style.display='none';
+  document.getElementById('prize-claimed').style.display='block';
+  document.getElementById('pc-summary').textContent=name+' · '+prizeVisitor.reward+' · '+prizeVisitor.voucher;
+  toast('Visitor saved!','green');
+}
+function pfWhatsApp(){
+  if(!prizeVisitor)return;
+  var v=prizeVisitor,isDisc=v.reward&&v.reward.includes('%');
+  var svcList=SVCS.map(function(s){return s.i+' '+s.n;}).join('\n');
+  var svcBlock=isDisc?('\n\nTo redeem, reply with your chosen service:\n\n'+svcList+'\n\nWe\'ll apply your '+v.reward+'.'):('\n\nWe will arrange your: '+v.reward);
+  var msg=encodeURIComponent('Hi '+(v.name||'').split(' ')[0]+'! 🎯\n\nThank you for playing at our booth!\n\nPrize Receipt\n──────────────\nPlayer: #'+v.id+'\nReward: '+v.reward+'\nVoucher: '+v.voucher+'\n──────────────'+svcBlock+'\n\nFree consultation included.\n\n— '+BRAND.name+'\n  '+BRAND.phone);
+  window.open('https://wa.me/'+BRAND.wa+'?text='+msg,'_blank');
+}
+function pfVcard(){
+  if(!prizeVisitor)return;
+  var vc=['BEGIN:VCARD','VERSION:3.0','FN:'+BRAND.name,'ORG:'+BRAND.name,'TEL:'+BRAND.phone,'EMAIL:'+BRAND.email,'URL:https://'+BRAND.email.split('@')[1],'NOTE:Voucher '+prizeVisitor.voucher+' · '+prizeVisitor.reward,'END:VCARD'].join('\n');
+  var a=document.createElement('a');a.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(vc);a.download=BRAND.name.replace(/\s+/g,'_')+'.vcf';a.click();
+}
+function pfReset(){
+  prizeVisitor=null;
+  document.getElementById('prize-pid').value='';
+  document.getElementById('prize-card').style.display='none';
+  document.getElementById('pf-name').value='';document.getElementById('pf-phone').value='';
+  document.getElementById('pf-email').value='';document.getElementById('pf-company').value='';
+}
+
+// ─── DASHBOARD ────────────────────────────
+function loadDash(){
+  var total=visitors.length;
+  var hot=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');}).length;
+  var elapsed=(Date.now()-startTime)/3600000;
+  var rate=elapsed>0?Math.round(total/elapsed):0;
+  document.getElementById('ds-players').textContent=total;
+  document.getElementById('ds-claimed').textContent=total;
+  document.getElementById('ds-hot').textContent=hot;
+  document.getElementById('ds-rate').textContent=rate;
+  // game breakdown
+  var games={};
+  visitors.forEach(function(v){games[v.game]=(games[v.game]||0)+1;});
+  var gb='';
+  Object.keys(games).forEach(function(g){
+    var pct=Math.round(games[g]/total*100)||0;
+    gb+='<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px"><span>'+g+'</span><span style="color:var(--text2)">'+games[g]+' · '+pct+'%</span></div><div class="profit-bar"><div class="profit-fill" style="width:'+pct+'%;background:var(--green)"></div></div></div>';
+  });
+  document.getElementById('game-breakdown').innerHTML=gb||'<div class="subtitle">No data yet</div>';
+  // reward dist
+  var rewards={};
+  visitors.forEach(function(v){rewards[v.reward]=(rewards[v.reward]||0)+1;});
+  var rd='';
+  Object.keys(rewards).sort(function(a,b){return (rewards[b]-rewards[a]);}).forEach(function(r){
+    var pct=Math.round(rewards[r]/total*100)||0;
+    var rm=REWARD_MAP[r]||{col:'var(--text2)'};
+    rd+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:4px"><span style="color:'+rm.col+'">'+r+'</span><span style="color:var(--text2)">'+rewards[r]+'</span></div><div class="profit-bar"><div class="profit-fill" style="width:'+pct+'%;background:'+rm.col+'"></div></div></div>';
+  });
+  document.getElementById('reward-dist').innerHTML=rd||'<div class="subtitle">No data yet</div>';
+  // recent
+  var rw='';
+  visitors.slice(0,6).forEach(function(v){
+    var rm=REWARD_MAP[v.reward]||{cls:'badge-muted'};
+    rw+='<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">'+
+      '<div><div style="font-family:var(--font-head);font-weight:700;font-size:.88rem">'+(v.name||'Player #'+v.id)+'</div><div style="font-size:.72rem;color:var(--text2)">'+v.game+' · #'+v.id+'</div></div>'+
+      '<span class="badge '+rm.cls+'">'+v.reward+'</span></div>';
+  });
+  document.getElementById('recent-winners').innerHTML=rw||'<div class="subtitle">No winners yet</div>';
+}
+// Golden round timer
+function goldenTimer(){
+  var el=document.getElementById('golden-timer');if(!el)return;
+  var rem=30*60*1000-(Date.now()%(30*60*1000));
+  var m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+  el.textContent=m+':'+(s<10?'0':'')+s;
+}
+setInterval(goldenTimer,1000);goldenTimer();
+
+// ─── WINNER'S BOARD ───────────────────────
+function loadWB(){
+  var jp=visitors.filter(function(v){return v.reward&&v.reward.includes('25');}).length;
+  document.getElementById('wb-jp').textContent=jp;
+  document.getElementById('wb-total').textContent=visitors.length;
+  document.getElementById('wb-coname').textContent=(BRAND.name||'YOUR COMPANY').toUpperCase();
+  var icons=['🥇','🥈','🥉','4️⃣','5️⃣'];
+  var html=visitors.slice(0,5).map(function(v,i){
+    var rm=REWARD_MAP[v.reward]||{bg:'rgba(255,255,255,.08)',col:'#8b8fa8'};
+    var isG=v.reward&&v.reward.includes('25'),isS=v.reward&&v.reward.includes('20');
+    return '<div class="wb-row '+(isG?'gold':isS?'silver':'')+'" style="background:'+(isG?'rgba(245,166,35,.12)':isS?'rgba(29,220,140,.08)':'rgba(255,255,255,.04)')+'">'+
+      '<div class="wb-pos">'+icons[i]+'</div>'+
+      '<div style="flex:1;min-width:0"><div class="wb-name">'+(v.name||'Player #'+v.id)+'</div><div class="wb-game">'+v.game+'</div></div>'+
+      '<span class="wb-rew" style="background:'+rm.bg+';color:'+rm.col+'">'+v.reward+'</span></div>';
+  }).join('');
+  document.getElementById('wb-list').innerHTML=html||'<div style="text-align:center;padding:20px;color:rgba(255,255,255,.3);font-size:.85rem">No winners yet — be the first!</div>';
+}
+function wbFull(){var el=document.getElementById('wb-screen');if(el.requestFullscreen)el.requestFullscreen();else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();}
+
+// ─── GUESTBOOK ────────────────────────────
+function gbFilt(btn,f){
+  gbFiltVal=f;
+  document.querySelectorAll('#gb-filters .chip').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');renderGB();
+}
 function renderGB(){
-  document.getElementById('gs1').textContent=visitors.length;
-  document.getElementById('gs2').textContent=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');}).length;
-  document.getElementById('gs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;
-  document.getElementById('gs4').textContent=visitors.filter(function(v){return v.svcs&&v.svcs.length;}).length;
   var list=visitors;
-  if(gbFiltVal==='hot')list=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');});
-  if(gbFiltVal==='noted')list=visitors.filter(function(v){return v.note&&v.note.trim();});
-  if(gbFiltVal==='svc')list=visitors.filter(function(v){return v.svcs&&v.svcs.length;});
-  if(gbFiltVal==='disc')list=visitors.filter(function(v){return v.reward&&v.reward.includes('%');});
-  var el=document.getElementById('gb-list');
-  if(!list.length){el.innerHTML='<div style="text-align:center;padding:24px;color:var(--color-text-secondary);font-size:13px">No entries</div>';return;}
-  el.innerHTML=list.map(function(v){
+  if(gbFiltVal==='hot') list=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');});
+  else if(gbFiltVal==='noted') list=visitors.filter(function(v){return v.note&&v.note.trim();});
+  else if(gbFiltVal==='svc') list=visitors.filter(function(v){return v.svcs&&v.svcs.length;});
+  else if(gbFiltVal==='disc') list=visitors.filter(function(v){return v.reward&&v.reward.includes('%');});
+  document.getElementById('gbs1').textContent=visitors.length;
+  document.getElementById('gbs2').textContent=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');}).length;
+  document.getElementById('gbs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;
+  document.getElementById('gbs4').textContent=visitors.filter(function(v){return v.svcs&&v.svcs.length;}).length;
+  if(!list.length){
+    document.getElementById('gb-list').innerHTML='<div class="empty-state"><div class="ei">📋</div><div class="et">No visitors yet</div></div>';
+    return;
+  }
+  document.getElementById('gb-list').innerHTML=list.map(function(v){
     var idx=visitors.indexOf(v);
-    var rb=v.rewardBg||'#EAF3DE',rc=v.rewardCol||'#3B6D11';
-    var rec=playerMap[v.id];
-    var plays=rec?rec.playCount:1;
+    var rm=REWARD_MAP[v.reward]||{cls:'badge-muted'};
+    var rec=playerMap[v.id];var plays=rec?rec.playCount:1;
     var tHtml=TAGS.map(function(t){return '<button class="chip '+(v.tags&&v.tags.includes(t)?'on':'')+'" onclick="gbTag('+idx+',\''+t+'\')">'+t+'</button>';}).join('');
-    var sHtml=SVCS.map(function(s){return '<button class="svcchip '+(v.svcs&&v.svcs.includes(s)?'on':'')+'" onclick="gbSvc('+idx+',\''+s.replace(/'/g,"\\'")+'\')" >'+s+'</button>';}).join('');
-    return '<div class="gbrow">'+
-      '<div class="gbtop" onclick="gbToggle('+idx+')">'+
+    var sHtml=SVCS.map(function(s,si){var sn=s.i+' '+s.n;return '<button class="svc-chip '+(v.svcs&&v.svcs.includes(sn)?'on':'')+'" onclick="gbSvc('+idx+',\''+sn.replace(/'/g,"\\'")+'\')">'+sn+'</button>';}).join('');
+    return '<div class="gb-row" id="gbr-'+idx+'" onclick="gbToggle('+idx+')">'+
+      '<div class="gb-top">'+
         '<div style="flex:1;min-width:0">'+
-          '<div style="font-size:14px;font-weight:500;color:var(--color-text-primary)">'+v.name+'</div>'+
-          '<div style="font-size:11px;color:var(--color-text-secondary);margin-top:2px">#'+v.id+(v.phone?' · '+v.phone:'')+(v.company?' · '+v.company:'')+' · '+v.time.toLocaleTimeString()+'</div>'+
-          (v.tags&&v.tags.length?'<div class="chips">'+v.tags.map(function(t){return '<span class="badge" style="background:#EEEDFE;color:#533AB7;font-size:10px">'+t+'</span>';}).join('')+'</div>':'')+
-          (v.svcs&&v.svcs.length?'<div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px">Interest: '+v.svcs.map(function(s){return s.split(' ').slice(1).join(' ');}).join(', ')+'</div>':'')+
-          (v.note?'<div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+v.note+'</div>':'')+
+          '<div class="gb-name">'+(v.name||'Player #'+v.id)+'</div>'+
+          '<div style="font-size:.75rem;color:var(--text2);margin-top:2px">#'+v.id+(v.phone?' · '+v.phone:'')+(v.company?' · '+v.company:'')+'</div>'+
+          (v.tags&&v.tags.length?'<div class="chip-row" style="margin-top:5px">'+v.tags.map(function(t){return '<span class="badge badge-purple">'+t+'</span>';}).join('')+'</div>':'')+
+          (v.note?'<div style="font-size:.78rem;color:var(--text2);margin-top:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+v.note+'</div>':'')+
         '</div>'+
-        '<div style="flex-shrink:0;text-align:right">'+
-          '<span class="badge" style="background:'+rb+';color:'+rc+'">'+v.reward+'</span>'+
-          '<div style="font-size:10px;color:var(--color-text-secondary);margin-top:3px">'+v.game+'</div>'+
-          (plays>1?'<div style="font-size:10px;color:var(--color-text-secondary);margin-top:1px">'+plays+' total plays</div>':'')+
+        '<div style="flex-shrink:0;text-align:right;margin-left:10px">'+
+          '<span class="badge '+rm.cls+'">'+v.reward+'</span>'+
+          '<div style="font-size:.68rem;color:var(--text3);margin-top:3px">'+v.game+'</div>'+
+          (plays>1?'<div style="font-size:.68rem;color:var(--text3)">'+plays+' plays</div>':'')+
         '</div>'+
       '</div>'+
-      '<div class="gbdet" id="gbd-'+idx+'">'+
-        '<div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px">Tags</div>'+
-        '<div class="chips">'+tHtml+'</div>'+
-        '<div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin:8px 0 4px">Service interest</div>'+
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px">'+sHtml+'</div>'+
-        '<div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px">Notes</div>'+
-        '<textarea placeholder="Add notes about this visitor…" onchange="gbNote('+idx+',this.value)">'+(v.note||'').replace(/</g,'&lt;')+'</textarea>'+
+      '<div class="gb-detail">'+
+        '<div class="section-head">Tags</div><div class="chip-row">'+tHtml+'</div>'+
+        '<div class="section-head" style="margin-top:8px">Service interest</div><div class="svc-grid">'+sHtml+'</div>'+
+        '<div class="section-head" style="margin-top:8px">Notes</div>'+
+        '<textarea placeholder="Add notes…" onchange="gbNote('+idx+',this.value)" onclick="event.stopPropagation()">'+(v.note||'')+'</textarea>'+
         '<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'+
-          (v.phone?'<button class="btn G sm" onclick="window.open(\'https://wa.me/'+(v.phone).replace(/\D/g,'')+'\',\'_blank\')">💬 WhatsApp</button>':'')+
-          (v.email?'<button class="btn B sm" onclick="window.open(\'mailto:'+v.email+'\',\'_blank\')">📧 Email</button>':'')+
+          (v.phone?'<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();window.open(\'https://wa.me/'+(v.phone||'').replace(/\\D/g,'')+'\',\'_blank\')">💬 WhatsApp</button>':'')+
+          (v.email?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();window.open(\'mailto:'+v.email+'\',\'_blank\')">📧 Email</button>':'')+
         '</div>'+
       '</div>'+
     '</div>';
   }).join('');
 }
-function gbToggle(idx){var d=document.getElementById('gbd-'+idx);if(d)d.classList.toggle('on');}
-function gbTag(idx,tag){var v=visitors[idx];if(!v.tags)v.tags=[];var i=v.tags.indexOf(tag);if(i>=0)v.tags.splice(i,1);else v.tags.push(tag);renderGB();setTimeout(function(){var d=document.getElementById('gbd-'+idx);if(d)d.classList.add('on');},10);}
-function gbSvc(idx,svc){var v=visitors[idx];if(!v.svcs)v.svcs=[];var i=v.svcs.indexOf(svc);if(i>=0)v.svcs.splice(i,1);else v.svcs.push(svc);renderGB();setTimeout(function(){var d=document.getElementById('gbd-'+idx);if(d)d.classList.add('on');},10);}
-function gbNote(idx,val){visitors[idx].note=val;document.getElementById('gs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;}
-function gbExport(){
-  var rows=[['ID','Name','Phone','Email','Company','Reward','Game','Total Plays','Tags','Services','Notes','Time']];
-  visitors.forEach(function(v){var rec=playerMap[v.id];rows.push([v.id,v.name,v.phone||'',v.email||'',v.company||'',v.reward,v.game,rec?rec.playCount:1,(v.tags||[]).join(';'),(v.svcs||[]).join(';'),v.note||'',v.time.toLocaleString()]);});
-  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='guestbook.csv';a.click();
+function gbToggle(idx){
+  var row=document.getElementById('gbr-'+idx);
+  if(row) row.classList.toggle('expanded');
 }
+function gbTag(idx,tag){
+  var v=visitors[idx];if(!v.tags)v.tags=[];
+  var i=v.tags.indexOf(tag);if(i>=0)v.tags.splice(i,1);else v.tags.push(tag);
+  dbUpdateVisitor(v);renderGB();
+  setTimeout(function(){var d=document.getElementById('gbr-'+idx);if(d)d.classList.add('expanded');},10);
+}
+function gbSvc(idx,svc){
+  var v=visitors[idx];if(!v.svcs)v.svcs=[];
+  var i=v.svcs.indexOf(svc);if(i>=0)v.svcs.splice(i,1);else v.svcs.push(svc);
+  dbUpdateVisitor(v);renderGB();
+  setTimeout(function(){var d=document.getElementById('gbr-'+idx);if(d)d.classList.add('expanded');},10);
+}
+function gbNote(idx,val){
+  visitors[idx].note=val;dbUpdateVisitor(visitors[idx]);
+  document.getElementById('gbs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;
+}
+function gbExport(){
+  var rows=[['ID','Name','Phone','Email','Company','Reward','Game','Tags','Services','Notes','Date']];
+  visitors.forEach(function(v){
+    rows.push([v.id,v.name||'',v.phone||'',v.email||'',v.company||'',v.reward,v.game,
+      (v.tags||[]).join(';'),(v.svcs||[]).join(';'),v.note||'',
+      v.created_at?new Date(v.created_at).toLocaleString():'']);
+  });
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='booth-guestbook.csv';a.click();
+  toast('Exported '+visitors.length+' visitors','green');
+}
+
+// ─── ADMIN ────────────────────────────────
+function brSave(){
+  BRAND.name=document.getElementById('br-name').value||BRAND.name;
+  BRAND.tag=document.getElementById('br-tag').value||BRAND.tag;
+  BRAND.phone=document.getElementById('br-phone').value||BRAND.phone;
+  BRAND.email=document.getElementById('br-email').value||BRAND.email;
+  BRAND.wa=document.getElementById('br-wa').value||BRAND.wa;
+  BRAND.emoji=document.getElementById('br-emoji').value||BRAND.emoji;
+  BRAND.days=document.getElementById('br-days').value||BRAND.days;
+  localStorage.setItem('booth_brand',JSON.stringify(BRAND));
+}
+function buildAdminForms(){
+  // fill brand fields
+  var fields={
+    'br-name':BRAND.name,'br-tag':BRAND.tag,'br-phone':BRAND.phone,
+    'br-email':BRAND.email,'br-wa':BRAND.wa,'br-emoji':BRAND.emoji,'br-days':BRAND.days
+  };
+  Object.keys(fields).forEach(function(id){var el=document.getElementById(id);if(el)el.value=fields[id];});
+  // fill supabase fields
+  var sbUrl=localStorage.getItem('sb_url'),sbKey=localStorage.getItem('sb_key');
+  if(sbUrl) document.getElementById('sb-url').value=sbUrl;
+  if(sbKey) document.getElementById('sb-key').value=sbKey;
+  // build service editor
+  document.getElementById('svc-editor').innerHTML=SVCS.map(function(s,i){
+    return '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'+
+      '<span style="font-size:1.3rem;flex-shrink:0">'+s.i+'</span>'+
+      '<input value="'+s.n+'" onchange="svcEdit('+i+',this.value)" style="font-size:.85rem">'+
+    '</div>';
+  }).join('');
+  // build pin editor
+  var roleNames={visitor:'Visitor',host:'Game Host',prize:'Prize Desk',manager:'Manager',admin:'Admin'};
+  document.getElementById('pin-editor').innerHTML=Object.keys(PINS).map(function(r){
+    return '<div class="setting-row">'+
+      '<div><div class="setting-lbl">'+roleNames[r]+'</div></div>'+
+      '<input type="password" maxlength="4" value="'+PINS[r]+'" style="width:80px;text-align:center;font-size:1rem;font-family:var(--font-head);font-weight:700" onchange="pinEdit(\''+r+'\',this.value)">'+
+    '</div>';
+  }).join('');
+  // ticket counter
+  document.getElementById('adm-tick-val').textContent=currentPid;
+  document.getElementById('adm-ticket').textContent=currentPid;
+}
+function svcEdit(i,v){SVCS[i].n=v;localStorage.setItem('booth_svcs',JSON.stringify(SVCS));}
+function pinEdit(role,val){if(val.length===4){PINS[role]=val;localStorage.setItem('booth_pins',JSON.stringify(PINS));toast('PIN updated','green');}}
+function adjTicket(d){currentPid=Math.max(1,currentPid+d);localStorage.setItem('booth_pid',currentPid);document.getElementById('adm-tick-val').textContent=currentPid;document.getElementById('adm-ticket').textContent=currentPid;}
+function resetData(){
+  if(!confirm('Reset ALL visitor data? This cannot be undone.'))return;
+  visitors=[];playerMap={};
+  localStorage.removeItem('booth_pid');currentPid=99;
+  toast('All data reset','amber');
+}
+
+// Init draw
 drawWheel();
 </script>
+</body>
+</html>
