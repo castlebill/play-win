@@ -351,6 +351,7 @@ textarea{resize:vertical;min-height:64px}
 .rps-result-overlay{position:fixed;inset:0;z-index:600;background:rgba(8,13,24,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;animation:fadeIn .3s ease}
 .rps-clash{font-size:clamp(3rem,16vw,7rem);margin:12px 0;animation:pop .5s ease}
 .rps-verdict{font-family:var(--fh);font-size:clamp(1.8rem,8vw,3rem);font-weight:800;margin:8px 0}
+.ty-star{display:inline-block;color:var(--text3);transition:all .2s;user-select:none}
 @media(min-width:480px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
 @media(min-width:640px){.page{max-width:620px;padding:20px 24px 90px}.topbar{padding:14px 24px}}
 @media(min-width:900px){
@@ -759,24 +760,100 @@ textarea{resize:vertical;min-height:64px}
       </div>
     </div>
 
-    <!-- STEP 6: THANK YOU -->
+    <!-- STEP 6: THANK YOU — two sub-screens toggled by JS -->
     <div id="v-ty" style="display:none">
-      <div class="ty-wrap">
-        <div class="ty-emoji">🎉</div>
-        <div class="ty-head">You're all set!</div>
-        <div class="ty-sub" id="ty-body">Your reward is confirmed.<br>We'll be in touch via WhatsApp.</div>
+
+      <!-- SUB-SCREEN A: Celebration + voucher -->
+      <div id="ty-screen-a" class="ty-wrap">
+        <div class="ty-emoji" style="animation:pop .5s ease">🎉</div>
+        <div class="ty-head" id="ty-head">You're all set!</div>
+        <div class="ty-sub" id="ty-body">Your reward is confirmed.</div>
+
         <div class="ty-voucher-box">
           <div class="sh" style="margin-bottom:6px">Your Voucher</div>
           <div style="font-family:var(--fh);font-size:1.6rem;font-weight:800;color:var(--green);letter-spacing:.06em" id="ty-voucher">BOOTH-XXXX</div>
           <div style="font-size:.75rem;color:var(--text2);margin-top:4px" id="ty-valid">Valid 90 days</div>
         </div>
-        <div id="ty-reward-card" class="card card-g" style="text-align:center;padding:16px;margin-bottom:16px">
+
+        <div id="ty-reward-card" class="card card-g" style="text-align:center;padding:16px;margin-bottom:20px">
           <div style="font-size:.75rem;color:var(--text2);margin-bottom:4px">Your Reward</div>
           <div style="font-family:var(--fh);font-size:1.5rem;font-weight:800" id="ty-reward">—</div>
         </div>
-        <button class="btn btn-ghost" onclick="vGoProfile()">← Back to My Profile</button>
-        <button class="btn btn-ghost" style="margin-top:8px" onclick="vPlayAgain()">🎯 Play Another Game</button>
+
+        <!-- Primary CTA: go to remark screen -->
+        <button class="btn btn-g" style="font-size:1rem;padding:15px" onclick="tyGoRemark()">
+          ✍️ Sign our guestbook →
+        </button>
+        <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px">30 seconds · tell us what you think</div>
+
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="btn btn-ghost" style="flex:1" onclick="vGoProfile()">← Profile</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="vPlayAgain()">🎯 Play again</button>
+        </div>
       </div>
+
+      <!-- SUB-SCREEN B: Remark / stars — full guestbook entry -->
+      <div id="ty-screen-b" style="display:none;padding:16px;max-width:560px;margin:0 auto;padding-bottom:80px">
+
+        <!-- Header -->
+        <div style="text-align:center;padding:24px 16px 20px">
+          <div style="font-size:2.2rem;margin-bottom:10px">📖</div>
+          <div style="font-family:var(--fh);font-size:1.4rem;font-weight:800;margin-bottom:6px">Sign the Guestbook</div>
+          <div style="font-size:.85rem;color:var(--text2)" id="ty-gb-sub">Hi <span id="ty-gb-name">there</span>! How was your experience today?</div>
+        </div>
+
+        <!-- Star rating — large, finger-friendly -->
+        <div class="card" style="padding:20px;text-align:center;margin-bottom:12px">
+          <div style="font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px">Rate your experience</div>
+          <div style="display:flex;justify-content:center;gap:10px;margin-bottom:10px" id="ty-stars">
+            <span class="ty-star" onclick="tySetRating(1)" style="font-size:2.6rem;cursor:pointer;opacity:.2;transition:all .2s;user-select:none">★</span>
+            <span class="ty-star" onclick="tySetRating(2)" style="font-size:2.6rem;cursor:pointer;opacity:.2;transition:all .2s;user-select:none">★</span>
+            <span class="ty-star" onclick="tySetRating(3)" style="font-size:2.6rem;cursor:pointer;opacity:.2;transition:all .2s;user-select:none">★</span>
+            <span class="ty-star" onclick="tySetRating(4)" style="font-size:2.6rem;cursor:pointer;opacity:.2;transition:all .2s;user-select:none">★</span>
+            <span class="ty-star" onclick="tySetRating(5)" style="font-size:2.6rem;cursor:pointer;opacity:.2;transition:all .2s;user-select:none">★</span>
+          </div>
+          <div style="font-size:.88rem;font-weight:600;min-height:22px;transition:all .2s" id="ty-rating-label" style="color:var(--green)"></div>
+        </div>
+
+        <!-- Remark textarea -->
+        <div class="card" style="padding:18px;margin-bottom:12px">
+          <div style="font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Your thoughts</div>
+          <textarea id="ty-remark"
+            placeholder="What did you enjoy? What could be better? Any services you're curious about?"
+            style="min-height:100px;resize:none;border:none;background:transparent;padding:0;font-size:.95rem;line-height:1.7;width:100%;outline:none;color:var(--text)"
+            maxlength="400"
+            oninput="tyCharCount(this)"></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:6px">
+            <span style="font-size:.68rem;color:var(--text3)" id="ty-char-count">0 / 400</span>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button class="btn btn-g" style="font-size:1rem;padding:15px;margin-bottom:8px" onclick="tySubmitRemark()" id="ty-submit-btn">
+          Submit &amp; finish →
+        </button>
+        <button class="btn btn-ghost" style="font-size:.85rem" onclick="tySkipRemark()">
+          Skip — I'm done
+        </button>
+      </div>
+
+      <!-- SUB-SCREEN C: Done — shown after remark saved -->
+      <div id="ty-screen-c" style="display:none" class="ty-wrap">
+        <div style="font-size:3rem;margin-bottom:16px;animation:pop .5s ease">🙏</div>
+        <div style="font-family:var(--fh);font-size:1.5rem;font-weight:800;color:var(--green);margin-bottom:8px">Thank you!</div>
+        <div style="font-size:.88rem;color:var(--text2);line-height:1.7;margin-bottom:24px" id="ty-done-msg">
+          Your remark has been saved. We'll be in touch soon.
+        </div>
+        <div id="ty-remark-preview-card" style="display:none" class="card" style="padding:16px;margin-bottom:20px;text-align:left">
+          <div id="ty-rating-display" style="margin-bottom:6px"></div>
+          <div style="font-size:.85rem;color:var(--text);font-style:italic;line-height:1.6" id="ty-remark-preview"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost" style="flex:1" onclick="vGoProfile()">← Profile</button>
+          <button class="btn btn-g" style="flex:1" onclick="vPlayAgain()">🎯 Play again</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -879,8 +956,37 @@ textarea{resize:vertical;min-height:64px}
       <div id="h-golf" style="display:none">
         <div class="rtabs"><div class="rtab cur" id="gt0" onclick="gGoRound(0)"><div>1️⃣</div><div id="gtr0" style="font-size:.58rem;margin-top:2px">—</div></div><div class="rtab" id="gt1" onclick="gGoRound(1)"><div>2️⃣</div><div id="gtr1" style="font-size:.58rem;margin-top:2px">—</div></div><div class="rtab" id="gt2" onclick="gGoRound(2)"><div>3️⃣</div><div id="gtr2" style="font-size:.58rem;margin-top:2px">—</div></div></div>
         <div id="g-play">
-          <div class="card-sm"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:var(--fh);font-weight:700" id="g-rlabel">Round 1 of 3</span><span style="font-size:.75rem;color:var(--text2)">3 balls each</span></div><div style="display:flex;gap:8px;justify-content:center;margin:10px 0"><div class="ball cur" id="gb0">⚪</div><div class="ball" id="gb1">⚪</div><div class="ball" id="gb2">⚪</div></div><div style="font-size:.8rem;color:var(--text2);text-align:center" id="g-bstat">Ball 1 — where did it land?</div></div>
-          <div id="g-holes"><div class="hole-grid"><button class="hole-btn jack" onclick="gHole('jack')"><div class="hi">⭐</div><div class="ht">Jackpot hole</div><div class="hd">25% OFF</div></button><button class="hole-btn" onclick="gHole('reg')"><div class="hi">⛳</div><div class="ht">Regular hole</div><div class="hd" id="g-rhint">Ball 1→BI Report</div></button></div><button onclick="gHole('miss')" class="btn btn-ghost" style="margin-bottom:8px">🌿 Miss — next ball</button></div>
+          <div class="card-sm"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:var(--fh);font-weight:700" id="g-rlabel">Round 1 of 3</span><span style="font-size:.75rem;color:var(--text2)">3 balls each</span></div><div style="display:flex;gap:8px;justify-content:center;margin:10px 0"><div class="ball cur" id="gb0">⚪</div><div class="ball" id="gb1">⚪</div><div class="ball" id="gb2">⚪</div></div></div>
+          <div id="g-holes">
+  <!-- Current ball prompt -->
+  <div style="text-align:center;font-size:.78rem;font-weight:600;color:var(--text2);margin-bottom:10px" id="g-ball-prompt">Ball 1 — where did it land?</div>
+  <!-- Hole buttons -->
+  <div class="hole-grid">
+    <button class="hole-btn jack" onclick="gHole('jack')">
+      <div class="hi">⭐</div><div class="ht">Jackpot hole</div><div class="hd">25% OFF</div>
+    </button>
+    <button class="hole-btn" onclick="gHole('reg')">
+      <div class="hi">⛳</div><div class="ht">Regular hole</div><div class="hd" id="g-rhint">→ Free BI Report</div>
+    </button>
+  </div>
+  <button onclick="gHole('miss')" class="btn btn-ghost" style="margin-bottom:8px">🌿 Miss — no hole</button>
+  <!-- Per-ball result mini-row (builds up as balls are played) -->
+  <div id="g-ball-results" style="display:flex;flex-direction:column;gap:4px;margin-top:6px"></div>
+</div>
+<!-- Round done: shows all 3 results + best -->
+<div id="g-rdone" style="display:none">
+  <div class="card-sm" style="padding:14px">
+    <div style="font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px" id="g-rdlabel">Round 1 Results</div>
+    <div id="g-round-summary"></div>
+    <div style="margin-top:10px;padding:10px;background:var(--adim);border-radius:var(--r3);border:1px solid rgba(255,176,32,.25);text-align:center">
+      <div style="font-size:.68rem;color:var(--amber);font-weight:600;letter-spacing:.06em;text-transform:uppercase">Best ball this round</div>
+      <div style="font-family:var(--fh);font-size:1.2rem;font-weight:800;margin:4px 0" id="g-rdtxt">—</div>
+      <div id="g-rdbadge"></div>
+    </div>
+  </div>
+  <button class="btn btn-g" id="g-next" style="display:none" onclick="gNextRound()">Next Round →</button>
+  <button class="btn btn-a" id="g-finish" style="display:none" onclick="gFinish()">See Final Result →</button>
+</div>
           <div id="g-rdone" style="display:none"><div class="card-sm" style="text-align:center"><div style="font-size:.75rem;color:var(--text2)" id="g-rdlabel">Round 1</div><div style="font-family:var(--fh);font-size:1.3rem;font-weight:800;margin:5px 0" id="g-rdtxt">—</div><div id="g-rdbadge"></div></div><button class="btn btn-g" id="g-next" style="display:none" onclick="gNextRound()">Next Round →</button><button class="btn btn-a" id="g-finish" style="display:none" onclick="gFinish()">Final Result →</button></div>
         </div>
         <div id="g-final" style="display:none"><div id="g-summary" style="margin-bottom:10px"></div><div id="g-best-card" class="card-sm" style="text-align:center;padding:16px"><div style="font-size:.75rem;color:var(--text2)">Best result</div><div style="font-family:var(--fh);font-size:1.7rem;font-weight:800;margin:5px 0" id="g-best-txt">—</div><div id="g-best-badge"></div></div><button class="btn btn-g" onclick="gAward()">Award ✓</button></div>
@@ -1041,6 +1147,7 @@ textarea{resize:vertical;min-height:64px}
       <div class="stat-card"><div class="stat-v" id="gbs2" style="color:var(--red)">0</div><div class="stat-l">Hot</div></div>
       <div class="stat-card"><div class="stat-v" id="gbs3" style="color:var(--blue)">0</div><div class="stat-l">Notes</div></div>
       <div class="stat-card"><div class="stat-v" id="gbs4" style="color:var(--amber)">0</div><div class="stat-l">Svc int.</div></div>
+      <div class="stat-card"><div class="stat-v" id="gbs5" style="color:var(--amber)">—</div><div class="stat-l">Avg rating</div></div>
     </div>
     <div class="chip-row" style="margin-bottom:12px" id="gb-filters">
       <button class="chip on" onclick="gbFilt(this,'all')">All</button>
@@ -1048,6 +1155,8 @@ textarea{resize:vertical;min-height:64px}
       <button class="chip" onclick="gbFilt(this,'noted')">📝 Notes</button>
       <button class="chip" onclick="gbFilt(this,'svc')">🔧 Svc</button>
       <button class="chip" onclick="gbFilt(this,'disc')">🏷 Discount</button>
+      <button class="chip" onclick="gbFilt(this,'remark')">💬 Remarked</button>
+      <button class="chip" onclick="gbFilt(this,'rated')">⭐ Rated</button>
     </div>
     <div id="gb-list"></div>
   </div>
@@ -1069,7 +1178,7 @@ textarea{resize:vertical;min-height:64px}
 CREATE TABLE visitors (
   id integer PRIMARY KEY, name text, phone text,
   email text, company text, reward text, game text,
-  voucher text, tags text[], svcs text[], note text, cat text,
+  voucher text, tags text[], svcs text[], note text, staff_note text, cat text, rating integer DEFAULT 0,
   created_at timestamptz DEFAULT now()
 );
 CREATE TABLE counters (
@@ -1230,7 +1339,7 @@ var playerMap={}; // pid->firstReward/firstGame/playCount
 var visitors=[];
 var gbFiltVal='all';
 var nThrows=[],rThrows=[];
-var gRounds=[{r:null},{r:null},{r:null}],gCurRound=0,gCurBall=0,gRoundDone=false;
+var gRounds=[{balls:[],best:null},{balls:[],best:null},{balls:[],best:null}],gCurRound=0,gCurBall=0,gRoundDone=false;
 var spinResult=null,spinAngle=0,spinning=false;
 var SB=null,pinEntry='',pinRole=null,startTime=Date.now();
 
@@ -1291,7 +1400,7 @@ async function dbWritePlay(pid,game,reward,ticketId,isFirst){
   catch(e){console.warn('dbWritePlay:',e);} // non-critical, don't block
 }
 async function dbWriteVisitor(v){if(!SB)return;await SB.from('visitors').upsert({id:v.id,name:v.name,phone:v.phone,email:v.email||'',company:v.company||'',reward:v.reward,game:v.game,voucher:v.voucher,tags:v.tags||[],svcs:v.svcs||[],note:v.note||'',cat:v.cat||''});}
-async function dbUpdateVisitor(v){if(!SB)return;await SB.from('visitors').update({tags:v.tags,svcs:v.svcs,note:v.note}).eq('id',v.id);}
+async function dbUpdateVisitor(v){if(!SB)return;await SB.from('visitors').update({tags:v.tags,svcs:v.svcs,note:v.note,rating:v.rating||0}).eq('id',v.id);}
 async function nextTicket(){
   if(SB){try{var r=await SB.rpc('next_ticket');if(r.data)return r.data;}catch(e){}}
   currentPid++;localStorage.setItem('booth_pid',currentPid);return currentPid;
@@ -1571,8 +1680,120 @@ function vShowTicket(idx){
   showResultOverlay(t.ticketId,t.game,t.reward,idx===0);
 }
 
+// ── VISITOR REMARK & GUESTBOOK SEQUENCE ──
+var tyRating=0;
+var RATING_LABELS=['','😕 Needs work','😐 It was OK','😊 Pretty good','😄 Really good!','🤩 Amazing!'];
+var RATING_COLORS=['','#ff5252','#ffb020','#4d9fff','#0a82e6','#b197fc'];
+
+// Screen A → B (celebration → guestbook entry)
+function tyGoRemark(){
+  document.getElementById('ty-screen-a').style.display='none';
+  document.getElementById('ty-screen-b').style.display='block';
+  var nameEl=document.getElementById('ty-gb-name');
+  if(nameEl&&vPlayer)nameEl.textContent=vPlayer.name.split(' ')[0];
+  // Focus textarea after transition
+  setTimeout(function(){
+    var ta=document.getElementById('ty-remark');
+    if(ta)ta.focus();
+  },200);
+}
+
+function tyCharCount(ta){
+  var cc=document.getElementById('ty-char-count');
+  if(cc)cc.textContent=ta.value.length+' / 400';
+}
+
+function tySetRating(n){
+  tyRating=n;
+  var col=RATING_COLORS[n]||'var(--green)';
+  document.querySelectorAll('.ty-star').forEach(function(s,i){
+    s.style.opacity=i<n?'1':'0.2';
+    s.style.color=i<n?col:'var(--text3)';
+    s.style.transform=i<n?'scale(1.2)':'scale(1)';
+  });
+  var lbl=document.getElementById('ty-rating-label');
+  if(lbl){lbl.textContent=RATING_LABELS[n]||'';lbl.style.color=col;}
+}
+
+// Skip remark — go straight to done screen
+function tySkipRemark(){
+  tySaveToDone('',0);
+}
+
+async function tySubmitRemark(){
+  var remark=document.getElementById('ty-remark').value.trim();
+  var btn=document.getElementById('ty-submit-btn');
+  btn.disabled=true;btn.textContent='Saving…';
+  await tySaveToDone(remark,tyRating);
+  btn.disabled=false;btn.textContent='Submit & finish →';
+}
+
+async function tySaveToDone(remark,rating){
+  // Persist note + rating to visitor record
+  if(vPlayer){
+    var v=visitors.find(function(x){return x.id===vPlayer.id;});
+    if(v){
+      if(remark)v.note=remark;
+      v.rating=rating||0;
+      try{await dbUpdateVisitor(v);}catch(e){console.warn('remark save:',e);}
+    } else if(remark||rating>0){
+      // Player played but never hit prize desk — create minimal visitor record
+      var rec=playerMap[vPlayer.id]||{};
+      var vdata={
+        id:vPlayer.id,name:vPlayer.name,phone:vPlayer.phone||'',
+        email:vPlayer.email||'',company:vPlayer.company||'',
+        reward:rec.firstReward||'',game:rec.firstGame||'',
+        voucher:'',tags:['self-remark'],svcs:[],
+        note:remark,rating:rating||0,cat:'',created_at:new Date()
+      };
+      visitors.unshift(vdata);
+      try{await dbWriteVisitor(vdata);}catch(e){console.warn('remark write:',e);}
+    }
+  }
+  // Transition to screen C
+  document.getElementById('ty-screen-b').style.display='none';
+  document.getElementById('ty-screen-c').style.display='block';
+  // Build done message
+  var first=vPlayer?vPlayer.name.split(' ')[0]:'There';
+  var doneMsg=rating>=4?'Your kind words mean a lot to us, '+first+". We'll be in touch soon!":
+    rating>0?"Thanks for the honest feedback, "+first+". We'll use it to improve.":
+    'Thanks '+first+'! We\'ll reach out via WhatsApp shortly.';
+  document.getElementById('ty-done-msg').textContent=doneMsg;
+  // Show remark preview card if something was said
+  if(remark||rating>0){
+    document.getElementById('ty-remark-preview-card').style.display='block';
+    var ratingDisplay='';
+    if(rating>0){
+      ratingDisplay='<span style="color:'+RATING_COLORS[rating]+';font-size:1rem">'+'★'.repeat(rating)+'☆'.repeat(5-rating)+'</span>'
+        +' <span style="font-size:.75rem;color:var(--text2)">'+RATING_LABELS[rating]+'</span>';
+    }
+    document.getElementById('ty-rating-display').innerHTML=ratingDisplay;
+    document.getElementById('ty-remark-preview').textContent=remark?'"'+remark+'"':'';
+  }
+}
+
+// Reset entire TY flow back to screen A (called when page is opened)
+function tyRemarkReset(){
+  tyRating=0;
+  // Reset screen visibility
+  document.getElementById('ty-screen-a').style.display='block';
+  document.getElementById('ty-screen-b').style.display='none';
+  document.getElementById('ty-screen-c').style.display='none';
+  // Reset stars
+  document.querySelectorAll('.ty-star').forEach(function(s){
+    s.style.opacity='.2';s.style.transform='';s.style.color='';
+  });
+  var lbl=document.getElementById('ty-rating-label');if(lbl)lbl.textContent='';
+  // Reset textarea
+  var ta=document.getElementById('ty-remark');if(ta)ta.value='';
+  var cc=document.getElementById('ty-char-count');if(cc)cc.textContent='0 / 400';
+  // Reset done screen
+  var rc=document.getElementById('ty-remark-preview-card');if(rc)rc.style.display='none';
+}
+
 function vGoThankYou(){
   vShowOnly('v-ty');renderSteps('vsteps-claim',5);
+  tyRemarkReset();
   var rec=playerMap[vPlayer?vPlayer.id:0];
   var reward=rec?rec.firstReward:'Your reward';
   var voucher=mkVoucher(vPlayer?vPlayer.id:currentPid);
@@ -1959,15 +2180,193 @@ function rUndo(){if(!rThrows.length)return;rThrows.pop();rRefresh();}
 function rAward(){var ring=RINGS[rBest()];recordResult('darts',ring.r,ring.bg,ring.col);rClear();}
 
 // ── GOLF ──
-function gFullReset(){gRounds=[{r:null},{r:null},{r:null}];gCurRound=0;document.getElementById('g-final').style.display='none';document.getElementById('g-play').style.display='block';for(var i=0;i<3;i++){document.getElementById('gt'+i).className='rtab'+(i===0?' cur':'');document.getElementById('gtr'+i).textContent='—';}gStartRound(0);}
-function gStartRound(r){gCurRound=r;gCurBall=0;gRoundDone=false;document.getElementById('g-rlabel').textContent='Round '+(r+1)+' of 3';document.getElementById('g-rhint').textContent='Ball 1→BI Report';document.getElementById('g-bstat').textContent='Ball 1 — where did it land?';for(var i=0;i<3;i++){var b=document.getElementById('gb'+i);b.className='ball'+(i===0?' cur':'');b.style.background='';b.style.borderColor='';b.textContent='⚪';}document.getElementById('g-holes').style.display='block';document.getElementById('g-rdone').style.display='none';for(var j=0;j<3;j++){var t=document.getElementById('gt'+j);t.className=j===r?'rtab cur':gRounds[j].r?'rtab done':'rtab';}}
-function gGoRound(r){if(gRounds[r].r||r===gCurRound)gStartRound(r);}
-function gBestIdx(){var best=0;for(var i=1;i<3;i++){if(!gRounds[i].r)continue;if(!gRounds[best].r){best=i;continue;}if(RORDER.indexOf(gRounds[i].r.r)<RORDER.indexOf(gRounds[best].r.r))best=i;}return best;}
-function gHole(type){if(gRoundDone)return;var b=document.getElementById('gb'+gCurBall);if(type==='miss'){b.className='ball';b.style.opacity='.35';b.textContent='✕';gCurBall++;if(gCurBall<3){document.getElementById('gb'+gCurBall).className='ball cur';document.getElementById('g-bstat').textContent='Ball '+(gCurBall+1)+' — where did it land?';document.getElementById('g-rhint').textContent=['Ball 2→Priority Queue','Ball 3→Net Scan'][gCurBall-1]||'';}else{gRoundDone=true;gEndRound(GRES.miss);}}else{gRoundDone=true;var res=type==='jack'?GRES.jack:GRES['r'+gCurBall];var rm=RM[res.r]||{bg:'rgba(255,255,255,.07)',col:'#8b90b0'};b.className='ball';b.style.background=rm.bg;b.style.borderColor=rm.col;b.textContent=res.i;gEndRound(res);}}
-function gEndRound(res){var rm=RM[res.r]||{cls:'bm'};gRounds[gCurRound].r=res;document.getElementById('g-holes').style.display='none';document.getElementById('g-rdlabel').textContent='Round '+(gCurRound+1);document.getElementById('g-rdtxt').textContent=res.r;document.getElementById('g-rdbadge').innerHTML='<span class="badge '+rm.cls+'">'+res.r+'</span>';document.getElementById('g-rdone').style.display='block';document.getElementById('gtr'+gCurRound).textContent=res.i+' '+res.r;document.getElementById('gt'+gCurRound).className=gCurRound===gBestIdx()?'rtab best':'rtab done';document.getElementById('g-next').style.display=gCurRound<2?'block':'none';document.getElementById('g-finish').style.display=gCurRound===2?'block':'none';}
+// ── GOLF — all 3 balls played per round, best ball kept ──
+// State: gRounds[r].balls = [{res, isBest}], gRounds[r].best = GRES result
+// Each round: all 3 balls must be played. Best ball of 3 = round result.
+// After 3 rounds: best round = final award.
+
+// Ball reward by position when it lands in a REGULAR hole
+var G_BALL_REWARDS=['r0','r1','r2']; // ball1=BI, ball2=Priority, ball3=Net Scan
+// Hint text for regular hole per ball position
+var G_BALL_HINTS=['→ Free BI Report','→ Priority Queue','→ Free Net Scan'];
+
+function gFullReset(){
+  gRounds=[{balls:[],best:null},{balls:[],best:null},{balls:[],best:null}];
+  gCurRound=0;gCurBall=0;gRoundDone=false;
+  document.getElementById('g-final').style.display='none';
+  document.getElementById('g-play').style.display='block';
+  for(var i=0;i<3;i++){
+    document.getElementById('gt'+i).className='rtab'+(i===0?' cur':'');
+    document.getElementById('gtr'+i).textContent='—';
+  }
+  gStartRound(0);
+}
+
+function gStartRound(r){
+  gCurRound=r;gCurBall=0;gRoundDone=false;
+  gRounds[r].balls=[];gRounds[r].best=null;
+  document.getElementById('g-rlabel').textContent='Round '+(r+1)+' of 3';
+  document.getElementById('g-rhint').textContent=G_BALL_HINTS[0];
+  document.getElementById('g-ball-prompt').textContent='Ball 1 — where did it land?';
+  // Reset ball chips
+  for(var i=0;i<3;i++){
+    var b=document.getElementById('gb'+i);
+    b.className='ball'+(i===0?' cur':'');
+    b.style.background='';b.style.borderColor='';b.style.opacity='1';b.textContent='⚪';
+  }
+  // Clear per-ball result log
+  document.getElementById('g-ball-results').innerHTML='';
+  document.getElementById('g-holes').style.display='block';
+  document.getElementById('g-rdone').style.display='none';
+  // Update round tabs
+  for(var j=0;j<3;j++){
+    var t=document.getElementById('gt'+j);
+    t.className=j===r?'rtab cur':gRounds[j].best?'rtab done':'rtab';
+  }
+}
+
+function gGoRound(r){
+  if(gRounds[r].best||r===gCurRound)gStartRound(r);
+}
+
+// Find best result across all completed rounds (for final award)
+function gBestRoundIdx(){
+  var best=0;
+  for(var i=1;i<3;i++){
+    if(!gRounds[i].best)continue;
+    if(!gRounds[best].best){best=i;continue;}
+    if(RORDER.indexOf(gRounds[i].best.r)<RORDER.indexOf(gRounds[best].best.r))best=i;
+  }
+  return best;
+}
+
+// Find best result within a round's balls
+function gBestBall(balls){
+  if(!balls.length)return GRES.miss;
+  return balls.reduce(function(a,b){
+    return RORDER.indexOf(a.r)<=RORDER.indexOf(b.r)?a:b;
+  });
+}
+
+function gHole(type){
+  if(gRoundDone)return;
+  var ballEl=document.getElementById('gb'+gCurBall);
+  var res;
+  if(type==='jack'){
+    res=GRES.jack;
+  } else if(type==='reg'){
+    res=GRES[G_BALL_REWARDS[gCurBall]];
+  } else {
+    // miss
+    res=null;
+  }
+  var rm=res?RM[res.r]||{bg:'rgba(255,255,255,.07)',col:'#8b90b0'}:{bg:'',col:''};
+  // Update ball chip
+  if(res){
+    ballEl.className='ball';
+    ballEl.style.background=rm.bg;
+    ballEl.style.borderColor=rm.col;
+    ballEl.textContent=res.i;
+    ballEl.style.opacity='1';
+    gRounds[gCurRound].balls.push(res);
+  } else {
+    ballEl.className='ball';
+    ballEl.style.opacity='.32';
+    ballEl.textContent='✕';
+  }
+  // Append to per-ball result log
+  var logEl=document.getElementById('g-ball-results');
+  var logRow=document.createElement('div');
+  logRow.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-radius:6px;background:var(--bg3);font-size:.75rem';
+  logRow.innerHTML='<span style="color:var(--text2)">Ball '+(gCurBall+1)+'</span>'
+    +(res?'<span class="badge '+(RM[res.r]||{cls:'bm'}).cls+'" style="font-size:.65rem">'+res.r+'</span>'
+         :'<span style="color:var(--text3)">✕ Miss</span>');
+  logEl.appendChild(logRow);
+  gCurBall++;
+  if(gCurBall<3){
+    // More balls — advance to next ball
+    document.getElementById('gb'+gCurBall).className='ball cur';
+    document.getElementById('g-ball-prompt').textContent='Ball '+(gCurBall+1)+' — where did it land?';
+    document.getElementById('g-rhint').textContent=G_BALL_HINTS[gCurBall];
+  } else {
+    // All 3 balls played — compute best, end round
+    gRoundDone=true;
+    gEndRound();
+  }
+}
+
+function gEndRound(){
+  var balls=gRounds[gCurRound].balls;
+  var best=balls.length?gBestBall(balls):GRES.miss;
+  gRounds[gCurRound].best=best;
+  var rm=RM[best.r]||{cls:'bm'};
+  // Show round done panel
+  document.getElementById('g-holes').style.display='none';
+  document.getElementById('g-rdlabel').textContent='Round '+(gCurRound+1)+' — all 3 balls played';
+  // Build per-ball summary for this round
+  var allBalls=gRounds[gCurRound].balls;
+  var ballNames=['Ball 1','Ball 2','Ball 3'];
+  var summaryHtml='';
+  for(var i=0;i<3;i++){
+    var br=allBalls[i];
+    var isBest=br&&br.r===best.r;
+    var brm=br?RM[br.r]||{cls:'bm'}:{cls:'bm'};
+    summaryHtml+='<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;margin-bottom:4px;background:'+(isBest?'var(--adim)':'var(--bg3)')+';border:'+(isBest?'1px solid rgba(255,176,32,.3)':'1px solid transparent')+'">'
+      +'<span style="font-size:.78rem;color:'+(isBest?'var(--amber)':'var(--text2)')+'">'+ballNames[i]+(isBest?' ⭐':'')+'</span>'
+      +(br?'<span class="badge '+brm.cls+'" style="font-size:.65rem">'+br.r+'</span>'
+          :'<span style="font-size:.72rem;color:var(--text3)">✕ Miss</span>')
+    +'</div>';
+  }
+  document.getElementById('g-round-summary').innerHTML=summaryHtml;
+  document.getElementById('g-rdtxt').textContent=best.r;
+  document.getElementById('g-rdtxt').style.color=(RM[best.r]||{col:'var(--text)'}).col;
+  document.getElementById('g-rdbadge').innerHTML='<span class="badge '+rm.cls+'">'+best.r+'</span>';
+  document.getElementById('g-rdone').style.display='block';
+  // Update round tab
+  document.getElementById('gtr'+gCurRound).textContent=best.i+' '+best.r;
+  var bestRound=gBestRoundIdx();
+  document.getElementById('gt'+gCurRound).className=gCurRound===bestRound?'rtab best':'rtab done';
+  document.getElementById('g-next').style.display=gCurRound<2?'block':'none';
+  document.getElementById('g-finish').style.display=gCurRound===2?'block':'none';
+}
+
 function gNextRound(){gStartRound(gCurRound+1);}
-function gFinish(){document.getElementById('g-play').style.display='none';document.getElementById('g-final').style.display='block';var bi=gBestIdx(),icons=['1️⃣','2️⃣','3️⃣'],html='';for(var j=0;j<3;j++){var res=gRounds[j].r||{r:'—'};var isB=j===bi;var rm=RM[res.r]||{cls:'bm'};html+='<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:var(--r3);margin-bottom:5px;background:'+(isB?'var(--adim)':'var(--bg3)')+'"><span style="font-family:var(--fh);font-weight:700;color:'+(isB?'var(--amber)':'var(--text)')+'">'+icons[j]+' Round '+(j+1)+(isB?' ⭐':'')+'</span><span class="badge '+rm.cls+'">'+res.r+'</span></div>';}document.getElementById('g-summary').innerHTML=html;var best=gRounds[bi].r;var rm=RM[best.r]||{bg:'var(--bg3)',col:'var(--text)',cls:'bm'};document.getElementById('g-best-txt').textContent=best.r;document.getElementById('g-best-txt').style.color=rm.col;document.getElementById('g-best-badge').innerHTML='<span class="badge '+rm.cls+'">Round '+(bi+1)+' wins</span>';document.getElementById('g-best-card').style.background=rm.bg;}
-function gAward(){var best=gRounds[gBestIdx()].r;var rm=RM[best.r]||{bg:'',col:''};recordResult('golf',best.r,rm.bg,rm.col);}
+
+function gFinish(){
+  document.getElementById('g-play').style.display='none';
+  document.getElementById('g-final').style.display='block';
+  var bi=gBestRoundIdx(),icons=['1️⃣','2️⃣','3️⃣'],html='';
+  for(var j=0;j<3;j++){
+    var rd=gRounds[j];
+    var res=rd.best||{r:'—',i:'?'};
+    var isB=j===bi;
+    var rm=RM[res.r]||{cls:'bm'};
+    // Show per-ball summary inline for each round
+    var ballSummary=rd.balls.map(function(b,k){
+      return '<span class="badge '+(RM[b.r]||{cls:'bm'}).cls+'" style="font-size:.6rem;margin-right:3px">'+b.r+'</span>';
+    }).join('');
+    html+='<div style="padding:10px 12px;border-radius:var(--r3);margin-bottom:6px;background:'+(isB?'var(--adim)':'var(--bg3)')+';border:1px solid '+(isB?'rgba(255,176,32,.3)':'var(--border)')+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+        +'<span style="font-family:var(--fh);font-weight:700;color:'+(isB?'var(--amber)':'var(--text)')+'">'+icons[j]+' Round '+(j+1)+(isB?' ⭐':'')+'</span>'
+        +'<span class="badge '+rm.cls+'">'+res.r+'</span>'
+      +'</div>'
+      +(ballSummary?'<div style="margin-top:5px">'+ballSummary+'</div>':'')
+    +'</div>';
+  }
+  document.getElementById('g-summary').innerHTML=html;
+  var best=gRounds[bi].best;
+  var rm=RM[best.r]||{bg:'var(--bg3)',col:'var(--text)',cls:'bm'};
+  document.getElementById('g-best-txt').textContent=best.r;
+  document.getElementById('g-best-txt').style.color=rm.col;
+  document.getElementById('g-best-badge').innerHTML='<span class="badge '+rm.cls+'">Round '+(bi+1)+' wins</span>';
+  document.getElementById('g-best-card').style.background=rm.bg;
+}
+
+function gAward(){
+  var best=gRounds[gBestRoundIdx()].best;
+  var rm=RM[best.r]||{bg:'',col:''};
+  recordResult('golf',best.r,rm.bg,rm.col);
+}
 
 // ── SPIN ──
 function drawWheel(ang){var c=document.getElementById('spin-canvas');if(!c)return;var ctx=c.getContext('2d'),cx=115,cy=115,r=112,n=SEGS.length,arc=2*Math.PI/n,a=ang!==undefined?ang:spinAngle;ctx.clearRect(0,0,230,230);SEGS.forEach(function(seg,i){var s=a+i*arc-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,s+arc);ctx.closePath();ctx.fillStyle=seg.bg;ctx.fill();ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=2;ctx.stroke();ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 9px "Syne",sans-serif';var words=seg.l.split(' ');words.forEach(function(w,wi){ctx.fillText(w,r-7,wi*11-(words.length-1)*5);});ctx.restore();});ctx.beginPath();ctx.arc(cx,cy,13,0,2*Math.PI);ctx.fillStyle='#080d18';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=2;ctx.stroke();}
@@ -2269,6 +2668,19 @@ setInterval(function(){
 },1000);
 
 // ── GUESTBOOK ──
+// Action buttons use data attributes; handlers look up from a registry to avoid nested quotes
+var _gbReg={};
+function gbActionBtns(v){
+  var id=v.id;
+  _gbReg[id]={ph:(v.phone||'').replace(/[^0-9+]/g,''),em:v.email||''};
+  var btns='';
+  if(v.phone) btns+='<button class="btn btn-g btn-sm" onclick="event.stopPropagation();gbWA('+id+')">'+String.fromCodePoint(0x1F4AC)+' WhatsApp</button> ';
+  if(v.email) btns+='<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();gbEmail('+id+')">'+String.fromCodePoint(0x1F4E7)+' Email</button>';
+  return btns;
+}
+function gbWA(id){var r=_gbReg[id];if(r&&r.ph)window.open('https://wa.me/'+r.ph,'_blank');}
+function gbEmail(id){var r=_gbReg[id];if(r&&r.em)window.open('mailto:'+r.em,'_blank');}
+
 function gbFilt(btn,f){gbFiltVal=f;document.querySelectorAll('#gb-filters .chip').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderGB();}
 function renderGB(){
   var list=visitors;
@@ -2276,22 +2688,83 @@ function renderGB(){
   else if(gbFiltVal==='noted')list=visitors.filter(function(v){return v.note&&v.note.trim();});
   else if(gbFiltVal==='svc')list=visitors.filter(function(v){return v.svcs&&v.svcs.length;});
   else if(gbFiltVal==='disc')list=visitors.filter(function(v){return v.reward&&v.reward.includes('%');});
+  else if(gbFiltVal==='remark')list=visitors.filter(function(v){return v.note&&v.note.trim();});
+  else if(gbFiltVal==='rated')list=visitors.filter(function(v){return v.rating&&v.rating>0;});
   document.getElementById('gbs1').textContent=visitors.length;
   document.getElementById('gbs2').textContent=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');}).length;
   document.getElementById('gbs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;
   document.getElementById('gbs4').textContent=visitors.filter(function(v){return v.svcs&&v.svcs.length;}).length;
+  var rated=visitors.filter(function(v){return v.rating>0;});
+  var avgR=rated.length?Math.round(rated.reduce(function(s,v){return s+(v.rating||0);},0)/rated.length*10)/10:0;
+  var gbs5=document.getElementById('gbs5');if(gbs5)gbs5.textContent=avgR>0?avgR+'⭐':'—';
   if(!list.length){document.getElementById('gb-list').innerHTML='<div class="empty"><div style="font-size:2rem;margin-bottom:8px">📋</div>No visitors yet</div>';return;}
   document.getElementById('gb-list').innerHTML=list.map(function(v){
     var idx=visitors.indexOf(v);var rm=RM[v.reward]||{cls:'bm'};
     var tHtml=TAGS.map(function(t){return '<button class="chip '+(v.tags&&v.tags.includes(t)?'on':'')+'" onclick="gbTag('+idx+',\''+t+'\')">'+t+'</button>';}).join('');
     var sHtml=SVCS.map(function(s){var sn=s.i+' '+s.n;return '<button class="svc-chip '+(v.svcs&&v.svcs.includes(sn)?'on':'')+'" onclick="gbSvc('+idx+',\''+sn.replace(/'/g,"\\'")+'\')" >'+sn+'</button>';}).join('');
-    return '<div class="gb-row" id="gbr-'+idx+'" onclick="gbTog('+idx+')"><div style="display:flex;gap:10px;align-items:flex-start"><div style="flex:1;min-width:0"><div style="font-family:var(--fh);font-size:.92rem;font-weight:700">'+(v.name||'Player #'+v.id)+'</div><div style="font-size:.72rem;color:var(--text2);margin-top:2px">#'+v.id+(v.phone?' · '+v.phone:'')+(v.company?' · '+v.company:'')+'</div>'+(v.tags&&v.tags.length?'<div class="chip-row" style="margin-top:5px">'+v.tags.map(function(t){return '<span class="badge bp">'+t+'</span>';}).join('')+'</div>':'')+(v.note?'<div style="font-size:.76rem;color:var(--text2);margin-top:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">'+v.note+'</div>':'')+'</div><div style="flex-shrink:0;text-align:right;margin-left:8px"><span class="badge '+rm.cls+'">'+v.reward+'</span><div style="font-size:.66rem;color:var(--text3);margin-top:3px">'+v.game+'</div></div></div><div class="gb-detail"><div class="sh">Tags</div><div class="chip-row">'+tHtml+'</div><div class="sh" style="margin-top:8px">Service interest</div><div class="svc-grid">'+sHtml+'</div><div class="sh" style="margin-top:8px">Notes</div><textarea placeholder="Add notes…" onchange="gbNote('+idx+',this.value)" onclick="event.stopPropagation()">'+(v.note||'')+'</textarea><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'+(v.phone?'<button class="btn btn-g btn-sm" onclick="event.stopPropagation();window.open(\'https://wa.me/'+(v.phone||'').replace(/\\D/g,'')+'\',\'_blank\')">💬 WhatsApp</button>':'')+(v.email?'<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();window.open(\'mailto:'+v.email+'\',\'_blank\')">📧 Email</button>':'')+'</div></div></div>';
+    var gbRatingCols=['','#ff5252','#ffb020','#4d9fff','#0a82e6','#b197fc'];
+    var gbRatingLbls=['','Needs work','OK','Pretty good','Really good','Amazing!'];
+    // Star display
+    var ratingHtml=v.rating>0
+      ?('<div style="margin-top:4px">'
+          +'<span style="color:'+gbRatingCols[v.rating]+';font-size:.95rem">'+'★'.repeat(v.rating)+'<span style="opacity:.25">'+'★'.repeat(5-v.rating)+'</span></span>'
+          +' <span style="font-size:.68rem;color:var(--text2)">'+gbRatingLbls[v.rating]+'</span>'
+        +'</div>')
+      :'';
+    // Category badge
+    var catHtml=v.cat?('<span class="badge bp" style="font-size:.65rem;margin-top:4px;display:inline-block">'+v.cat+'</span> '):'';
+    // Visitor remark — shown in collapsed view as blockquote
+    var remarkHtml=v.note
+      ?('<blockquote style="margin:8px 0 0;padding:10px 12px;background:var(--bg3);border-radius:0 var(--r3) var(--r3) 0;border-left:3px solid var(--green);font-size:.82rem;line-height:1.6;color:var(--text);font-style:italic">'
+          +'"'+v.note+'"'
+        +'</blockquote>')
+      :'';
+    return '<div class="gb-row" id="gbr-'+idx+'" onclick="gbTog('+idx+')">'
+      // ── ROW HEADER (always visible) ──
+      +'<div style="display:flex;gap:10px;align-items:flex-start">'
+        +'<div style="flex:1;min-width:0">'
+          +'<div style="font-family:var(--fh);font-size:.92rem;font-weight:700">'+(v.name||'Player #'+v.id)+'</div>'
+          +'<div style="font-size:.72rem;color:var(--text2);margin-top:2px">#'+v.id+(v.phone?' · '+v.phone:'')+(v.company?' · '+v.company:'')+'</div>'
+          +ratingHtml
+          +catHtml
+          +(v.tags&&v.tags.length?'<div class="chip-row" style="margin-top:4px">'+v.tags.map(function(t){return '<span class="badge bp">'+t+'</span>';}).join('')+'</div>':'')
+          +remarkHtml
+        +'</div>'
+        +'<div style="flex-shrink:0;text-align:right;margin-left:8px">'
+          +'<span class="badge '+rm.cls+'">'+v.reward+'</span>'
+          +'<div style="font-size:.66rem;color:var(--text3);margin-top:3px">'+v.game+'</div>'
+        +'</div>'
+      +'</div>'
+      // ── EXPANDED DETAIL (staff tools) ──
+      +'<div class="gb-detail">'
+        // Visitor remark read-only display (prominent)
+        +(v.note?'<div class="sh">Visitor remark</div><div style="padding:10px 12px;background:var(--bg3);border-radius:var(--r2);border-left:3px solid var(--green);font-size:.85rem;line-height:1.7;color:var(--text);font-style:italic;margin-bottom:10px">"'+v.note+'"</div>':'')
+        // Staff tags
+        +'<div class="sh">Staff tags</div>'
+        +'<div class="chip-row">'+tHtml+'</div>'
+        // Service interests
+        +'<div class="sh" style="margin-top:8px">Service interest</div>'
+        +'<div class="svc-grid">'+sHtml+'</div>'
+        // Staff notes (separate from visitor remark)
+        +'<div class="sh" style="margin-top:8px">Staff notes</div>'
+        +'<textarea placeholder="Add staff notes…" onchange="gbNote('+idx+',this.value)" onclick="event.stopPropagation()" style="font-size:.85rem">'+(v.staff_note||'')+'</textarea>'
+        // Action buttons
+        +'<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'
+          +gbActionBtns(v)
+        +'</div>'
+      +'</div>'
+    +'</div>';
   }).join('');
 }
 function gbTog(idx){var r=document.getElementById('gbr-'+idx);if(r)r.classList.toggle('open');}
 function gbTag(idx,tag){var v=visitors[idx];if(!v.tags)v.tags=[];var i=v.tags.indexOf(tag);if(i>=0)v.tags.splice(i,1);else v.tags.push(tag);dbUpdateVisitor(v);renderGB();setTimeout(function(){var d=document.getElementById('gbr-'+idx);if(d)d.classList.add('open');},10);}
 function gbSvc(idx,svc){var v=visitors[idx];if(!v.svcs)v.svcs=[];var i=v.svcs.indexOf(svc);if(i>=0)v.svcs.splice(i,1);else v.svcs.push(svc);dbUpdateVisitor(v);renderGB();setTimeout(function(){var d=document.getElementById('gbr-'+idx);if(d)d.classList.add('open');},10);}
-function gbNote(idx,val){visitors[idx].note=val;dbUpdateVisitor(visitors[idx]);document.getElementById('gbs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;}
+function gbNote(idx,val){
+  visitors[idx].staff_note=val;
+  // staff_note stored separately — we don't overwrite visitor's own remark (note)
+  if(SB)SB.from('visitors').update({staff_note:val}).eq('id',visitors[idx].id).then(function(){});
+  document.getElementById('gbs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;
+}
 function gbExport(){var rows=[['ID','Name','Phone','Email','Company','Reward','Game','Tags','Services','Notes','Date']];visitors.forEach(function(v){rows.push([v.id,v.name||'',v.phone||'',v.email||'',v.company||'',v.reward,v.game,(v.tags||[]).join(';'),(v.svcs||[]).join(';'),v.note||'',v.created_at?new Date(v.created_at).toLocaleString():'']);});var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='nanosoft-guestbook.csv';a.click();toast('Exported '+visitors.length+' visitors','g');}
 
 // ── ADMIN ──
