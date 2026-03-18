@@ -536,7 +536,7 @@ textarea{resize:vertical;min-height:64px}
         </div>
         <div class="divider"></div>
         <div class="field"><label>Your name *</label><input id="reg-name" placeholder="Jane Mwangi" oninput="regValidate()"></div>
-        <div class="field"><label>WhatsApp number *</label><input id="reg-phone" type="tel" placeholder="+254 700 000 000" oninput="regValidate()"></div>
+        <div class="field"><label>WhatsApp number *</label><input id="reg-phone" type="tel" placeholder="+254 700 000 000" oninput="regValidate()"><div id="reg-phone-hint" style="font-size:.72rem;margin-top:4px;min-height:16px"></div></div>
         <div class="field"><label>Email <span style="color:var(--text3);font-weight:400;text-transform:none;font-size:.68rem">(optional)</span></label><input id="reg-email" type="email" placeholder="jane@example.com"></div>
         <div class="field"><label>Company <span style="color:var(--text3);font-weight:400;text-transform:none;font-size:.68rem">(optional)</span></label><input id="reg-company" placeholder="Your company"></div>
         <button class="btn btn-g" id="reg-btn" disabled onclick="vRegister()">Continue →</button>
@@ -628,19 +628,51 @@ textarea{resize:vertical;min-height:64px}
               <div class="subtitle" style="margin-top:4px">Enrol with your ticket numbers to play</div>
             </div>
             <div style="padding:16px">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-                <div>
-                  <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Player 1 ticket #</label>
-                  <input id="rps-p1" type="number" placeholder="e.g. 128" style="text-align:center;font-size:1.2rem;font-family:var(--fh);font-weight:700" oninput="rpsValidate()">
+              <!-- TWO MODES: same device OR send invite link -->
+              <div class="gs-tabs" style="margin-bottom:12px">
+                <button class="gs-tab active" id="rps-mode-local" onclick="rpsMode('local')">📱 Same device</button>
+                <button class="gs-tab" id="rps-mode-link" onclick="rpsMode('link')">🔗 Send invite link</button>
+              </div>
+              <!-- SAME DEVICE mode -->
+              <div id="rps-local-section">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                  <div>
+                    <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Player 1 ticket #</label>
+                    <input id="rps-p1" type="number" placeholder="e.g. 128" style="text-align:center;font-size:1.2rem;font-family:var(--fh);font-weight:700" oninput="rpsValidate()">
+                  </div>
+                  <div>
+                    <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Player 2 ticket #</label>
+                    <input id="rps-p2" type="number" placeholder="e.g. 142" style="text-align:center;font-size:1.2rem;font-family:var(--fh);font-weight:700" oninput="rpsValidate()">
+                  </div>
                 </div>
-                <div>
-                  <label style="display:block;font-size:.7rem;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase">Player 2 ticket #</label>
-                  <input id="rps-p2" type="number" placeholder="e.g. 142" style="text-align:center;font-size:1.2rem;font-family:var(--fh);font-weight:700" oninput="rpsValidate()">
+                <div id="rps-enrol-err" style="font-size:.75rem;color:var(--red);margin-bottom:8px;display:none"></div>
+                <button class="btn btn-g" id="rps-start-btn" disabled onclick="rpsStart()">⚔️ Start Showdown →</button>
+                <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px">Best of 3 rounds · Pass phone between players</div>
+              </div>
+              <!-- INVITE LINK mode -->
+              <div id="rps-link-section" style="display:none">
+                <div class="field">
+                  <label>Your ticket # (Player 1)</label>
+                  <input id="rps-link-p1" type="number" placeholder="e.g. 128" style="text-align:center;font-size:1.2rem;font-family:var(--fh);font-weight:700" oninput="rpsLinkValidate()">
+                </div>
+                <div id="rps-link-code" style="display:none;margin-bottom:12px">
+                  <div class="card card-g" style="text-align:center;padding:14px">
+                    <div style="font-size:.7rem;color:var(--text2);margin-bottom:4px;letter-spacing:.1em;text-transform:uppercase">Game Code</div>
+                    <div style="font-family:var(--fh);font-size:2rem;font-weight:800;color:var(--green);letter-spacing:.18em" id="rps-game-code">—</div>
+                    <div style="font-size:.72rem;color:var(--text2);margin-top:6px">Share this code with your opponent</div>
+                  </div>
+                  <button class="btn btn-g" style="margin-top:8px" onclick="rpsShareLink()">📤 Share invite link</button>
+                </div>
+                <button class="btn btn-ghost" id="rps-gen-btn" disabled onclick="rpsGenCode()" style="margin-bottom:8px">Generate Game Code →</button>
+                <div class="divider"></div>
+                <div class="field" style="margin-top:10px">
+                  <label>Have a game code? Join here</label>
+                  <div style="display:flex;gap:8px">
+                    <input id="rps-join-code" placeholder="e.g. RPS-A3K9" style="text-transform:uppercase;font-family:var(--fh);font-weight:700;letter-spacing:.1em" oninput="this.value=this.value.toUpperCase()">
+                    <button class="btn btn-g btn-sm" style="flex-shrink:0" onclick="rpsJoinGame()">Join →</button>
+                  </div>
                 </div>
               </div>
-              <div id="rps-enrol-err" style="font-size:.75rem;color:var(--red);margin-bottom:8px;display:none"></div>
-              <button class="btn btn-g" id="rps-start-btn" disabled onclick="rpsStart()">⚔️ Start Showdown →</button>
-              <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px">Best of 3 rounds · Everyone wins something</div>
             </div>
           </div>
           <!-- GAME STEP -->
@@ -881,11 +913,22 @@ textarea{resize:vertical;min-height:64px}
 
   <!-- ══ GAME HOST ══ -->
   <div class="page" id="pg-host" style="display:none">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div style="font-family:var(--fh);font-size:1.3rem;font-weight:800">Game Host</div>
       <div class="badge bm" id="h-plays-today">0 plays</div>
     </div>
-
+    <!-- Host sub-tabs -->
+    <div class="gs-tabs" style="margin-bottom:12px">
+      <button class="gs-tab active" id="htab-score" onclick="hTab('score')">🎯 Score Player</button>
+      <button class="gs-tab" id="htab-unclaimed" onclick="hTab('unclaimed')">⏳ Unclaimed</button>
+    </div>
+    <!-- UNCLAIMED list panel -->
+    <div id="h-unclaimed-panel" style="display:none">
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:10px">Players who played but haven't visited the prize desk yet</div>
+      <div id="h-unclaimed-list"></div>
+    </div>
+    <!-- Score panel (default) -->
+    <div id="h-score-panel">
     <div class="card">
       <div class="field" style="margin-bottom:0">
         <label>Player number</label>
@@ -1000,11 +1043,23 @@ textarea{resize:vertical;min-height:64px}
         <div id="spin-result" style="display:none"><div class="card-sm" style="text-align:center;padding:16px;animation:pop .3s ease"><div style="font-family:var(--fh);font-size:1.7rem;font-weight:800;margin:5px 0" id="spin-rtxt">—</div><div id="spin-rbadge"></div></div><button class="btn btn-g" onclick="spinAward()">Award ✓</button><button class="btn btn-ghost" style="margin-top:8px" onclick="spinReset()">Re-spin</button></div>
       </div>
     </div>
-  </div>
+  </div></div><!-- end h-score-panel -->
 
   <!-- ══ PRIZE DESK ══ -->
   <div class="page" id="pg-prize" style="display:none">
-    <div style="font-family:var(--fh);font-size:1.3rem;font-weight:800;margin-bottom:14px">Prize Desk</div>
+    <div style="font-family:var(--fh);font-size:1.3rem;font-weight:800;margin-bottom:10px">Prize Desk</div>
+    <!-- Prize sub-tabs -->
+    <div class="gs-tabs" style="margin-bottom:12px">
+      <button class="gs-tab active" id="ptab-search" onclick="pTab('search')">🔍 Search / Ticket #</button>
+      <button class="gs-tab" id="ptab-unclaimed" onclick="pTab('unclaimed')">🎁 Unclaimed Prizes</button>
+    </div>
+    <!-- UNCLAIMED prizes panel -->
+    <div id="p-unclaimed-panel" style="display:none">
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:10px">Players with a reward who haven't claimed yet</div>
+      <div id="p-unclaimed-list"></div>
+    </div>
+    <!-- Search panel -->
+    <div id="p-search-panel">
     <div class="card"><div class="field" style="margin-bottom:0"><label>Player number</label><input type="number" id="prize-pid" placeholder="128" style="font-size:1.3rem;font-weight:700;text-align:center;font-family:var(--fh)" oninput="prizeLookup()"></div></div>
     <div id="prize-card" style="display:none">
       <div class="profile-card">
@@ -1050,7 +1105,7 @@ textarea{resize:vertical;min-height:64px}
         </div>
       </div>
     </div>
-  </div>
+  </div></div><!-- end p-search-panel -->
 
   <!-- ══ DASHBOARD ══ -->
   <div class="page" id="pg-dash" style="display:none">
@@ -1159,6 +1214,7 @@ textarea{resize:vertical;min-height:64px}
       <button class="chip" onclick="gbFilt(this,'disc')">🏷 Discount</button>
       <button class="chip" onclick="gbFilt(this,'remark')">💬 Remarked</button>
       <button class="chip" onclick="gbFilt(this,'rated')">⭐ Rated</button>
+      <button class="chip" onclick="gbFilt(this,'unclaimed')">⏳ Unclaimed</button>
     </div>
     <div id="gb-list"></div>
   </div>
@@ -1354,6 +1410,7 @@ function bootApp(){
   var pid=localStorage.getItem('booth_pid');if(pid)currentPid=parseInt(pid)||99;
   loginAs('visitor');
   sbConnectWith(SUPABASE_URL,SUPABASE_KEY);
+  rpsCheckUrlJoin();
 }
 function updateLandingSocialProof(){
   var el=document.getElementById('land-social-proof');if(!el)return;
@@ -1545,20 +1602,49 @@ function vGoRegTicket(){
 
 var vAvatar='🦁';
 function avSel(el,emoji){vAvatar=emoji;document.querySelectorAll('.av').forEach(function(a){a.classList.remove('sel');});el.classList.add('sel');}
-function regValidate(){var ok=document.getElementById('reg-name').value.trim()&&document.getElementById('reg-phone').value.trim();document.getElementById('reg-btn').disabled=!ok;}
+function cleanPhone(p){return p.replace(/[^0-9+]/g,'');}
+function validPhone(p){var c=cleanPhone(p);return c.length>=9&&c.length<=15;}
+function regValidate(){
+  var name=document.getElementById('reg-name').value.trim();
+  var phone=document.getElementById('reg-phone').value.trim();
+  var phoneOk=validPhone(phone);
+  var btn=document.getElementById('reg-btn');
+  btn.disabled=!(name&&phoneOk);
+  var hint=document.getElementById('reg-phone-hint');
+  if(hint){
+    if(phone&&!phoneOk){hint.textContent='Enter a valid phone number (9–15 digits)';hint.style.color='var(--red)';}
+    else if(phone&&phoneOk){
+      // Live duplicate check
+      var dup=visitors.find(function(v){return v.phone&&cleanPhone(v.phone)===cleanPhone(phone);});
+      if(dup){hint.textContent='Already registered — tap below to go to your profile';hint.style.color='var(--amber)';}
+      else{hint.textContent='';} 
+    } else{hint.textContent='';}
+  }
+}
 
 async function vRegister(){
   var name=document.getElementById('reg-name').value.trim();
   var phone=document.getElementById('reg-phone').value.trim();
   if(!name||!phone){toast('Name and phone required','a');return;}
+  if(!validPhone(phone)){toast('Please enter a valid phone number','a');return;}
   var btn=document.getElementById('reg-btn');
-  btn.disabled=true;btn.textContent='Getting your number…';
+  btn.disabled=true;btn.textContent='Checking…';
   try{
-    // BUG FIX: declare existingVisitor in this scope (was undefined reference)
-    var existingVisitor=visitors.find(function(v){return v.phone&&v.phone.replace(/\D/g,'')===(phone.replace(/\D/g,''));});
+    var existingVisitor=visitors.find(function(v){return v.phone&&cleanPhone(v.phone)===cleanPhone(phone);});
+    // DUPLICATE: redirect straight to profile — no new ticket
+    if(existingVisitor){
+      var rec=playerMap[existingVisitor.id];
+      vPlayer={id:existingVisitor.id,name:existingVisitor.name||name,phone:phone,
+        email:existingVisitor.email||'',company:existingVisitor.company||'',
+        avatar:vAvatar,tickets:[]};
+      if(rec&&rec.firstReward){vPlayer.tickets=[{ticketId:existingVisitor.id+'-1',game:rec.firstGame,reward:rec.firstReward,isFirst:true}];}
+      toast('Welcome back '+name.split(' ')[0]+'! Taking you to your profile…','g');
+      vGoProfile();
+      btn.disabled=false;btn.textContent='Continue →';
+      return;
+    }
     var pid;
-    if(existingVisitor){pid=existingVisitor.id;}
-    else{pid=await nextTicket();}
+    pid=await nextTicket();
     vPlayer={
       id:pid,name:name,phone:phone,
       email:document.getElementById('reg-email').value.trim(),
@@ -1890,6 +1976,87 @@ function closeResult(goClaim){
 }
 
 // ── HOST ──
+// ── HOST TABS ──
+function hTab(t){
+  document.getElementById('htab-score').classList.toggle('active',t==='score');
+  document.getElementById('htab-unclaimed').classList.toggle('active',t==='unclaimed');
+  document.getElementById('h-score-panel').style.display=t==='score'?'block':'none';
+  document.getElementById('h-unclaimed-panel').style.display=t==='unclaimed'?'block':'none';
+  if(t==='unclaimed')hRenderUnclaimed();
+}
+function hRenderUnclaimed(){
+  // Players in playerMap who have plays but NO entry in visitors (haven't been to prize desk)
+  var claimedIds=visitors.map(function(v){return v.id;});
+  var unclaimed=Object.keys(playerMap).map(Number).filter(function(pid){
+    return playerMap[pid].playCount>0&&claimedIds.indexOf(pid)<0;
+  });
+  var el=document.getElementById('h-unclaimed-list');
+  if(!unclaimed.length){
+    el.innerHTML='<div class="empty" style="padding:28px 0"><div style="font-size:1.8rem;margin-bottom:8px">🎉</div><div>Everyone has claimed — great work!</div></div>';
+    return;
+  }
+  el.innerHTML=unclaimed.map(function(pid){
+    var rec=playerMap[pid];
+    var rm=RM[rec.firstReward]||{cls:'bm',col:'var(--text2)'};
+    return '<div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="hTabLoadPlayer('+pid+')">'
+      +'<div style="font-family:var(--fh);font-size:1.5rem;font-weight:800;color:var(--green);min-width:52px">#'+pid+'</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:.85rem;font-weight:600">'+rec.firstGame+' · <span class="badge '+rm.cls+'">'+rec.firstReward+'</span></div>'
+        +'<div style="font-size:.72rem;color:var(--text2);margin-top:2px">'+rec.playCount+' game'+(rec.playCount>1?'s':'')+' played · not yet claimed</div>'
+      +'</div>'
+      +'<div style="font-size:.72rem;color:var(--green)">Load →</div>'
+    +'</div>';
+  }).join('');
+  document.getElementById('htab-unclaimed').querySelector?document.getElementById('htab-unclaimed').textContent='⏳ Unclaimed ('+unclaimed.length+')':null;
+}
+function hTabLoadPlayer(pid){
+  hTab('score');
+  document.getElementById('h-pid').value=pid;
+  hostLookup();
+}
+
+// ── PRIZE TABS ──
+function pTab(t){
+  document.getElementById('ptab-search').classList.toggle('active',t==='search');
+  document.getElementById('ptab-unclaimed').classList.toggle('active',t==='unclaimed');
+  document.getElementById('p-search-panel').style.display=t==='search'?'block':'none';
+  document.getElementById('p-unclaimed-panel').style.display=t==='unclaimed'?'block':'none';
+  if(t==='unclaimed')pRenderUnclaimed();
+}
+function pRenderUnclaimed(){
+  // Players with a reward in results but NOT yet in visitors table
+  var claimedIds=visitors.map(function(v){return v.id;});
+  var unclaimed=Object.keys(playerMap).map(Number).filter(function(pid){
+    return playerMap[pid].firstReward&&claimedIds.indexOf(pid)<0;
+  });
+  var el=document.getElementById('p-unclaimed-list');
+  if(!unclaimed.length){
+    el.innerHTML='<div class="empty" style="padding:28px 0"><div style="font-size:1.8rem;margin-bottom:8px">✅</div><div>All prizes claimed!</div></div>';
+    return;
+  }
+  el.innerHTML=unclaimed.map(function(pid){
+    var rec=playerMap[pid];
+    var rm=RM[rec.firstReward]||{cls:'bm',col:'var(--text2)'};
+    var isCookie=rec.firstReward==='Free Consult'||rec.firstReward==='Free Site Visit';
+    var isCandy=rec.firstReward==='Free BI Report'||rec.firstReward==='Free Net Scan'||rec.firstReward==='Priority Queue';
+    var jarHtml=isCookie?' 🍪':isCandy?' 🍬':'';
+    return '<div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer" onclick="pTabLoadPlayer('+pid+')">'
+      +'<div style="font-family:var(--fh);font-size:1.5rem;font-weight:800;color:var(--green);min-width:52px">#'+pid+'</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:.85rem;font-weight:600"><span class="badge '+rm.cls+'">'+rec.firstReward+'</span>'+jarHtml+'</div>'
+        +'<div style="font-size:.72rem;color:var(--text2);margin-top:2px">'+rec.firstGame+' · unclaimed</div>'
+      +'</div>'
+      +'<div style="font-size:.72rem;color:var(--green)">Claim →</div>'
+    +'</div>';
+  }).join('');
+  document.getElementById('ptab-unclaimed').textContent='🎁 Unclaimed ('+unclaimed.length+')';
+}
+function pTabLoadPlayer(pid){
+  pTab('search');
+  document.getElementById('prize-pid').value=pid;
+  prizeLookup();
+}
+
 function hostScan(){document.getElementById('h-pid').value=vPlayer?vPlayer.id:currentPid;hostLookup();}
 function hostLookup(){
   var raw=document.getElementById('h-pid').value,pid=parseInt(raw);
@@ -1954,15 +2121,35 @@ function vDoSpin(){
 function vSpinRetry(){vSpinResult=null;document.getElementById('v-spin-result').style.display='none';document.getElementById('v-spin-hint').textContent='Tap to spin';}
 function vSpinAward(){
   if(!vSpinResult||!vPlayer)return;
-  var rm=RM[vSpinResult.l]||{bg:'',col:''};
+  var reward=vSpinResult.l;
+  // Map short SEGS label back to full reward name via RM keys
+  var fullReward=reward;
+  // SEGS labels are abbreviated — find exact match in RM
+  var rmKeys=Object.keys(RM);
+  for(var k=0;k<rmKeys.length;k++){
+    if(rmKeys[k].indexOf(reward)===0||reward.indexOf(rmKeys[k].split(' ')[0])===0){
+      // Prefer exact or starts-with match
+      if(rmKeys[k]===reward){fullReward=rmKeys[k];break;}
+    }
+  }
+  // Direct map for spin segment labels
+  var segMap={'25% OFF':'25% OFF','Free BI':'Free BI Report','20% OFF':'20% OFF',
+    'Free Scan':'Free Net Scan','15% OFF':'15% OFF','Consult':'Free Consult',
+    '10% OFF':'10% OFF','Free Visit':'Free Site Visit'};
+  fullReward=segMap[reward]||reward;
+  var rm=RM[fullReward]||{bg:'rgba(255,255,255,.07)',col:'#8b90b0'};
   var rec=playerMap[vPlayer.id],isFirst=!rec||rec.playCount===0;
   if(!playerMap[vPlayer.id])playerMap[vPlayer.id]={firstReward:null,firstGame:null,playCount:0};
   playerMap[vPlayer.id].playCount++;
   var ticketId=vPlayer.id+'-'+playerMap[vPlayer.id].playCount;
-  if(isFirst){playerMap[vPlayer.id].firstReward=vSpinResult.l;playerMap[vPlayer.id].firstGame='spin';dbWriteResult(vPlayer.id,vSpinResult.l,rm.bg,rm.col);}
-  dbWritePlay(vPlayer.id,'spin',vSpinResult.l,ticketId,isFirst);
-  vPlayer.tickets.push({ticketId:ticketId,game:'spin',reward:vSpinResult.l,isFirst:isFirst});
-  showResultOverlay(ticketId,'spin',vSpinResult.l,isFirst);
+  if(isFirst){
+    playerMap[vPlayer.id].firstReward=fullReward;
+    playerMap[vPlayer.id].firstGame='spin';
+    dbWriteResult(vPlayer.id,fullReward,'spin',rm.bg,rm.col);
+  }
+  dbWritePlay(vPlayer.id,'spin',fullReward,ticketId,isFirst);
+  vPlayer.tickets.push({ticketId:ticketId,game:'spin',reward:fullReward,isFirst:isFirst});
+  showResultOverlay(ticketId,'spin',fullReward,isFirst);
   document.getElementById('v-spin-result').style.display='none';
   document.getElementById('v-spin-hint').textContent='Tap to spin';
   vSpinResult=null;
@@ -1981,14 +2168,103 @@ var rpsState={
 var RPS_ICONS={rock:'🪨',paper:'📄',scissors:'✂️'};
 var RPS_BEATS={rock:'scissors',paper:'rock',scissors:'paper'};
 
+// RPS mode switcher
+var rpsCurrentMode='local';
+function rpsMode(m){
+  rpsCurrentMode=m;
+  document.getElementById('rps-mode-local').classList.toggle('active',m==='local');
+  document.getElementById('rps-mode-link').classList.toggle('active',m==='link');
+  document.getElementById('rps-local-section').style.display=m==='local'?'block':'none';
+  document.getElementById('rps-link-section').style.display=m==='link'?'block':'none';
+}
+
 function rpsValidate(){
   var p1=parseInt(document.getElementById('rps-p1').value);
   var p2=parseInt(document.getElementById('rps-p2').value);
   var errEl=document.getElementById('rps-enrol-err');
-  errEl.style.display='none';
+  if(errEl)errEl.style.display='none';
   var ok=p1&&p2&&p1!==p2;
-  document.getElementById('rps-start-btn').disabled=!ok;
+  var btn=document.getElementById('rps-start-btn');
+  if(btn)btn.disabled=!ok;
 }
+
+// Game code registry — stored in memory (and optionally Supabase)
+var rpsGames={}; // code -> {p1id, p2id, state}
+
+function rpsLinkValidate(){
+  var p1=parseInt(document.getElementById('rps-link-p1').value);
+  var btn=document.getElementById('rps-gen-btn');
+  if(btn)btn.disabled=!p1;
+}
+
+function rpsGenCode(){
+  var p1id=parseInt(document.getElementById('rps-link-p1').value);
+  if(!p1id)return;
+  // Generate short memorable game code
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code='RPS-';
+  for(var i=0;i<4;i++)code+=chars[Math.floor(Math.random()*chars.length)];
+  rpsGames[code]={p1id:p1id,p2id:null,created:Date.now()};
+  // Store in localStorage for cross-device lookup
+  localStorage.setItem('rps_game_'+code, JSON.stringify(rpsGames[code]));
+  document.getElementById('rps-game-code').textContent=code;
+  document.getElementById('rps-link-code').style.display='block';
+  document.getElementById('rps-gen-btn').style.display='none';
+  toast('Game code created! Share it with your opponent','g');
+}
+
+function rpsShareLink(){
+  var code=document.getElementById('rps-game-code').textContent;
+  var url=window.location.href.split('?')[0]+'?rps='+code;
+  if(navigator.share){
+    navigator.share({title:'NanoSoft Showdown — '+code,text:'Join my Rock Paper Scissors game at the NanoSoft booth! Code: '+code,url:url}).catch(function(){});
+  } else {
+    navigator.clipboard&&navigator.clipboard.writeText(url).then(function(){toast('Link copied!','g');}).catch(function(){toast('Code: '+code,'g');});
+  }
+}
+
+function rpsJoinGame(){
+  var code=(document.getElementById('rps-join-code').value||'').trim().toUpperCase();
+  if(!code){toast('Enter a game code','a');return;}
+  // Check localStorage for game
+  var stored=localStorage.getItem('rps_game_'+code);
+  if(!stored){toast('Game code not found — check with your opponent','r');return;}
+  var game=JSON.parse(stored);
+  // P2 joins — need their ticket number (current player or prompt)
+  var p2id=vPlayer?vPlayer.id:null;
+  if(!p2id){
+    toast('Register first to join a game','a');return;
+  }
+  if(p2id===game.p1id){toast('You created this game — wait for your opponent','a');return;}
+  game.p2id=p2id;
+  localStorage.setItem('rps_game_'+code,JSON.stringify(game));
+  // Launch game directly
+  document.getElementById('rps-p1').value=game.p1id;
+  document.getElementById('rps-p2').value=game.p2id;
+  rpsMode('local');
+  rpsStart();
+  toast('Joined game '+code+'!','g');
+}
+
+// Auto-join from URL param on load
+function rpsCheckUrlJoin(){
+  var params=new URLSearchParams(window.location.search);
+  var code=params.get('rps');
+  if(!code)return;
+  var stored=localStorage.getItem('rps_game_'+code);
+  if(!stored)return;
+  // Pre-fill join code field and switch to RPS game picker
+  setTimeout(function(){
+    var inp=document.getElementById('rps-join-code');
+    if(inp){inp.value=code.toUpperCase();}
+    // Navigate to games page and pick RPS
+    navTo('visitor');
+    vGoGames();
+    setTimeout(function(){vPickGame('rps');rpsMode('link');},200);
+    toast('Game invite: '+code+' — register and tap Join →','g');
+  },800);
+}
+
 
 function rpsStart(){
   var p1id=parseInt(document.getElementById('rps-p1').value);
@@ -2600,14 +2876,56 @@ function pfReset(){
 
 // ── DASHBOARD ──
 function loadDash(){
-  var total=visitors.length,hot=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');}).length;
-  var elapsed=(Date.now()-startTime)/3600000,rate=elapsed>0?Math.round(total/elapsed):0;
-  document.getElementById('ds-players').textContent=total;document.getElementById('ds-claimed').textContent=total;document.getElementById('ds-hot').textContent=hot;document.getElementById('ds-rate').textContent=rate;
-  var games={};visitors.forEach(function(v){games[v.game]=(games[v.game]||0)+1;});
-  document.getElementById('game-breakdown').innerHTML=Object.keys(games).map(function(g){var pct=Math.round(games[g]/total*100)||0;return '<div class="bar-row"><div style="display:flex;justify-content:space-between;font-size:.8rem"><span>'+g+'</span><span style="color:var(--text2)">'+games[g]+' · '+pct+'%</span></div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:var(--green)"></div></div></div>';}).join('')||'<div style="color:var(--text3);font-size:.82rem">No data yet</div>';
-  var rewards={};visitors.forEach(function(v){rewards[v.reward]=(rewards[v.reward]||0)+1;});
-  document.getElementById('reward-dist').innerHTML=Object.keys(rewards).sort(function(a,b){return rewards[b]-rewards[a];}).map(function(r){var pct=Math.round(rewards[r]/total*100)||0;var rm=RM[r]||{col:'var(--text2)'};return '<div class="bar-row"><div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:'+rm.col+'">'+r+'</span><span style="color:var(--text2)">'+rewards[r]+'</span></div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+rm.col+'"></div></div></div>';}).join('')||'<div style="color:var(--text3);font-size:.82rem">No data yet</div>';
-  document.getElementById('recent-winners').innerHTML=visitors.slice(0,6).map(function(v){var rm=RM[v.reward]||{cls:'bm'};return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)"><div><div style="font-family:var(--fh);font-weight:700;font-size:.86rem">'+(v.name||'Player #'+v.id)+'</div><div style="font-size:.7rem;color:var(--text2)">'+v.game+' · #'+v.id+'</div></div><span class="badge '+rm.cls+'">'+v.reward+'</span></div>';}).join('')||'<div style="color:var(--text3);font-size:.82rem">No winners yet</div>';
+  // Players = everyone in playerMap (includes those who haven't claimed yet)
+  var allPids=Object.keys(playerMap).map(Number);
+  var totalPlayers=allPids.length;
+  var totalPlays=allPids.reduce(function(s,pid){return s+(playerMap[pid].playCount||0);},0);
+  var claimed=visitors.length;
+  var unclaimed=allPids.filter(function(pid){return playerMap[pid].firstReward&&visitors.findIndex(function(v){return v.id===pid;})<0;}).length;
+  var hot=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');}).length;
+  var elapsed=(Date.now()-startTime)/3600000;
+  var rate=elapsed>0?Math.round(totalPlayers/elapsed):0;
+  document.getElementById('ds-players').textContent=totalPlayers;
+  document.getElementById('ds-claimed').textContent=claimed+(unclaimed?' ('+unclaimed+' unclaimed)':'');
+  document.getElementById('ds-hot').textContent=hot;
+  document.getElementById('ds-rate').textContent=rate;
+  // Game breakdown from playerMap
+  var games={};
+  allPids.forEach(function(pid){var g=playerMap[pid].firstGame;if(g)games[g]=(games[g]||0)+1;});
+  var gTotal=Object.values(games).reduce(function(a,b){return a+b;},0)||1;
+  document.getElementById('game-breakdown').innerHTML=Object.keys(games).length
+    ?Object.keys(games).map(function(g){
+        var cnt=games[g],pct=Math.round(cnt/gTotal*100);
+        var icon={darts:'🎯',golf:'⛳',spin:'🎡',rps:'🤜'}[g]||'🎮';
+        return '<div class="bar-row"><div style="display:flex;justify-content:space-between;font-size:.8rem"><span>'+icon+' '+g+'</span><span style="color:var(--text2)">'+cnt+' · '+pct+'%</span></div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:var(--green)"></div></div></div>';
+      }).join('')
+    :'<div style="color:var(--text3);font-size:.82rem">No data yet</div>';
+  // Reward distribution from playerMap
+  var rewards={};
+  allPids.forEach(function(pid){var r=playerMap[pid].firstReward;if(r)rewards[r]=(rewards[r]||0)+1;});
+  var rTotal=Object.values(rewards).reduce(function(a,b){return a+b;},0)||1;
+  document.getElementById('reward-dist').innerHTML=Object.keys(rewards).length
+    ?RORDER.filter(function(r){return rewards[r];}).map(function(r){
+        var pct=Math.round(rewards[r]/rTotal*100);
+        var rm=RM[r]||{col:'var(--text2)'};
+        return '<div class="bar-row"><div style="display:flex;justify-content:space-between;font-size:.8rem"><span style="color:'+rm.col+'">'+r+'</span><span style="color:var(--text2)">'+rewards[r]+' · '+pct+'%</span></div><div class="bar-track"><div class="bar-fill" style="width:'+pct+'%;background:'+rm.col+'"></div></div></div>';
+      }).join('')
+    :'<div style="color:var(--text3);font-size:.82rem">No data yet</div>';
+  // Recent — show all who have played (from playerMap), not just claimed
+  var recPids=allPids.slice(-8).reverse();
+  document.getElementById('recent-winners').innerHTML=recPids.length
+    ?recPids.map(function(pid){
+        var rec=playerMap[pid];
+        var v=visitors.find(function(x){return x.id===pid;});
+        var rm=RM[rec.firstReward]||{cls:'bm'};
+        var gameIcon={darts:'🎯',golf:'⛳',spin:'🎡',rps:'🤜'}[rec.firstGame]||'🎮';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)">'
+          +'<div><div style="font-family:var(--fh);font-weight:700;font-size:.86rem">'+(v?v.name:'Player #'+pid)+(v?'':' <span style="font-size:.68rem;color:var(--amber)">·  unclaimed</span>')+'</div>'
+          +'<div style="font-size:.7rem;color:var(--text2)">'+gameIcon+' '+rec.firstGame+' · #'+pid+'</div></div>'
+          +'<span class="badge '+rm.cls+'">'+rec.firstReward+'</span>'
+        +'</div>';
+      }).join('')
+    :'<div style="color:var(--text3);font-size:.82rem">No players yet</div>';
 }
 function goldenTimer(){var el=document.getElementById('golden-timer');if(!el)return;var rem=30*60*1000-(Date.now()%(30*60*1000)),m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);el.textContent=m+':'+(s<10?'0':'')+s;}
 setInterval(goldenTimer,1000);goldenTimer();
@@ -2626,9 +2944,10 @@ var WB_AVATARS=['🦁','🐯','🦊','🐺','🦅','🦋','🔥','⚡','🎮','�
 function wbAnon(id){return WB_AVATARS[id%WB_AVATARS.length]+' Player #'+id;}
 
 function loadWB(){
-  var total=visitors.length;
-  var jp=visitors.filter(function(v){return v.reward&&v.reward.includes('25');}).length;
-  var winRate=total>0?Math.round((total/total)*100):100; // everyone wins something
+  var allPids=Object.keys(playerMap).map(Number);
+  var total=allPids.length;  // everyone who played, not just claimed
+  var jp=allPids.filter(function(pid){return playerMap[pid].firstReward&&playerMap[pid].firstReward.includes('25');}).length;
+  var winRate=100; // everyone wins something
   document.getElementById('wb-jp').textContent=jp;
   document.getElementById('wb-total').textContent=total;
   document.getElementById('wb-pct').textContent=winRate+'%';
@@ -2637,19 +2956,23 @@ function loadWB(){
   var activeEl=document.getElementById('wb-active-line');
   if(activeEl){
     if(total===0)activeEl.textContent='Be the first to play today!';
-    else if(total<5)activeEl.textContent=total+' player'+(total===1?'':'s')+' already winning — join them';
-    else activeEl.textContent=total+' players winning today · '+jp+' jackpots claimed';
+    else if(total===1)activeEl.textContent='1 player already winning — join them!';
+    else if(total<10)activeEl.textContent=total+' players winning today — join them!';
+    else activeEl.textContent=total+' players winning today · '+jp+' jackpot'+(jp!==1?'s':'')+' claimed';
   }
   // Golden round timer
   var timerEl=document.getElementById('wb-timer');
   if(timerEl){var rem=30*60*1000-(Date.now()%(30*60*1000)),m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);timerEl.textContent=m+':'+(s<10?'0':'')+s;}
   // Recent winners — NO NAMES, only avatar+player# and reward (anonymity = privacy safe)
-  var gameIcons={darts:'🎯',golf:'⛳',spin:'🎡'};
-  var recent=visitors.slice(0,8);
-  document.getElementById('wb-list').innerHTML=recent.length?recent.map(function(v){
+  var gameIcons={darts:'🎯',golf:'⛳',spin:'🎡',rps:'🤜'};
+  // Show recent players from playerMap — includes those who haven't claimed yet
+  var recentPids=Object.keys(playerMap).map(Number).filter(function(pid){return playerMap[pid].firstReward;}).slice(-8).reverse();
+  document.getElementById('wb-list').innerHTML=recentPids.length?recentPids.map(function(pid){
+    var rec=playerMap[pid];
+    var v={id:pid,reward:rec.firstReward,game:rec.firstGame};
     var rm=RM[v.reward]||{bg:'rgba(255,255,255,.06)',col:'#8b90b0'};
-    var isG=v.reward&&v.reward.includes('25');
-    var isJ=v.reward&&v.reward.includes('JACKPOT');
+    var isG=rec.firstReward&&rec.firstReward.includes('25');
+    var isJ=rec.firstReward&&rec.firstReward.includes('JACKPOT');
     var bg=isJ?'rgba(255,176,32,.12)':isG?'rgba(255,176,32,.07)':'rgba(255,255,255,.03)';
     var border=isJ?'rgba(255,176,32,.4)':isG?'rgba(255,176,32,.2)':'rgba(255,255,255,.06)';
     return '<div class="wb-row" style="background:'+bg+';border-color:'+border+'">'
@@ -2660,7 +2983,7 @@ function loadWB(){
       +'</div>'
       +'<span class="badge" style="background:'+rm.bg+';color:'+rm.col+';border:1px solid '+rm.col.replace(')',',0.3)').replace('rgb','rgba')+'">'+v.reward+'</span>'
     +'</div>';
-  }).join(''):'<div style="text-align:center;padding:16px;color:rgba(255,255,255,.2);font-size:.82rem">No winners yet — scan QR to be first!</div>';
+  }).join(''):'<div style="text-align:center;padding:16px;color:rgba(255,255,255,.2);font-size:.82rem">No players yet — scan QR to be first!</div>';
   // Reward distribution — near-miss psychology: people see most players win 10-25%, want to beat that
   var rewards={};visitors.forEach(function(v){if(v.reward)rewards[v.reward]=(rewards[v.reward]||0)+1;});
   var distHtml='';
@@ -2715,6 +3038,17 @@ function renderGB(){
   else if(gbFiltVal==='disc')list=visitors.filter(function(v){return v.reward&&v.reward.includes('%');});
   else if(gbFiltVal==='remark')list=visitors.filter(function(v){return v.note&&v.note.trim();});
   else if(gbFiltVal==='rated')list=visitors.filter(function(v){return v.rating&&v.rating>0;});
+  // Unclaimed = in playerMap with reward but not in visitors
+  else if(gbFiltVal==='unclaimed'){
+    var claimedIds=visitors.map(function(v){return v.id;});
+    var unclPids=Object.keys(playerMap).map(Number).filter(function(pid){
+      return playerMap[pid].firstReward&&claimedIds.indexOf(pid)<0;
+    });
+    list=unclPids.map(function(pid){
+      var rec=playerMap[pid];
+      return {id:pid,name:'',phone:'',reward:rec.firstReward,game:rec.firstGame,tags:[],svcs:[],note:'',cat:'',rating:0};
+    });
+  }
   document.getElementById('gbs1').textContent=visitors.length;
   document.getElementById('gbs2').textContent=visitors.filter(function(v){return v.tags&&v.tags.includes('hot lead');}).length;
   document.getElementById('gbs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;
