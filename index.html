@@ -735,7 +735,9 @@ textarea{resize:vertical;min-height:64px}
           <div class="prize-reward" id="cl-reward">25% OFF</div>
           <div style="font-size:.8rem;color:var(--text2)" id="cl-valid">Valid 90 days from today</div>
           <div class="prize-voucher" id="cl-voucher">BOOTH-XXXX</div>
-          <div style="font-size:.72rem;color:var(--text3)">Save NanoSoft's number to unlock your prize</div>
+          <!-- JAR INDICATOR — shown to visitor so they know where to go -->
+          <div id="cl-jar" style="display:none;margin-top:12px"></div>
+          <div style="font-size:.72rem;color:var(--text3);margin-top:8px">Save NanoSoft's number to unlock your prize</div>
         </div>
         <div style="padding:16px">
           <!-- KEY STEP: save contact to unlock -->
@@ -1818,6 +1820,29 @@ function vGoClaim(){
   document.getElementById('cl-valid').textContent='Valid '+BRAND.days+' days from today';
   document.getElementById('cl-voucher').textContent=voucher;
   document.getElementById('cl-done').style.display='none';
+  // ── JAR INDICATOR ──
+  var jarEl=document.getElementById('cl-jar');
+  if(jarEl){
+    var isCookie=reward==='Free Consult'||reward==='Free Site Visit';
+    var isCandy=reward==='Free BI Report'||reward==='Free Net Scan'||reward==='Priority Queue';
+    if(isCookie){
+      jarEl.style.display='block';
+      jarEl.innerHTML='<div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.3);border-radius:12px;padding:10px 16px;font-size:.82rem;font-weight:600;color:var(--amber)">'
+        +'<span style="font-size:1.8rem">🍪</span>'
+        +'<div style="text-align:left"><div style="font-size:.9rem">Cookie Jar</div>'
+        +'<div style="font-weight:400;font-size:.75rem;opacity:.85;margin-top:1px">Head to the prize desk — pick a cookie!</div></div>'
+        +'</div>';
+    } else if(isCandy){
+      jarEl.style.display='block';
+      jarEl.innerHTML='<div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,110,180,.1);border:1px solid rgba(255,110,180,.3);border-radius:12px;padding:10px 16px;font-size:.82rem;font-weight:600;color:var(--pink)">'
+        +'<span style="font-size:1.8rem">🍬</span>'
+        +'<div style="text-align:left"><div style="font-size:.9rem">Candy Jar</div>'
+        +'<div style="font-weight:400;font-size:.75rem;opacity:.85;margin-top:1px">Head to the prize desk — pick a sweet!</div></div>'
+        +'</div>';
+    } else {
+      jarEl.style.display='none';
+    }
+  }
   vShowOnly('v-claim');renderSteps('vsteps-claim',5);
   // save visitor to DB at this point
   if(vPlayer){
