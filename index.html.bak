@@ -520,10 +520,7 @@ textarea{resize:vertical;min-height:64px}
     <!-- STEP 1: REGISTER -->
     <div id="v-reg" style="display:none">
       <div id="vsteps-reg" class="vsteps" style="margin-top:8px"></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
-        <button onclick="vShowOnly('v-land')" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1rem;padding:0;line-height:1" aria-label="Back">←</button>
-        <div style="font-family:var(--fh);font-size:1.3rem;font-weight:800">Create your player profile</div>
-      </div>
+      <div style="font-family:var(--fh);font-size:1.3rem;font-weight:800;margin-bottom:4px">Create your player profile</div>
       <div class="subtitle" style="margin-bottom:18px">Quick — just your name and a way to reach you</div>
       <div class="card v-reg-wrap">
         <div class="section-head" style="margin-bottom:8px">Pick your avatar</div>
@@ -571,18 +568,6 @@ textarea{resize:vertical;min-height:64px}
           <div class="ticket-perforate"><div style="font-size:1.2rem;margin:0 12px;flex-shrink:0">✂</div></div>
           <div style="font-size:.75rem;color:var(--text2);margin-top:8px" id="tk-host-hint">Show this number to the game host at any table</div>
           <div id="tk-returning" style="display:none" class="banner bn-g" style="margin-top:12px"></div>
-        </div>
-      </div>
-      <!-- SAVE CONTACT PROMPT — shown right after registration -->
-      <div id="tk-save-cta" style="margin-bottom:12px">
-        <div style="background:linear-gradient(135deg,rgba(177,151,252,.15),rgba(177,151,252,.05));border:1px solid rgba(177,151,252,.3);border-radius:var(--r);padding:18px;text-align:center">
-          <div style="font-size:1.5rem;margin-bottom:8px">📱</div>
-          <div style="font-family:var(--fh);font-weight:800;color:var(--purple);margin-bottom:6px;font-size:.95rem">Save NanoSoft Contact</div>
-          <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.6">Save our number now — your voucher will be tied to it when you claim your prize</div>
-          <button class="btn" style="background:var(--purple);color:#fff;box-shadow:0 4px 20px rgba(177,151,252,.25);margin-bottom:8px;padding:13px" onclick="tkSaveContact()">
-            📱 Save NanoSoft to My Contacts
-          </button>
-          <div id="tk-saved-confirm" style="display:none;font-size:.75rem;color:var(--purple);font-weight:600;margin-top:4px">✓ Saved!</div>
         </div>
       </div>
       <button class="btn btn-g" onclick="vGoGames()">Choose a Game →</button>
@@ -767,53 +752,10 @@ textarea{resize:vertical;min-height:64px}
           <div id="pr-tickets" class="tlist"></div>
           <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-ghost btn-sm" onclick="vGoGames()">+ Play Another Game</button>
-            <button class="btn btn-g btn-sm" id="pr-claim-btn" onclick="vGoIdentify()" style="display:none">🎁 Claim Prize →</button>
+            <button class="btn btn-g btn-sm" id="pr-claim-btn" onclick="vGoClaim()" style="display:none">🎁 Claim Prize →</button>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- STEP 4.5: QUICK IDENTIFICATION (category + interests) -->
-    <div id="v-identify" style="display:none">
-      <div id="vsteps-identify" class="vsteps" style="margin-top:8px"></div>
-      <div style="text-align:center;padding:20px 0 14px">
-        <div style="font-size:2rem;margin-bottom:8px">👤</div>
-        <div style="font-family:var(--fh);font-size:1.3rem;font-weight:800;margin-bottom:6px">Quick profile</div>
-        <div style="font-size:.85rem;color:var(--text2)">Help us personalise your prize — takes 15 seconds</div>
-      </div>
-
-      <!-- WHO ARE YOU -->
-      <div class="card" style="padding:16px;margin-bottom:10px">
-        <div style="font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Who are you?</div>
-        <div id="vi-cat-chips" class="chip-row" style="flex-wrap:wrap;gap:7px">
-          <button class="chip" onclick="viCat(this,'🏠 Homeowner')" style="font-size:.78rem;padding:8px 14px">🏠 Homeowner</button>
-          <button class="chip" onclick="viCat(this,'🏢 Business Owner')" style="font-size:.78rem;padding:8px 14px">🏢 Business Owner</button>
-          <button class="chip" onclick="viCat(this,'💼 Manager / Executive')" style="font-size:.78rem;padding:8px 14px">💼 Manager / Executive</button>
-          <button class="chip" onclick="viCat(this,'🛠 IT / Tech Professional')" style="font-size:.78rem;padding:8px 14px">🛠 IT / Tech Professional</button>
-          <button class="chip" onclick="viCat(this,'🏥 Healthcare Professional')" style="font-size:.78rem;padding:8px 14px">🏥 Healthcare Professional</button>
-          <button class="chip" onclick="viCat(this,'🎓 Educator / Researcher')" style="font-size:.78rem;padding:8px 14px">🎓 Educator / Researcher</button>
-          <button class="chip" onclick="viCat(this,'🏗 Construction / Real Estate')" style="font-size:.78rem;padding:8px 14px">🏗 Construction / Real Estate</button>
-          <button class="chip" onclick="viCat(this,'🛒 Retail / E-commerce')" style="font-size:.78rem;padding:8px 14px">🛒 Retail / E-commerce</button>
-          <button class="chip" onclick="viCat(this,'🚀 Startup / Entrepreneur')" style="font-size:.78rem;padding:8px 14px">🚀 Startup / Entrepreneur</button>
-          <button class="chip" onclick="viCat(this,'🏛 Government / NGO')" style="font-size:.78rem;padding:8px 14px">🏛 Government / NGO</button>
-        </div>
-      </div>
-
-      <!-- WHAT INTERESTS YOU -->
-      <div class="card" style="padding:16px;margin-bottom:16px">
-        <div style="font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">What interests you?</div>
-        <div id="vi-svc-chips" class="svc-grid" style="gap:7px">
-          <button class="svc-chip" onclick="viSvc(this,'🔒 Security Audit')" style="font-size:.75rem">🔒 Security Audit</button>
-          <button class="svc-chip" onclick="viSvc(this,'🌐 Network Audit')" style="font-size:.75rem">🌐 Network Audit</button>
-          <button class="svc-chip" onclick="viSvc(this,'⚡ Smart Installation')" style="font-size:.75rem">⚡ Smart Installation</button>
-          <button class="svc-chip" onclick="viSvc(this,'🔄 Workflow Automation')" style="font-size:.75rem">🔄 Workflow Automation</button>
-          <button class="svc-chip" onclick="viSvc(this,'📊 Data Management')" style="font-size:.75rem">📊 Data Management</button>
-          <button class="svc-chip" onclick="viSvc(this,'🧠 Business Intelligence')" style="font-size:.75rem">🧠 Business Intelligence</button>
-        </div>
-      </div>
-
-      <button class="btn btn-g" style="padding:15px;font-size:1rem" onclick="viConfirm()">Claim My Prize →</button>
-      <button class="btn btn-ghost" style="margin-top:8px" onclick="viSkip()">Skip →</button>
     </div>
 
     <!-- STEP 5: CLAIM PRIZE -->
@@ -827,13 +769,27 @@ textarea{resize:vertical;min-height:64px}
           <div class="prize-voucher" id="cl-voucher">BOOTH-XXXX</div>
           <!-- JAR INDICATOR — shown to visitor so they know where to go -->
           <div id="cl-jar" style="display:none;margin-top:12px"></div>
+          <div style="font-size:.72rem;color:var(--text3);margin-top:8px">Save NanoSoft's number to unlock your prize</div>
         </div>
         <div style="padding:16px">
-
-          <!-- PROFILE CHIPS — set on identify screen, shown here as confirmation -->
-          <div id="cl-profile-chips" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px"></div>
-
-          <button class="btn btn-ghost" onclick="vGoThankYou()" style="margin-top:6px;width:100%">Done — Leave a note →</button>
+          <!-- KEY STEP: save contact to unlock -->
+          <div class="save-cta">
+            <div class="save-cta-title">📱 Save Our Contact to Claim</div>
+            <div class="save-cta-body">Your prize is held against your voucher code. To redeem it, we need to reach you — save our number now and your reward is yours forever.</div>
+            <div class="save-steps">
+              <div class="save-step"><div class="save-step-num">1</div><span>Tap <strong style="color:var(--green)">Save Contact</strong> below</span></div>
+              <div class="save-step"><div class="save-step-num">2</div><span>Add NanoSoft to your phone</span></div>
+              <div class="save-step"><div class="save-step-num">3</div><span>WhatsApp us to receive your receipt &amp; voucher</span></div>
+            </div>
+            <button class="btn btn-g" onclick="clSaveContact()" style="margin-bottom:8px">📇 Save NanoSoft Contact</button>
+            <button class="btn btn-ghost" onclick="clWhatsApp()">💬 WhatsApp Us Your Receipt</button>
+          </div>
+          <div id="cl-done" style="display:none" class="card card-g" style="text-align:center;padding:18px">
+            <div style="font-size:1.8rem;margin-bottom:6px">✅</div>
+            <div style="font-family:var(--fh);font-weight:800;color:var(--green);margin-bottom:4px">Contact Saved!</div>
+            <div class="subtitle">WhatsApp your receipt to complete the claim</div>
+          </div>
+          <button class="btn btn-ghost" style="margin-top:8px" onclick="vGoThankYou()">I've sent it — Done →</button>
         </div>
       </div>
     </div>
@@ -864,24 +820,7 @@ textarea{resize:vertical;min-height:64px}
         </button>
         <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px">30 seconds · tell us what you think</div>
 
-        <!-- WHATSAPP RECEIPT — visitor sends to NanoSoft from their own phone -->
-        <div style="font-size:.78rem;color:var(--text2);line-height:1.7;margin:20px 0 12px">
-          Send us a WhatsApp with your receipt — this confirms your claim and our team will get back to you.
-        </div>
-        <button class="btn btn-g" style="padding:15px;font-size:1rem;margin-bottom:8px" onclick="clWhatsApp()">
-          💬 Send Receipt via WhatsApp →
-        </button>
-
-        <!-- Sent confirmation -->
-        <div id="cl-done" style="display:none;margin:12px 0" class="card card-g">
-          <div style="text-align:center;padding:14px">
-            <div style="font-size:1.4rem;margin-bottom:4px">✅</div>
-            <div style="font-family:var(--fh);font-weight:800;color:var(--green);font-size:.95rem">Receipt sent!</div>
-            <div style="font-size:.75rem;color:var(--text2);margin-top:4px">Prize desk will verify and hand over your prize</div>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:14px;">
+        <div style="display:flex;gap:8px;margin-top:14px">
           <button class="btn btn-ghost" style="flex:1" onclick="vGoProfile()">← Profile</button>
           <button class="btn btn-ghost" style="flex:1" onclick="vPlayAgain()">🎯 Play again</button>
         </div>
@@ -1093,7 +1032,7 @@ textarea{resize:vertical;min-height:64px}
   <button class="btn btn-g" id="g-next" style="display:none" onclick="gNextRound()">Next Round →</button>
   <button class="btn btn-a" id="g-finish" style="display:none" onclick="gFinish()">See Final Result →</button>
 </div>
-
+          <div id="g-rdone" style="display:none"><div class="card-sm" style="text-align:center"><div style="font-size:.75rem;color:var(--text2)" id="g-rdlabel">Round 1</div><div style="font-family:var(--fh);font-size:1.3rem;font-weight:800;margin:5px 0" id="g-rdtxt">—</div><div id="g-rdbadge"></div></div><button class="btn btn-g" id="g-next" style="display:none" onclick="gNextRound()">Next Round →</button><button class="btn btn-a" id="g-finish" style="display:none" onclick="gFinish()">Final Result →</button></div>
         </div>
         <div id="g-final" style="display:none"><div id="g-summary" style="margin-bottom:10px"></div><div id="g-best-card" class="card-sm" style="text-align:center;padding:16px"><div style="font-size:.75rem;color:var(--text2)">Best result</div><div style="font-family:var(--fh);font-size:1.7rem;font-weight:800;margin:5px 0" id="g-best-txt">—</div><div id="g-best-badge"></div></div><button class="btn btn-g" onclick="gAward()">Award ✓</button></div>
       </div>
@@ -1135,55 +1074,33 @@ textarea{resize:vertical;min-height:64px}
         </div>
         <div style="padding:14px">
           <div id="prize-form">
-            <!-- PLAYER IDENTITY — read from DB, no re-entry ever -->
-            <div id="pf-player-identity" style="display:none;margin-bottom:14px">
-              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--r2);border:1px solid var(--border)">
-                <div style="font-size:1.4rem" id="pf-id-avatar">👤</div>
-                <div style="flex:1;min-width:0">
-                  <div style="font-family:var(--fh);font-weight:700;font-size:.92rem" id="pf-id-name">—</div>
-                  <div style="font-size:.72rem;color:var(--text2);margin-top:1px" id="pf-id-detail">—</div>
-                </div>
-                <span class="badge bg" style="flex-shrink:0">Player</span>
-              </div>
-            </div>
-            <!-- CATEGORY — who are they? -->
-            <div class="sh">Who are you?</div>
-            <div id="pf-cat-chips" class="chip-row" style="flex-wrap:wrap;gap:6px;margin-bottom:14px"></div>
-            <!-- INTERESTS — from SVCS in admin -->
-            <div class="sh">What interests you?</div>
-            <div id="pf-svc-chips" class="svc-grid" style="margin-bottom:16px"></div>
-            <button class="btn btn-g" onclick="pfSave()">Confirm &amp; Claim →</button>
-          </div>
+            <div class="sh">Player details</div>
+            <div class="field"><label>Name *</label><input id="pf-name" placeholder="Jane Mwangi"></div>
+            <div class="field"><label>Phone *</label><input id="pf-phone" type="tel" placeholder="+254 700 000 000"></div>
+            <div class="field"><label>Email</label><input id="pf-email" type="email" placeholder="jane@example.com"></div>
+            <div class="field"><label>Company</label><input id="pf-company" placeholder="Your company"></div>
 
-          <!-- ── POST-CLAIM SECTION ── -->
+            <!-- CATEGORY — who are they? -->
+            <div class="sh" style="margin-top:8px">Who are you?</div>
+            <div id="pf-cat-chips" class="chip-row" style="flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>
+
+            <!-- INTERESTS — from SVCS in admin (no duplication) -->
+            <div class="sh">What interests you?</div>
+            <div id="pf-svc-chips" class="svc-grid" style="margin-bottom:14px"></div>
+
+            <button class="btn btn-g" onclick="pfSave()">Save &amp; Claim →</button>
+          </div>
           <div id="prize-claimed" style="display:none">
-            <!-- Claimed confirmation -->
-            <div class="card card-g" style="text-align:center;padding:18px;margin-bottom:14px">
+            <div class="card card-g" style="text-align:center;padding:18px;margin-bottom:12px">
               <div style="font-size:1.8rem;margin-bottom:6px">🎉</div>
-              <div style="font-family:var(--fh);font-weight:800;color:var(--green);margin-bottom:4px">All done!</div>
+              <div style="font-family:var(--fh);font-weight:800;color:var(--green);margin-bottom:4px">Claimed!</div>
               <div class="subtitle" id="pc-summary"></div>
+              <!-- Profile summary chips shown after save -->
               <div id="pc-profile-chips" style="display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:8px"></div>
             </div>
-
-            <!-- STEP 1: Save contact (framed as giving visitor something) -->
-            <div style="font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Step 1 — Save our number</div>
-            <div style="font-size:.82rem;color:var(--text2);margin-bottom:10px;line-height:1.6">
-              Hand them your phone — they tap below to save NanoSoft directly into their contacts. No download, no file to find later.
-            </div>
-            <button class="btn btn-g" style="margin-bottom:14px;background:var(--purple);box-shadow:0 4px 20px rgba(177,151,252,.2)" onclick="pfSaveContact()">
-              📱 Save NanoSoft Contact
-            </button>
-
-            <!-- STEP 2: WhatsApp receipt -->
-            <div style="font-size:.72rem;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Step 2 — Send receipt</div>
-            <div style="font-size:.82rem;color:var(--text2);margin-bottom:10px;line-height:1.6">
-              Opens WhatsApp with a personalised message — they send it to complete the claim.
-            </div>
-            <button class="btn btn-g" style="margin-bottom:14px" onclick="pfWhatsApp()">
-              💬 Open WhatsApp Receipt →
-            </button>
-
-            <button class="btn btn-ghost" onclick="pfReset()">Next Visitor →</button>
+            <button class="btn btn-g" onclick="pfWhatsApp()">💬 Send Personalised WhatsApp →</button>
+            <button class="btn btn-g" style="margin-top:8px;background:var(--purple);box-shadow:0 4px 20px rgba(177,151,252,.25)" onclick="pfSaveContact()">📱 Save NanoSoft to Their Phone</button>
+            <button class="btn btn-ghost" style="margin-top:8px" onclick="pfReset()">Next Visitor →</button>
           </div>
         </div>
       </div>
@@ -1469,7 +1386,7 @@ var GRES={
   r2:{r:'Free Net Scan',i:'🌐',d:'Full network scan'},
   miss:{r:'Free Consult',i:'💬',d:'30-min strategy session'}
 };
-var SEGS=[{l:'JACKPOT',bg:'#8a6000'},{l:'25% OFF',bg:'#c47d10'},{l:'Free BI',bg:'#6d4fc0'},{l:'20% OFF',bg:'#1a5db5'},{l:'Free Scan',bg:'#0a6ed2'},{l:'15% OFF',bg:'#1a4e8a'},{l:'Consult',bg:'#383a52'},{l:'10% OFF',bg:'#7a3a10'}];
+var SEGS=[{l:'25% OFF',bg:'#c47d10'},{l:'Free BI',bg:'#6d4fc0'},{l:'20% OFF',bg:'#1a5db5'},{l:'Free Scan',bg:'#0a6ed2'},{l:'15% OFF',bg:'#1a4e8a'},{l:'Consult',bg:'#383a52'},{l:'10% OFF',bg:'#7a3a10'},{l:'Free Visit',bg:'#2a3080'}];
 var TAGS=['hot lead','warm lead','follow up','callback','not interested','premium','bulk order'];
 
 // ── STATE ──
@@ -1541,8 +1458,8 @@ async function dbWritePlay(pid,game,reward,ticketId,isFirst){
   try{await SB.from('plays').insert({pid:pid,game:game,reward:reward,ticket_id:ticketId,is_first:isFirst,created_at:new Date().toISOString()});}
   catch(e){console.warn('dbWritePlay:',e);} // non-critical, don't block
 }
-async function dbWriteVisitor(v){if(!SB)return;await SB.from('visitors').upsert({id:v.id,name:v.name,phone:v.phone,email:v.email||'',company:v.company||'',reward:v.reward,game:v.game,voucher:v.voucher,tags:v.tags||[],svcs:v.svcs||[],note:v.note||'',cat:v.cat||'',rating:v.rating||0,staff_note:v.staff_note||''});}
-async function dbUpdateVisitor(v){if(!SB)return;await SB.from('visitors').update({tags:v.tags,svcs:v.svcs,note:v.note,rating:v.rating||0,cat:v.cat||''}).eq('id',v.id);}
+async function dbWriteVisitor(v){if(!SB)return;await SB.from('visitors').upsert({id:v.id,name:v.name,phone:v.phone,email:v.email||'',company:v.company||'',reward:v.reward,game:v.game,voucher:v.voucher,tags:v.tags||[],svcs:v.svcs||[],note:v.note||'',cat:v.cat||''});}
+async function dbUpdateVisitor(v){if(!SB)return;await SB.from('visitors').update({tags:v.tags,svcs:v.svcs,note:v.note,rating:v.rating||0}).eq('id',v.id);}
 async function nextTicket(){
   if(SB){try{var r=await SB.rpc('next_ticket');if(r.data)return r.data;}catch(e){}}
   currentPid++;localStorage.setItem('booth_pid',currentPid);return currentPid;
@@ -1612,7 +1529,7 @@ function toast(msg,type){
 }
 
 // ── STEP INDICATOR ──
-var VSTEP_LABELS=['Land','Register','Ticket','Games','Profile','Identify','Claim'];
+var VSTEP_LABELS=['Land','Register','Ticket','Games','Profile','Claim'];
 function renderSteps(containerId,activeIdx){
   var el=document.getElementById(containerId);if(!el)return;
   el.innerHTML=VSTEP_LABELS.map(function(l,i){
@@ -1636,7 +1553,7 @@ function confetti(){
 
 // ── VISITOR FLOW ──
 function vShowOnly(id){
-  ['v-land','v-reg','v-ticket','v-games','v-profile','v-identify','v-claim','v-ty'].forEach(function(s){
+  ['v-land','v-reg','v-ticket','v-games','v-profile','v-claim','v-ty'].forEach(function(s){
     document.getElementById(s).style.display=s===id?'block':'none';
   });
   // scroll top
@@ -1644,6 +1561,10 @@ function vShowOnly(id){
 }
 
 function vGoReg(){vShowOnly('v-reg');renderSteps('vsteps-reg',1);}
+function vGoRegTicket(){
+  vShowOnly('v-reg');renderSteps('vsteps-reg',1);
+  setTimeout(function(){var el=document.getElementById('reg-ticket');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus();}},200);
+}
 function regTicketInput(){
   var val=document.getElementById('reg-ticket').value.trim();
   document.getElementById('reg-ticket-btn').disabled=!val;
@@ -1658,8 +1579,7 @@ function vLoginByTicket(){
   var name=(existing&&existing.name)||('Player #'+ticketNum);
   var phone=(existing&&existing.phone)||'';
   var rec=playerMap[ticketNum];
-  vPlayer={id:ticketNum,name:name,phone:phone,email:(existing&&existing.email)||'',company:(existing&&existing.company)||'',avatar:'🎮',tickets:[],
-    cat:(existing&&existing.cat)||'',svcs:(existing&&existing.svcs&&existing.svcs.slice())||[]};
+  vPlayer={id:ticketNum,name:name,phone:phone,email:(existing&&existing.email)||'',company:(existing&&existing.company)||'',avatar:'🎮',tickets:[]};
   if(rec&&rec.firstReward){vPlayer.tickets=[{ticketId:ticketNum+'-1',game:rec.firstGame,reward:rec.firstReward,isFirst:true}];}
   document.getElementById('tk-greeting').textContent='Welcome back, '+name.split(' ')[0]+'! 👋';
   document.getElementById('tk-num').textContent='#'+ticketNum;
@@ -1716,8 +1636,7 @@ async function vRegister(){
       var rec=playerMap[existingVisitor.id];
       vPlayer={id:existingVisitor.id,name:existingVisitor.name||name,phone:phone,
         email:existingVisitor.email||'',company:existingVisitor.company||'',
-        avatar:vAvatar,tickets:[],
-        cat:existingVisitor.cat||'',svcs:(existingVisitor.svcs&&existingVisitor.svcs.slice())||[]};
+        avatar:vAvatar,tickets:[]};
       if(rec&&rec.firstReward){vPlayer.tickets=[{ticketId:existingVisitor.id+'-1',game:rec.firstGame,reward:rec.firstReward,isFirst:true}];}
       toast('Welcome back '+name.split(' ')[0]+'! Taking you to your profile…','g');
       vGoProfile();
@@ -1730,7 +1649,7 @@ async function vRegister(){
       id:pid,name:name,phone:phone,
       email:document.getElementById('reg-email').value.trim(),
       company:document.getElementById('reg-company').value.trim(),
-      avatar:vAvatar,tickets:[],cat:'',svcs:[]
+      avatar:vAvatar,tickets:[]
     };
     // Restore tickets from playerMap for returning visitors
     var rec=playerMap[pid];
@@ -1754,41 +1673,7 @@ async function vRegister(){
   }
 }
 
-// Save contact from ticket screen (after registration)
-async function tkSaveContact(){
-  var vcf=[
-    'BEGIN:VCARD','VERSION:3.0',
-    'FN:'+BRAND.name,'ORG:'+BRAND.name,
-    'TEL;TYPE=CELL:'+BRAND.phone,
-    'EMAIL:'+BRAND.email,
-    'URL:https://wa.me/'+BRAND.wa,
-    'NOTE:NanoSoft booth — your prize awaits!',
-    'END:VCARD'
-  ].join('\r\n');
-  if(navigator.share&&navigator.canShare){
-    try{
-      var file=new File([vcf],'NanoSoft.vcf',{type:'text/vcard'});
-      if(navigator.canShare({files:[file]})){
-        await navigator.share({files:[file],title:BRAND.name});
-        var c=document.getElementById('tk-saved-confirm');if(c)c.style.display='block';
-        return;
-      }
-    }catch(e){if(e.name==='AbortError')return;}
-  }
-  if(navigator.share){
-    try{await navigator.share({title:BRAND.name,text:BRAND.name+' · '+BRAND.phone,url:'https://wa.me/'+BRAND.wa});return;}
-    catch(e){if(e.name==='AbortError')return;}
-  }
-  var blob=new Blob([vcf],{type:'text/vcard'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');a.href=url;a.download='NanoSoft.vcf';
-  document.body.appendChild(a);a.click();
-  setTimeout(function(){URL.revokeObjectURL(url);if(a.parentNode)a.parentNode.removeChild(a);},1000);
-  var c=document.getElementById('tk-saved-confirm');if(c)c.style.display='block';
-}
-
 function vGoGames(){
-  if(!vPlayer){vShowOnly('v-land');return;}
   vShowOnly('v-games');renderSteps('vsteps-games',3);
   ['darts','golf','spin'].forEach(function(g){document.getElementById('vg-'+g).classList.remove('chosen');});
   document.getElementById('v-game-confirm').style.display='none';
@@ -1873,21 +1758,9 @@ function refreshProfile(){
       '</div>';
     }).join('');
   }
-  // show claim button — but only if they have a real game result (not just RPS badge)
-  var hasResult=rec&&rec.firstReward&&rec.firstGame!=='rps';
+  // show claim button if has a result
+  var hasResult=rec&&rec.firstReward;
   document.getElementById('pr-claim-btn').style.display=hasResult?'inline-block':'none';
-  // If only RPS, show nudge to play a real game
-  var rpsOnly=vPlayer.tickets.length>0&&vPlayer.tickets.every(function(t){return t.game==='rps';});
-  if(rpsOnly){
-    var existing=document.getElementById('pr-rps-nudge');
-    if(!existing){
-      var nudge=document.createElement('div');
-      nudge.id='pr-rps-nudge';
-      nudge.style.cssText='font-size:.75rem;color:var(--text2);margin-top:6px';
-      nudge.textContent='Showdown is for fun only — play Darts, Golf or Spin to win a prize!';
-      document.getElementById('pr-claim-btn').parentNode.appendChild(nudge);
-    }
-  }
 }
 
 function vShowTicket(idx){
@@ -2007,11 +1880,11 @@ function tyRemarkReset(){
 }
 
 function vGoThankYou(){
-  vShowOnly('v-ty');renderSteps('vsteps-claim',6);
+  vShowOnly('v-ty');renderSteps('vsteps-claim',5);
   tyRemarkReset();
   var rec=playerMap[vPlayer?vPlayer.id:0];
   var reward=rec?rec.firstReward:'Your reward';
-  var voucher=(vPlayer&&vPlayer.voucher)||mkVoucher(vPlayer?vPlayer.id:currentPid);
+  var voucher=mkVoucher(vPlayer?vPlayer.id:currentPid);
   document.getElementById('ty-voucher').textContent=voucher;
   document.getElementById('ty-valid').textContent='Valid '+BRAND.days+' days from today';
   document.getElementById('ty-body').textContent='Hi '+((vPlayer&&vPlayer.name.split(' ')[0])||'Player')+'! Your reward is confirmed. We\'ll be in touch via WhatsApp to arrange it.';
@@ -2020,67 +1893,7 @@ function vGoThankYou(){
   document.getElementById('ty-reward').style.color=r.col;
   confetti();
 }
-function vPlayAgain(){if(!vPlayer){vShowOnly('v-land');return;}vGoGames();}
-
-// ── VISITOR IDENTIFICATION (category + interests) ──
-function vGoIdentify(){
-  if(!vPlayer)return;
-  vShowOnly('v-identify');
-  renderSteps('vsteps-identify',5);
-  // Build category chips
-  var catEl=document.getElementById('vi-cat-chips');
-  var prevCat=vPlayer.cat||'';
-  if(catEl){
-    catEl.innerHTML=CATS.map(function(c){
-      var label=c.i+' '+c.n;
-      var sel=prevCat===label;
-      return '<button class="chip'+(sel?' on':'')+'" onclick="viCat(this,'+JSON.stringify(label)+')" style="font-size:.78rem;padding:8px 14px">'+label+'</button>';
-    }).join('');
-  }
-  // Build service chips
-  var svcEl=document.getElementById('vi-svc-chips');
-  var prevSvcs=vPlayer.svcs||[];
-  if(svcEl){
-    svcEl.innerHTML=SVCS.map(function(s){
-      var label=s.i+' '+s.n;
-      var sel=prevSvcs.indexOf(label)>=0;
-      return '<button class="svc-chip'+(sel?' on':'')+'" onclick="viSvc(this,'+JSON.stringify(label)+')" style="font-size:.75rem">'+label+'</button>';
-    }).join('');
-  }
-}
-function viCat(btn,cat){
-  document.querySelectorAll('#vi-cat-chips .chip').forEach(function(b){b.classList.remove('on');});
-  btn.classList.add('on');
-  if(!vPlayer)vPlayer={svcs:[],cat:''};
-  vPlayer.cat=cat;
-}
-function viSvc(btn,svc){
-  btn.classList.toggle('on');
-  if(!vPlayer.svcs)vPlayer.svcs=[];
-  var i=vPlayer.svcs.indexOf(svc);
-  if(i>=0)vPlayer.svcs.splice(i,1);else vPlayer.svcs.push(svc);
-}
-function viConfirm(){
-  if(vPlayer){
-    var v=visitors.find(function(x){return x.id===vPlayer.id;});
-    if(v){
-      v.cat=vPlayer.cat||'';v.svcs=vPlayer.svcs||[];
-      dbUpdateVisitor(v);
-    } else {
-      // Visitor not in array yet — create a minimal record so cat/svcs are persisted
-      var rec=playerMap[vPlayer.id]||{};
-      var vdata={id:vPlayer.id,name:vPlayer.name,phone:vPlayer.phone||'',
-        email:vPlayer.email||'',company:vPlayer.company||'',
-        reward:rec.firstReward||'',game:rec.firstGame||'',
-        voucher:vPlayer.voucher||'',tags:[],svcs:vPlayer.svcs||[],
-        note:'',cat:vPlayer.cat||'',rating:0,staff_note:'',created_at:new Date()};
-      visitors.unshift(vdata);
-      dbWriteVisitor(vdata);
-    }
-  }
-  vGoClaim();
-}
-function viSkip(){vGoClaim();}
+function vPlayAgain(){vGoGames();}
 
 function vGoClaim(){
   if(!vPlayer)return;
@@ -2088,109 +1901,58 @@ function vGoClaim(){
   var reward=rec?rec.firstReward:'Free Consult';
   var r=RM[reward]||{col:'var(--green)',bg:'var(--gdim)'};
   var voucher=mkVoucher(vPlayer?vPlayer.id:currentPid);
-  if(vPlayer)vPlayer.voucher=voucher; // store for thank-you screen
   document.getElementById('cl-reward').textContent=reward;
   document.getElementById('cl-reward').style.color=r.col;
   document.getElementById('cl-valid').textContent='Valid '+BRAND.days+' days from today';
   document.getElementById('cl-voucher').textContent=voucher;
   document.getElementById('cl-done').style.display='none';
-  // JAR INDICATOR
+  // ── JAR INDICATOR ──
   var jarEl=document.getElementById('cl-jar');
   if(jarEl){
     var isCookie=reward==='Free Consult'||reward==='Free Site Visit';
     var isCandy=reward==='Free BI Report'||reward==='Free Net Scan'||reward==='Priority Queue';
     if(isCookie){
       jarEl.style.display='block';
-      jarEl.innerHTML='<div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.3);border-radius:12px;padding:10px 16px;font-size:.82rem;font-weight:600;color:var(--amber)"><span style="font-size:1.8rem">🍪</span><div style="text-align:left"><div style="font-size:.9rem">Cookie Jar</div><div style="font-weight:400;font-size:.75rem;opacity:.85;margin-top:1px">Head to the prize desk — pick a cookie!</div></div></div>';
+      jarEl.innerHTML='<div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,176,32,.12);border:1px solid rgba(255,176,32,.3);border-radius:12px;padding:10px 16px;font-size:.82rem;font-weight:600;color:var(--amber)">'
+        +'<span style="font-size:1.8rem">🍪</span>'
+        +'<div style="text-align:left"><div style="font-size:.9rem">Cookie Jar</div>'
+        +'<div style="font-weight:400;font-size:.75rem;opacity:.85;margin-top:1px">Head to the prize desk — pick a cookie!</div></div>'
+        +'</div>';
     } else if(isCandy){
       jarEl.style.display='block';
-      jarEl.innerHTML='<div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,110,180,.1);border:1px solid rgba(255,110,180,.3);border-radius:12px;padding:10px 16px;font-size:.82rem;font-weight:600;color:var(--pink)"><span style="font-size:1.8rem">🍬</span><div style="text-align:left"><div style="font-size:.9rem">Candy Jar</div><div style="font-weight:400;font-size:.75rem;opacity:.85;margin-top:1px">Head to the prize desk — pick a sweet!</div></div></div>';
+      jarEl.innerHTML='<div style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,110,180,.1);border:1px solid rgba(255,110,180,.3);border-radius:12px;padding:10px 16px;font-size:.82rem;font-weight:600;color:var(--pink)">'
+        +'<span style="font-size:1.8rem">🍬</span>'
+        +'<div style="text-align:left"><div style="font-size:.9rem">Candy Jar</div>'
+        +'<div style="font-weight:400;font-size:.75rem;opacity:.85;margin-top:1px">Head to the prize desk — pick a sweet!</div></div>'
+        +'</div>';
     } else {
       jarEl.style.display='none';
     }
   }
-  // Profile chips from identification screen
-  var chipEl=document.getElementById('cl-profile-chips');
-  if(chipEl){
-    var chips=[];
-    if(vPlayer.cat)chips.push('<span class="badge bp">'+vPlayer.cat+'</span>');
-    (vPlayer.svcs||[]).forEach(function(s){chips.push('<span class="badge bb" style="font-size:.65rem">'+s+'</span>');});
-    chipEl.innerHTML=chips.join('');
-    chipEl.style.display=chips.length?'flex':'none';
-  }
-  vShowOnly('v-claim');renderSteps('vsteps-claim',6);
-  // Save visitor record
+  vShowOnly('v-claim');renderSteps('vsteps-claim',5);
+  // save visitor to DB at this point
   if(vPlayer){
-    var vdata={id:vPlayer.id,name:vPlayer.name,phone:vPlayer.phone,email:vPlayer.email||'',
-      company:vPlayer.company||'',reward:reward,game:rec?rec.firstGame:'',
-      voucher:voucher,tags:[],svcs:vPlayer.svcs||[],cat:vPlayer.cat||'',note:'',created_at:new Date()};
+    var vdata={id:vPlayer.id,name:vPlayer.name,phone:vPlayer.phone,email:vPlayer.email,company:vPlayer.company,reward:reward,game:rec?rec.firstGame:'',voucher:voucher,tags:[],svcs:[],note:'',created_at:new Date()};
     var exists=visitors.find(function(v){return v.id===vPlayer.id;});
-    if(exists){exists.svcs=vdata.svcs;exists.cat=vdata.cat;dbUpdateVisitor(exists);}
-    else{visitors.unshift(vdata);dbWriteVisitor(vdata);}
+    if(!exists){visitors.unshift(vdata);dbWriteVisitor(vdata);}
   }
 }
 
-async function clSaveContact(){
-  var reward=vPlayer?(playerMap[vPlayer.id]?playerMap[vPlayer.id].firstReward:'your reward'):'your reward';
-  var voucher=document.getElementById('cl-voucher').textContent;
-  var note='Voucher: '+voucher+' · Reward: '+reward;
-  var vcf=[
-    'BEGIN:VCARD','VERSION:3.0',
-    'FN:'+BRAND.name,'ORG:'+BRAND.name,
-    'TEL;TYPE=CELL:'+BRAND.phone,
-    'EMAIL:'+BRAND.email,
-    'URL:https://wa.me/'+BRAND.wa,
-    'NOTE:'+note,
-    'END:VCARD'
-  ].join('\r\n');
-  // Try Web Share API with file (native "Add to Contacts" sheet on iOS/Android)
-  if(navigator.share&&navigator.canShare){
-    try{
-      var file=new File([vcf],'NanoSoft.vcf',{type:'text/vcard'});
-      if(navigator.canShare({files:[file]})){
-        await navigator.share({files:[file],title:BRAND.name});
-        document.getElementById('cl-done').style.display='block';
-        toast('Contact saved!','g');return;
-      }
-    }catch(e){if(e.name==='AbortError'){return;}}
-  }
-  // Fallback: Web Share without file (share as text + WA link)
-  if(navigator.share){
-    try{
-      await navigator.share({title:BRAND.name,text:BRAND.name+' · '+BRAND.phone,url:'https://wa.me/'+BRAND.wa});
-      document.getElementById('cl-done').style.display='block';return;
-    }catch(e){if(e.name==='AbortError'){return;}}
-  }
-  // Final fallback: blob URL (avoids "Save As" dialog on iOS Safari)
-  var blob=new Blob([vcf],{type:'text/vcard'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');a.href=url;a.download='NanoSoft.vcf';
-  document.body.appendChild(a);a.click();
-  setTimeout(function(){URL.revokeObjectURL(url);if(a.parentNode)a.parentNode.removeChild(a);},1200);
+function clSaveContact(){
+  var vc=['BEGIN:VCARD','VERSION:3.0','FN:'+BRAND.name,'ORG:'+BRAND.name,'TEL;TYPE=CELL:'+BRAND.phone,'EMAIL:'+BRAND.email,'NOTE:NanoSoft Booth — your reward is waiting!','END:VCARD'].join('\n');
+  var a=document.createElement('a');a.href='data:text/vcard;charset=utf-8,'+encodeURIComponent(vc);a.download='NanoSoft.vcf';a.click();
   document.getElementById('cl-done').style.display='block';
-  toast('Contact file ready','g');
+  toast('Contact saved!','g');
 }
 function clWhatsApp(){
   if(!vPlayer)return;
   var rec=playerMap[vPlayer.id],reward=rec?rec.firstReward:'Your reward';
   var voucher=document.getElementById('cl-voucher').textContent;
-  // Only show real name - skip the 'Player #N' fallback
-  var hasRealName=vPlayer.name&&!vPlayer.name.match(/^Player #\d+$/);
-  var nameLine=hasRealName?('\nName: '+vPlayer.name):'';
-  var cat=vPlayer.cat?('\nCategory: '+vPlayer.cat):'';
-  var svcs=(vPlayer.svcs&&vPlayer.svcs.length)?('\nInterests: '+vPlayer.svcs.join(', ')):'';
-  // Message FROM visitor TO NanoSoft
-  var body=
-    'Hi NanoSoft, I just played at your booth and would like to claim my prize.\n\n'
-    +'Receipt\n'
-    +'------------------\n'
-    +'Player: #'+vPlayer.id+'\n'
-    +'Reward: '+reward+'\n'
-    +'Voucher: '+voucher
-    +nameLine+cat+svcs+'\n'
-    +'------------------\n'
-    +'Please confirm. Thank you!';
-  window.open('https://wa.me/'+BRAND.wa+'?text='+encodeURIComponent(body),'_blank');
+  var isDisc=reward.includes('%');
+  var svcList=SVCS.map(function(s){return s.i+' '+s.n;}).join('\n');
+  var svcBlock=isDisc?('\n\nTo redeem, reply with the service you want '+reward+' on:\n\n'+svcList):('\n\nWe will arrange your: '+reward);
+  var msg=encodeURIComponent('Hi NanoSoft! 🎯\n\nI just played at your booth!\n\nReceipt\n──────────────\nPlayer: #'+vPlayer.id+'\nName: '+vPlayer.name+'\nReward: '+reward+'\nVoucher: '+voucher+'\n──────────────'+svcBlock+'\n\nThanks for a great game!');
+  window.open('https://wa.me/'+BRAND.wa+'?text='+msg,'_blank');
   document.getElementById('cl-done').style.display='block';
 }
 
@@ -2210,7 +1972,7 @@ function showResultOverlay(ticketId,game,reward,isFirst){
 }
 function closeResult(goClaim){
   document.getElementById('result-overlay').style.display='none';
-  if(goClaim)vGoIdentify();else vGoProfile();
+  if(goClaim)vGoClaim();else vGoProfile();
 }
 
 // ── HOST ──
@@ -2435,80 +2197,72 @@ function rpsLinkValidate(){
   if(btn)btn.disabled=!p1;
 }
 
-// RPS invite: encode p1id IN the code itself — no storage needed at all
-// Format: RPS-XXXX where XXXX encodes the p1 ticket number
-// This works across devices with zero localStorage/cookies/tracking APIs
-function rpsEncodeId(pid){
-  // Encode pid as base-36 padded to 4 chars, prefixed RPS-
-  return 'RPS-'+pid.toString(36).toUpperCase().padStart(4,'0');
-}
-function rpsDecodeId(code){
-  var part=(code||'').replace('RPS-','');
-  return parseInt(part,36)||0;
-}
-
 function rpsGenCode(){
   var p1id=parseInt(document.getElementById('rps-link-p1').value);
   if(!p1id)return;
-  var code=rpsEncodeId(p1id);
+  // Generate short memorable game code
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code='RPS-';
+  for(var i=0;i<4;i++)code+=chars[Math.floor(Math.random()*chars.length)];
   rpsGames[code]={p1id:p1id,p2id:null,created:Date.now()};
+  // Store in localStorage for cross-device lookup
+  localStorage.setItem('rps_game_'+code, JSON.stringify(rpsGames[code]));
   document.getElementById('rps-game-code').textContent=code;
   document.getElementById('rps-link-code').style.display='block';
   document.getElementById('rps-gen-btn').style.display='none';
-  toast('Game code ready — share it!','g');
+  toast('Game code created! Share it with your opponent','g');
 }
 
 function rpsShareLink(){
   var code=document.getElementById('rps-game-code').textContent;
-  // Use URL hash — no query param, no tracking prevention issues
-  var base=window.location.href.split('?')[0].split('#')[0];
-  var url=base+'#rps='+code;
-  var text='Join my NanoSoft Showdown! Code: '+code+'\n'+url;
+  var url=window.location.href.split('?')[0]+'?rps='+code;
   if(navigator.share){
-    navigator.share({title:'NanoSoft Showdown',text:text,url:url}).catch(function(){});
-  } else if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(function(){toast('Link copied!','g');}).catch(function(){
-      prompt('Copy this link:',url);
-    });
+    navigator.share({title:'NanoSoft Showdown — '+code,text:'Join my Rock Paper Scissors game at the NanoSoft booth! Code: '+code,url:url}).catch(function(){});
   } else {
-    prompt('Copy this link:',url);
+    navigator.clipboard&&navigator.clipboard.writeText(url).then(function(){toast('Link copied!','g');}).catch(function(){toast('Code: '+code,'g');});
   }
 }
 
 function rpsJoinGame(){
   var code=(document.getElementById('rps-join-code').value||'').trim().toUpperCase();
   if(!code){toast('Enter a game code','a');return;}
-  if(!code.startsWith('RPS-')){toast('Code should start with RPS-','a');return;}
-  var p1id=rpsDecodeId(code);
-  if(!p1id){toast('Invalid code — check with your opponent','r');return;}
+  // Check localStorage for game
+  var stored=localStorage.getItem('rps_game_'+code);
+  if(!stored){toast('Game code not found — check with your opponent','r');return;}
+  var game=JSON.parse(stored);
+  // P2 joins — need their ticket number (current player or prompt)
   var p2id=vPlayer?vPlayer.id:null;
-  if(!p2id){toast('Register first, then join the game','a');return;}
-  if(p2id===p1id){toast('You created this game — share it with your opponent','a');return;}
-  // Launch game — p1id decoded from code, p2 is current player
-  document.getElementById('rps-p1').value=p1id;
-  document.getElementById('rps-p2').value=p2id;
+  if(!p2id){
+    toast('Register first to join a game','a');return;
+  }
+  if(p2id===game.p1id){toast('You created this game — wait for your opponent','a');return;}
+  game.p2id=p2id;
+  localStorage.setItem('rps_game_'+code,JSON.stringify(game));
+  // Launch game directly
+  document.getElementById('rps-p1').value=game.p1id;
+  document.getElementById('rps-p2').value=game.p2id;
   rpsMode('local');
   rpsStart();
-  toast('Joined game vs #'+p1id+'!','g');
+  toast('Joined game '+code+'!','g');
 }
 
-// Auto-join from URL hash (#rps=CODE) — no localStorage, no tracking issues
+// Auto-join from URL param on load
 function rpsCheckUrlJoin(){
-  var hash=window.location.hash; // e.g. #rps=RPS-00A0
-  if(!hash||hash.indexOf('rps=')<0)return;
-  var code=hash.split('rps=')[1].split('&')[0].toUpperCase();
-  if(!code||!code.startsWith('RPS-'))return;
-  var p1id=rpsDecodeId(code);
-  if(!p1id)return;
-  // Auto-fill join code and navigate to RPS
+  var params=new URLSearchParams(window.location.search);
+  var code=params.get('rps');
+  if(!code)return;
+  var stored=localStorage.getItem('rps_game_'+code);
+  if(!stored)return;
+  // Pre-fill join code field and switch to RPS game picker
   setTimeout(function(){
     var inp=document.getElementById('rps-join-code');
-    if(inp)inp.value=code;
+    if(inp){inp.value=code.toUpperCase();}
+    // Navigate to games page and pick RPS
     navTo('visitor');
     vGoGames();
-    setTimeout(function(){vPickGame('rps');rpsMode('link');},250);
-    toast('Game invite from #'+p1id+' — register then tap Join →','g');
-  },900);
+    setTimeout(function(){vPickGame('rps');rpsMode('link');},200);
+    toast('Game invite: '+code+' — register and tap Join →','g');
+  },800);
 }
 
 
@@ -2919,16 +2673,7 @@ function gAward(){
 function drawWheel(ang){var c=document.getElementById('spin-canvas');if(!c)return;var ctx=c.getContext('2d'),cx=115,cy=115,r=112,n=SEGS.length,arc=2*Math.PI/n,a=ang!==undefined?ang:spinAngle;ctx.clearRect(0,0,230,230);SEGS.forEach(function(seg,i){var s=a+i*arc-Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,s+arc);ctx.closePath();ctx.fillStyle=seg.bg;ctx.fill();ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=2;ctx.stroke();ctx.save();ctx.translate(cx,cy);ctx.rotate(s+arc/2);ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 9px "Syne",sans-serif';var words=seg.l.split(' ');words.forEach(function(w,wi){ctx.fillText(w,r-7,wi*11-(words.length-1)*5);});ctx.restore();});ctx.beginPath();ctx.arc(cx,cy,13,0,2*Math.PI);ctx.fillStyle='#080d18';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=2;ctx.stroke();}
 function doSpin(){if(spinning)return;spinning=true;document.getElementById('spin-btn').disabled=true;document.getElementById('spin-result').style.display='none';document.getElementById('spin-hint').textContent='Spinning…';var extra=Math.PI*8+Math.random()*Math.PI*4,dur=3400,start=performance.now(),from=spinAngle;function frame(now){var t=Math.min((now-start)/dur,1),ease=1-Math.pow(1-t,4),cur=from+extra*ease;drawWheel(cur);if(t<1){requestAnimationFrame(frame);}else{spinAngle=cur%(2*Math.PI);drawWheel(spinAngle);spinning=false;document.getElementById('spin-btn').disabled=false;var n2=SEGS.length,arc=2*Math.PI/n2,norm=(((-spinAngle%(2*Math.PI))+2*Math.PI+Math.PI/2))%(2*Math.PI),idx=Math.floor(norm/arc)%n2;spinResult=SEGS[idx];document.getElementById('spin-rtxt').textContent=spinResult.l;var rm=RM[spinResult.l]||{cls:'bm'};document.getElementById('spin-rbadge').innerHTML='<span class="badge '+rm.cls+'">'+spinResult.l+'</span>';document.getElementById('spin-result').style.display='block';document.getElementById('spin-hint').textContent='Award to record';}}requestAnimationFrame(frame);}
 function spinReset(){spinResult=null;document.getElementById('spin-result').style.display='none';document.getElementById('spin-hint').textContent='Tap to spin';}
-function spinAward(){
-  if(!spinResult)return;
-  var segMap={'JACKPOT':'JACKPOT 25% OFF','25% OFF':'25% OFF','Free BI':'Free BI Report','20% OFF':'20% OFF',
-    'Free Scan':'Free Net Scan','15% OFF':'15% OFF','Consult':'Free Consult',
-    '10% OFF':'10% OFF','Free Visit':'Free Site Visit'};
-  var fullReward=segMap[spinResult.l]||spinResult.l;
-  var rm=RM[fullReward]||{bg:'rgba(255,255,255,.07)',col:'#8b90b0'};
-  recordResult('spin',fullReward,rm.bg,rm.col);
-  spinReset();
-}
+function spinAward(){if(!spinResult)return;var rm=RM[spinResult.l]||{bg:'',col:''};recordResult('spin',spinResult.l,rm.bg,rm.col);spinReset();}
 
 // ── PRIZE DESK ──
 var prizeV=null;
@@ -2954,35 +2699,8 @@ function prizeLookup(){
   document.getElementById('pr-dc-reward').textContent=reward;
   document.getElementById('pr-dc-reward').style.color=r.col;
   document.getElementById('pr-dc-voucher').textContent=prizeV.voucher;
-  // Merge any existing visitor data into prizeV (for WA personalisation)
-  if(existing){
-    prizeV.name=existing.name||'';
-    prizeV.phone=existing.phone||'';
-    prizeV.email=existing.email||'';
-    prizeV.company=existing.company||'';
-    // Pre-fill previous category/interests if they have them
-    if(existing.cat)prizeV.cat=existing.cat;
-    if(existing.svcs&&existing.svcs.length)prizeV.svcs=existing.svcs.slice();
-  }
-  // Always show form (category + interests) — never skip straight to claimed
-  document.getElementById('prize-form').style.display='block';
-  document.getElementById('prize-claimed').style.display='none';
-  // Show player identity card if we know who they are
-  var idCard=document.getElementById('pf-player-identity');
-  if(idCard){
-    if(existing&&existing.name){
-      idCard.style.display='block';
-      var avatarPool=['🦁','🐯','🦊','🐺','🦅','🦋','🔥','⚡','🎮','🎲','🦄','🐉'];
-      document.getElementById('pf-id-avatar').textContent=avatarPool[pid%avatarPool.length];
-      document.getElementById('pf-id-name').textContent=existing.name+(existing.company?' · '+existing.company:'');
-      document.getElementById('pf-id-detail').textContent=(existing.phone||'#'+pid)+(existing.email?' · '+existing.email:'');
-    } else {
-      idCard.style.display='block'; // show with just ticket number
-      document.getElementById('pf-id-avatar').textContent='🎫';
-      document.getElementById('pf-id-name').textContent='Player #'+pid;
-      document.getElementById('pf-id-detail').textContent=rec?rec.firstGame+' · '+rec.playCount+' play'+(rec.playCount!==1?'s':''):'Walked in';
-    }
-  }
+  if(existing){prizeV=Object.assign(prizeV,{name:existing.name,phone:existing.phone});document.getElementById('prize-form').style.display='none';document.getElementById('prize-claimed').style.display='block';document.getElementById('pc-summary').textContent='Player #'+pid+' · '+reward+' · '+prizeV.voucher;}
+  else{document.getElementById('prize-form').style.display='block';document.getElementById('prize-claimed').style.display='none';}
   document.getElementById('prize-card').style.display='block';
 }
 // ── PRIZE DESK: render category + interest chips in form ──
@@ -3026,46 +2744,33 @@ function pfGetSelectedSvcs(){
 }
 
 async function pfSave(){
-  // No form fields to validate — prizeV already has id, reward, and any known visitor data
+  var name=document.getElementById('pf-name').value.trim(),phone=document.getElementById('pf-phone').value.trim();
+  if(!name||!phone){toast('Name and phone required','a');return;}
+  prizeV.name=name;prizeV.phone=phone;
+  prizeV.email=document.getElementById('pf-email').value.trim();
+  prizeV.company=document.getElementById('pf-company').value.trim();
   prizeV.cat=pfGetSelectedCat();
   prizeV.svcs=pfGetSelectedSvcs();
-  prizeV.tags=[];
-  prizeV.note=prizeV.note||'';
-  prizeV.created_at=new Date();
-  // Auto-tag for guestbook
+  prizeV.tags=[];prizeV.note='';prizeV.created_at=new Date();
+  // Auto-tag based on category / interests for guestbook
   if(prizeV.svcs.length)prizeV.tags.push('svc interest');
-  if(prizeV.cat){var catWord=prizeV.cat.split(' ').pop().toLowerCase();if(catWord)prizeV.tags.push(catWord);}
-  // Update or insert visitor record
-  var existing=visitors.find(function(v){return v.id===prizeV.id;});
-  if(existing){
-    existing.cat=prizeV.cat;
-    existing.svcs=prizeV.svcs;
-    existing.tags=(existing.tags||[]).concat(prizeV.tags.filter(function(t){return (existing.tags||[]).indexOf(t)<0;}));
-  } else {
-    visitors.unshift(prizeV);
-    existing=prizeV;
-  }
-  try{
-    if(existing===prizeV){await dbWriteVisitor(existing);}
-    else{await dbUpdateVisitor(existing);}
-  }catch(err){
-    console.warn('pfSave DB error:',err);
-    toast('Saved locally — sync may be delayed','a');
-  }
+  if(prizeV.cat)prizeV.tags.push(prizeV.cat.replace(/^.+\s/,'').toLowerCase());
+  visitors.unshift(prizeV);
+  await dbWriteVisitor(prizeV);
   document.getElementById('prize-form').style.display='none';
   document.getElementById('prize-claimed').style.display='block';
-  var displayName=prizeV.name?prizeV.name:'Player #'+prizeV.id;
-  document.getElementById('pc-summary').textContent=displayName+' · '+prizeV.reward+' · '+prizeV.voucher;
+  document.getElementById('pc-summary').textContent=name+' · '+prizeV.reward+' · '+prizeV.voucher;
+  // Show profile chips in summary
   var chips=[];
   if(prizeV.cat)chips.push('<span class="badge bp">'+prizeV.cat+'</span>');
   prizeV.svcs.forEach(function(s){chips.push('<span class="badge bb" style="font-size:.65rem">'+s+'</span>');});
   document.getElementById('pc-profile-chips').innerHTML=chips.join('');
-  toast('Claimed!','g');confetti();
+  toast('Visitor saved!','g');confetti();
 }
 
 function pfWhatsApp(){
   if(!prizeV)return;
-  var name=prizeV.name||('Player #'+prizeV.id);var firstName=name.split(' ')[0]||('Player #'+prizeV.id);
+  var name=prizeV.name||'';var firstName=name.split(' ')[0];
   var reward=prizeV.reward||'Your reward';
   var isDisc=reward.includes('%');
   var cat=prizeV.cat||'';
@@ -3163,12 +2868,10 @@ function pfReset(){
   prizeV=null;
   document.getElementById('prize-pid').value='';
   document.getElementById('prize-card').style.display='none';
-  document.getElementById('prize-form').style.display='block';
-  document.getElementById('prize-claimed').style.display='none';
+  ['pf-name','pf-phone','pf-email','pf-company'].forEach(function(id){document.getElementById(id).value='';});
+  // Reset chips
   document.querySelectorAll('#pf-cat-chips .chip').forEach(function(b){b.classList.remove('on');});
   document.querySelectorAll('#pf-svc-chips .svc-chip').forEach(function(b){b.classList.remove('on');});
-  var idCard=document.getElementById('pf-player-identity');
-  if(idCard)idCard.style.display='none';
 }
 
 // ── DASHBOARD ──
@@ -3421,24 +3124,7 @@ function gbNote(idx,val){
   if(SB)SB.from('visitors').update({staff_note:val}).eq('id',visitors[idx].id).then(function(){});
   document.getElementById('gbs3').textContent=visitors.filter(function(v){return v.note&&v.note.trim();}).length;
 }
-function gbExport(){
-  var rows=[['ID','Name','Phone','Email','Company','Category','Reward','Game','Rating','Tags','Services','Notes','Staff Notes','Date']];
-  visitors.forEach(function(v){
-    rows.push([
-      v.id,v.name||'',v.phone||'',v.email||'',v.company||'',
-      v.cat||'',v.reward||'',v.game||'',v.rating||0,
-      (v.tags||[]).join(';'),(v.svcs||[]).join(';'),
-      v.note||'',v.staff_note||'',
-      v.created_at?new Date(v.created_at).toLocaleString():''
-    ]);
-  });
-  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
-  var a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='nanosoft-booth-'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();
-  toast('Exported '+visitors.length+' visitors','g');
-}
+function gbExport(){var rows=[['ID','Name','Phone','Email','Company','Reward','Game','Tags','Services','Notes','Date']];visitors.forEach(function(v){rows.push([v.id,v.name||'',v.phone||'',v.email||'',v.company||'',v.reward,v.game,(v.tags||[]).join(';'),(v.svcs||[]).join(';'),v.note||'',v.created_at?new Date(v.created_at).toLocaleString():'']);});var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='nanosoft-guestbook.csv';a.click();toast('Exported '+visitors.length+' visitors','g');}
 
 // ── ADMIN ──
 function brSave(){['name','tag','phone','email','wa','days'].forEach(function(k){var v=document.getElementById('br-'+k).value;if(v)BRAND[k]=v;});localStorage.setItem('booth_brand',JSON.stringify(BRAND));}
@@ -3497,7 +3183,7 @@ function renderSvcEditor(){
 }
 function pinEd(role,val){if(val.length===4){PINS[role]=val;localStorage.setItem('booth_pins',JSON.stringify(PINS));toast('PIN updated','g');}}
 function adjTicket(d){currentPid=Math.max(1,currentPid+d);localStorage.setItem('booth_pid',currentPid);document.getElementById('adm-tv').textContent=currentPid;document.getElementById('adm-ticket').textContent=currentPid;}
-function resetData(){if(!confirm('Reset ALL visitor data?'))return;visitors=[];playerMap={};vPlayer=null;localStorage.removeItem('booth_pid');currentPid=99;vShowOnly('v-land');toast('Data reset — all cleared','a');}
+function resetData(){if(!confirm('Reset ALL visitor data?'))return;visitors=[];playerMap={};localStorage.removeItem('booth_pid');currentPid=99;toast('Data reset','a');}
 
 // Init — runs after ALL functions are defined
 window.addEventListener('DOMContentLoaded', function() {
